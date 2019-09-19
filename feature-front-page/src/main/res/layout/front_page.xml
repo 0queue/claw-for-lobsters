@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/front_page_coordinator"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -8,7 +9,8 @@
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/front_page_app_bar_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:stateListAnimator="@animator/lift_on_scroll">
 
         <!-- Not sure why this doesn't work -->
         <!-- app:navigationIcon="@mipmap/ic_launcher_round"-->
@@ -17,14 +19,25 @@
             style="@style/AppTheme.ToolbarStyle"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:layout_scrollFlags="scroll|enterAlways|snap" />
+            app:layout_scrollFlags="scroll|enterAlways|snap"
+            tools:layout_height="50dp" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <TextView
+    <!-- scrim to go behind transparent status bar -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="?attr/colorSurface"
+        android:outlineProvider="none"
+        android:translationY="-50dp"
+        android:translationZ="16dp" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/front_page_recycler"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center"
-        android:text="Hello Toolbar" />
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
+        tools:listitem="@layout/item_front_page" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
