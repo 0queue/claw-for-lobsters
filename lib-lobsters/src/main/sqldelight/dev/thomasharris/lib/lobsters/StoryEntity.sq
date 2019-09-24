@@ -1,7 +1,0 @@
-CREATE TABLE StoryEntity (
-    shortId TEXT NOT NULL UNIQUE PRIMARY KEY,
-    title TEXT NOT NULL
-);
-
-selectAll:
-SELECT * FROM StoryEntity;

@@ -1,0 +1,30 @@
+import java.util.Date;
+import kotlin.collections.List;
+
+CREATE TABLE StoryDatabaseEntity (
+    shortId TEXT NOT NULL UNIQUE PRIMARY KEY,
+    title TEXT NOT NULL,
+    createdAt INTEGER as Date NOT NULL,
+    url TEXT NOT NULL,
+    score INTEGER NOT NULL,
+    upvotes INTEGER NOT NULL,
+    downvotes INTEGER NOT NULL,
+    commentCount INTEGER NOT NULL,
+    description TEXT NOT NULL,
+    submitterUsername TEXT NOT NULL,
+    tags TEXT as List<String> NOT NULL,
+    pageIndex INTEGER NOT NULL,
+    insertedAt INTEGER as Date NOT NULL
+);
+
+selectAll:
+SELECT * FROM StoryDatabaseEntity;
+
+countStories:
+SELECT count(*) FROM StoryDatabaseEntity;
+
+storiesPaged:
+SELECT * FROM StoryDatabaseEntity LIMIT :limit OFFSET :offset;
+
+insert:
+INSERT INTO StoryDatabaseEntity VALUES ?;
