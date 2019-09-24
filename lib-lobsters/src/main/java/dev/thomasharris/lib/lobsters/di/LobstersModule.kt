@@ -1,26 +1,27 @@
 package dev.thomasharris.lib.lobsters.di
 
 import android.content.Context
+import androidx.paging.DataSource
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter
 import com.squareup.sqldelight.ColumnAdapter
 import com.squareup.sqldelight.android.AndroidSqliteDriver
+import com.squareup.sqldelight.android.paging.QueryDataSourceFactory
 import dagger.Module
 import dagger.Provides
-import dagger.Reusable
 import dev.thomasharris.lib.lobsters.Database
 import dev.thomasharris.lib.lobsters.LobstersService
 import dev.thomasharris.lib.lobsters.StoryDatabaseEntity
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import java.util.*
+import javax.inject.Singleton
 
-// TODO Scoping of some sort
 @Module
 class LobstersModule(private val context: Context) {
 
     @Provides
-    @Reusable
+    @Singleton
     fun lobstersService(): LobstersService {
         val moshi = Moshi.Builder()
             .add(Date::class.java, Rfc3339DateJsonAdapter().nullSafe())
@@ -32,6 +33,7 @@ class LobstersModule(private val context: Context) {
     }
 
     @Provides
+    @Singleton
     fun lobstersDatabase(): Database {
 
         val dateAdapter = object : ColumnAdapter<Date, Long> {
@@ -57,4 +59,9 @@ class LobstersModule(private val context: Context) {
             )
         )
     }
+
+//    @Provides
+//    fun queryDataSourceFactory(database: Database): DataSource.Factory<Int, StoryDatabaseEntity> {
+//
+//    }
 }

@@ -12,4 +12,6 @@ dependencies {
     material()
 
     implementation(project(":core"))
+
+    implementation("androidx.paging:paging-runtime-ktx:2.1.0")
 }
