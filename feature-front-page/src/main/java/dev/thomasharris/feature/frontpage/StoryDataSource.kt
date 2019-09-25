@@ -1,6 +1,5 @@
 package dev.thomasharris.feature.frontpage
 
-import android.util.Log
 import androidx.paging.DataSource
 import androidx.paging.PageKeyedDataSource
 import dev.thomasharris.lib.lobsters.Story
@@ -12,27 +11,24 @@ import dev.thomasharris.lib.lobsters.StoryRepository
  */
 class StoryDataSource(
     private val storyRepository: StoryRepository
-) : PageKeyedDataSource<Int, Story>() {
+) : PageKeyedDataSource<Int, FrontPageStory>() {
 
     override fun loadInitial(
         params: LoadInitialParams<Int>,
-        callback: LoadInitialCallback<Int, Story>
+        callback: LoadInitialCallback<Int, FrontPageStory>
     ) = storyRepository.getPageSync(0) {
-        Log.i("TEH", "Fetched initial : (0)")
-        callback.onResult(it, null, 1)
+        callback.onResult(it.map(Story::frontPage), null, 1)
     }
 
-    override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, Story>) =
+    override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, FrontPageStory>) =
         storyRepository.getPageSync(params.key) {
-            Log.i("TEH", "Fetched after : (${params.key})")
-            callback.onResult(it, params.key + 1)
+            callback.onResult(it.map(Story::frontPage), params.key + 1)
         }
 
-    override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, Story>) =
+    override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, FrontPageStory>) =
         storyRepository.getPageSync(params.key) {
-            Log.i("TEH", "Fetched before : (${params.key})")
             val adjacentKey = if (params.key == 0) null else params.key + 1
-            callback.onResult(it, adjacentKey)
+            callback.onResult(it.map(Story::frontPage), adjacentKey)
         }
 
     override fun invalidate() {
@@ -43,6 +39,6 @@ class StoryDataSource(
 
 class StoryDataSourceFactory(
     private val storyRepository: StoryRepository
-) : DataSource.Factory<Int, Story>() {
-    override fun create(): DataSource<Int, Story> = StoryDataSource(storyRepository)
+) : DataSource.Factory<Int, FrontPageStory>() {
+    override fun create(): DataSource<Int, FrontPageStory> = StoryDataSource(storyRepository)
 }

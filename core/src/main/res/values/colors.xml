@@ -4,7 +4,15 @@
     <color name="colorPrimaryDark">#670000</color>
     <color name="colorAccent">#42a5f5</color>
     <color name="colorAccentDark">#0077c2</color>
-    
+
     <color name="white">#FFFFFF</color>
     <color name="dark">#212121</color>
+
+    <color name="colorTagBorderShowAsk">#F0B2B8</color>
+    <color name="colorTagBorderMedia">#B2CCF0</color>
+    <color name="colorTagBorder">#d5d458</color>
+
+    <color name="colorTagBackgroundShowAsk">#f9ddde</color>
+    <color name="colorTagBackgroundMedia">#ddebf9</color>
+    <color name="colorTagBackground">#fffcd7</color>
 </resources>

@@ -12,6 +12,14 @@
         <item name="android:colorBackground">@color/white</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">true</item>
+
+        <item name="colorTagBorderShowAsk">@color/colorTagBorderShowAsk</item>
+        <item name="colorTagBorderMedia">@color/colorTagBorderMedia</item>
+        <item name="colorTagBorder">@color/colorTagBorder</item>
+
+        <item name="colorTagBackgroundShowAsk">@color/colorTagBackgroundShowAsk</item>
+        <item name="colorTagBackgroundMedia">@color/colorTagBackgroundMedia</item>
+        <item name="colorTagBackground">@color/colorTagBackground</item>
     </style>
 
     <style name="AppTheme.ToolbarStyle">

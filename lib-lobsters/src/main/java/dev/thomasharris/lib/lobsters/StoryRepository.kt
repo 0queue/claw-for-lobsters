@@ -7,6 +7,7 @@ import javax.inject.Inject
 
 class StoryRepository @Inject constructor(
     private val lobstersService: LobstersService,
+    private val tagRepository: TagRepository,
     private val storyQueries: StoryDatabaseEntityQueries
 ) {
 
@@ -25,12 +26,14 @@ class StoryRepository @Inject constructor(
             TimeUnit.MILLISECONDS.toMinutes(Date().time - it.time) >= 60
         }
 
+        val tagMap = tagRepository.getTagsSync()
+
         // if page not downloaded, or is old...
         if (dbPage.isEmpty() || isOld == true) {
             // fetch new page
-            val newPage =
-                lobstersService.getPageSync(index + 1).execute().body()?.map(Story.Companion::from)
-                    ?: throw NullPointerException("TODO")
+            val newPage = lobstersService.getPageSync(index + 1).execute().body()?.map {
+                Story.from(it, tagMap)
+            } ?: throw NullPointerException("TODO")
 
             // return new page
             callback(newPage)
@@ -41,7 +44,9 @@ class StoryRepository @Inject constructor(
                 storyQueries.insertStory(it.toDatabaseEntity(index, now))
             }
         } else
-            callback(dbPage.map(Story.Companion::from))
+            callback(dbPage.map {
+                Story.from(it, tagMap)
+            })
     }
 
     fun invalidate() {
@@ -60,10 +65,13 @@ data class Story(
     val commentCount: Int,
     val description: String,
     val submitterUsername: String,
-    val tags: List<String>
+    val tags: List<TagNetworkEntity>
 ) {
 
-    fun toDatabaseEntity(index: Int, insertedAt: Date = Date()): StoryDatabaseEntity {
+    fun toDatabaseEntity(
+        index: Int,
+        insertedAt: Date = Date()
+    ): StoryDatabaseEntity {
         return StoryDatabaseEntity.Impl(
             shortId,
             title,
@@ -75,14 +83,17 @@ data class Story(
             commentCount.toLong(),
             description,
             submitterUsername,
-            tags,
+            tags.map(TagNetworkEntity::tag),
             index.toLong(),
             insertedAt
         )
     }
 
     companion object {
-        fun from(storyNetworkEntity: StoryNetworkEntity): Story {
+        fun from(
+            storyNetworkEntity: StoryNetworkEntity,
+            tagMap: Map<String, TagNetworkEntity>
+        ): Story {
             with(storyNetworkEntity) {
                 return Story(
                     shortId,
@@ -95,12 +106,15 @@ data class Story(
                     commentCount,
                     description,
                     submitter.username,
-                    tags
+                    tags.mapNotNull { tagMap[it] }
                 )
             }
         }
 
-        fun from(storyDatabaseEntity: StoryDatabaseEntity): Story {
+        fun from(
+            storyDatabaseEntity: StoryDatabaseEntity,
+            tagMap: Map<String, TagNetworkEntity>
+        ): Story {
             with(storyDatabaseEntity) {
                 return Story(
                     shortId,
@@ -113,7 +127,7 @@ data class Story(
                     commentCount.toInt(),
                     description,
                     submitterUsername,
-                    tags
+                    tags.mapNotNull { tagMap[it] }
                 )
             }
         }

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="colorTagBorderShowAsk" format="color" />
+    <attr name="colorTagBorderMedia" format="color" />
+    <attr name="colorTagBorder" format="color" />
+
+    <attr name="colorTagBackgroundShowAsk" format="color" />
+    <attr name="colorTagBackgroundMedia" format="color" />
+    <attr name="colorTagBackground" format="color" />
+</resources>

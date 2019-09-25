@@ -22,6 +22,9 @@ interface LobstersService {
 
     @GET("tags.json")
     suspend fun getTags(): List<TagNetworkEntity>
+
+    @GET("tags.json")
+    fun getTagsSync(): Call<List<TagNetworkEntity>>
 }
 
 typealias ShortId = String
