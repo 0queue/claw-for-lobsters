@@ -43,6 +43,6 @@
             android:id="@+id/front_page_recycler"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:listitem="@layout/item_front_page" />
+            tools:listitem="@layout/item_front_page_story" />
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

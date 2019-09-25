@@ -17,17 +17,91 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import java.util.concurrent.TimeUnit
 
-class StoryAdapter : PagedListAdapter<FrontPageStory, StoryAdapter.StoryViewHolder>(Companion) {
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StoryViewHolder {
-        val inflater = LayoutInflater.from(parent.context)
-        return StoryViewHolder(inflater.inflate(R.layout.item_front_page, parent, false))
+const val VIEW_TYPE_STORY = 1
+const val VIEW_TYPE_DIVIDER = 2
+
+class StoryAdapter : PagedListAdapter<FrontPageItem, RecyclerView.ViewHolder>(Companion) {
+
+    override fun getItemViewType(position: Int) = when (getItem(position)) {
+        is FrontPageStory -> VIEW_TYPE_STORY
+        else -> VIEW_TYPE_DIVIDER
     }
 
-    override fun onBindViewHolder(holder: StoryViewHolder, position: Int) {
-        val story = getItem(position) ?: return
-        val context = holder.root.context
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        val inflater = LayoutInflater.from(parent.context)
+        return when (viewType) {
+            VIEW_TYPE_STORY -> StoryViewHolder(
+                inflater.inflate(
+                    R.layout.item_front_page_story,
+                    parent,
+                    false
+                )
+            )
+            else -> DividerViewHolder(
+                inflater.inflate(R.layout.item_front_page_divider, parent, false)
+            )
+        }
+    }
 
-        val title = SpannableStringBuilder().apply {
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        when (holder.itemViewType) {
+            VIEW_TYPE_STORY -> (holder as StoryViewHolder).bind(getItem(position) as FrontPageStory)
+            VIEW_TYPE_DIVIDER -> (holder as DividerViewHolder).bind(getItem(position) as FrontPageDivider)
+        }
+    }
+
+    companion object : DiffUtil.ItemCallback<FrontPageItem>() {
+        override fun areContentsTheSame(oldItem: FrontPageItem, newItem: FrontPageItem): Boolean {
+            (oldItem as? FrontPageStory)?.let { old ->
+                (newItem as? FrontPageStory)?.let { new ->
+                    return old == new
+                }
+            }
+
+            (oldItem as? FrontPageDivider)?.let { old ->
+                (newItem as? FrontPageDivider)?.let { new ->
+                    return old == new
+                }
+            }
+
+            return false
+        }
+
+        override fun areItemsTheSame(oldItem: FrontPageItem, newItem: FrontPageItem): Boolean {
+            (oldItem as? FrontPageStory)?.let { old ->
+                (newItem as? FrontPageStory)?.let { new ->
+                    return old.shortId == new.shortId
+                }
+            }
+
+            (oldItem as? FrontPageDivider)?.let { old ->
+                (newItem as? FrontPageDivider)?.let { new ->
+                    return old.n == new.n
+                }
+            }
+
+            return false
+        }
+    }
+}
+
+class DividerViewHolder(root: View) : RecyclerView.ViewHolder(root) {
+
+    private val divider: TextView = root.findViewById(R.id.item_front_page_divider)
+
+    fun bind(item: FrontPageDivider) {
+        divider.text = item.n.toString()
+    }
+}
+
+class StoryViewHolder(private val root: View) : RecyclerView.ViewHolder(root) {
+    private val title: TextView = root.findViewById(R.id.item_front_page_title)
+    private val byline: TextView = root.findViewById(R.id.item_front_page_author)
+
+    fun bind(story: FrontPageStory) {
+        val context = root.context
+
+        val titleText = SpannableStringBuilder().apply {
             append(story.title)
             story.tags.forEach { tag ->
                 append(" ")
@@ -41,7 +115,7 @@ class StoryAdapter : PagedListAdapter<FrontPageStory, StoryAdapter.StoryViewHold
             }
         }
 
-        holder.title.text = title
+        title.text = titleText
 
         val ago = with(story.postedAgo) {
             val t = first.toInt()
@@ -63,7 +137,7 @@ class StoryAdapter : PagedListAdapter<FrontPageStory, StoryAdapter.StoryViewHold
 
         val voteCount = String.format("%+d", story.voteTotal)
 
-        val byline = SpannableStringBuilder().apply {
+        val bylineText = SpannableStringBuilder().apply {
             append(
                 context.getString(
                     R.string.front_page_caption,
@@ -86,23 +160,10 @@ class StoryAdapter : PagedListAdapter<FrontPageStory, StoryAdapter.StoryViewHold
             }
         }
 
-        holder.byline.text = byline
-        holder.root.setOnClickListener {
+        byline.text = bylineText
+        root.setOnClickListener {
             Toast.makeText(context, "TODO", Toast.LENGTH_SHORT).show()
         }
-    }
-
-    class StoryViewHolder(val root: View) : RecyclerView.ViewHolder(root) {
-        val title: TextView = root.findViewById(R.id.item_front_page_title)
-        val byline: TextView = root.findViewById(R.id.item_front_page_author)
-    }
-
-    companion object : DiffUtil.ItemCallback<FrontPageStory>() {
-        override fun areContentsTheSame(oldItem: FrontPageStory, newItem: FrontPageStory) =
-            oldItem == newItem
-
-        override fun areItemsTheSame(oldItem: FrontPageStory, newItem: FrontPageStory) =
-            oldItem.shortId == newItem.shortId
     }
 }
 

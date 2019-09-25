@@ -11,24 +11,30 @@ import dev.thomasharris.lib.lobsters.StoryRepository
  */
 class StoryDataSource(
     private val storyRepository: StoryRepository
-) : PageKeyedDataSource<Int, FrontPageStory>() {
+) : PageKeyedDataSource<Int, FrontPageItem>() {
 
     override fun loadInitial(
         params: LoadInitialParams<Int>,
-        callback: LoadInitialCallback<Int, FrontPageStory>
+        callback: LoadInitialCallback<Int, FrontPageItem>
     ) = storyRepository.getPageSync(0) {
-        callback.onResult(it.map(Story::frontPage), null, 1)
+        callback.onResult(it.map(Story::frontPage) + FrontPageDivider(2), null, 1)
     }
 
-    override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, FrontPageStory>) =
+    override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, FrontPageItem>) =
         storyRepository.getPageSync(params.key) {
-            callback.onResult(it.map(Story::frontPage), params.key + 1)
+            callback.onResult(
+                it.map(Story::frontPage) + FrontPageDivider(params.key + 2),
+                params.key + 1
+            )
         }
 
-    override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, FrontPageStory>) =
+    override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, FrontPageItem>) =
         storyRepository.getPageSync(params.key) {
             val adjacentKey = if (params.key == 0) null else params.key + 1
-            callback.onResult(it.map(Story::frontPage), adjacentKey)
+            callback.onResult(
+                it.map(Story::frontPage) + FrontPageDivider(params.key + 2),
+                adjacentKey
+            )
         }
 
     override fun invalidate() {
@@ -39,6 +45,6 @@ class StoryDataSource(
 
 class StoryDataSourceFactory(
     private val storyRepository: StoryRepository
-) : DataSource.Factory<Int, FrontPageStory>() {
-    override fun create(): DataSource<Int, FrontPageStory> = StoryDataSource(storyRepository)
+) : DataSource.Factory<Int, FrontPageItem>() {
+    override fun create(): DataSource<Int, FrontPageItem> = StoryDataSource(storyRepository)
 }

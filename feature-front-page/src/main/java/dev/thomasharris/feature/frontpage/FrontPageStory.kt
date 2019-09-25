@@ -6,6 +6,8 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.math.abs
 
+sealed class FrontPageItem
+
 data class FrontPageStory(
     val shortId: String,
     val title: String,
@@ -15,7 +17,9 @@ data class FrontPageStory(
     val voteTotal: Int,
     val shortURL: String?,
     val tags: List<FrontPageTag>
-)
+) : FrontPageItem()
+
+data class FrontPageDivider(val n: Int) : FrontPageItem()
 
 fun Story.frontPage(): FrontPageStory {
     val postedAgo = abs(Date().time - createdAt.time).let { t ->
