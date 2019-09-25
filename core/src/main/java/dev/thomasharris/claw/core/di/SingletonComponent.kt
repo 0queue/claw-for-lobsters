@@ -2,6 +2,7 @@ package dev.thomasharris.claw.core.di
 
 import dagger.Component
 import dev.thomasharris.lib.lobsters.Database
+import dev.thomasharris.lib.lobsters.StoryRepository
 import dev.thomasharris.lib.lobsters.di.LobstersModule
 import javax.inject.Singleton
 
@@ -9,4 +10,6 @@ import javax.inject.Singleton
 @Singleton
 interface SingletonComponent {
     fun database(): Database
+
+    fun storyRepository(): StoryRepository
 }

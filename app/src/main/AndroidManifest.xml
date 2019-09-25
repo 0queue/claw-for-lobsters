@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="dev.thomasharris.claw">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:name=".core.ClawApplication"
         android:allowBackup="true"

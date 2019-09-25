@@ -1,12 +1,10 @@
 package dev.thomasharris.lib.lobsters.di
 
 import android.content.Context
-import androidx.paging.DataSource
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter
 import com.squareup.sqldelight.ColumnAdapter
 import com.squareup.sqldelight.android.AndroidSqliteDriver
-import com.squareup.sqldelight.android.paging.QueryDataSourceFactory
 import dagger.Module
 import dagger.Provides
 import dev.thomasharris.lib.lobsters.Database
@@ -60,8 +58,6 @@ class LobstersModule(private val context: Context) {
         )
     }
 
-//    @Provides
-//    fun queryDataSourceFactory(database: Database): DataSource.Factory<Int, StoryDatabaseEntity> {
-//
-//    }
+    @Provides
+    fun storyQueries(database: Database) = database.storyDatabaseEntityQueries
 }

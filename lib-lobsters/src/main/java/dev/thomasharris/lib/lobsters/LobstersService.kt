@@ -1,13 +1,21 @@
 package dev.thomasharris.lib.lobsters
 
 import com.squareup.moshi.Json
+import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Path
 import java.util.*
 
 interface LobstersService {
+
+    /**
+     * Hey this starts at 1, don't forget it
+     */
     @GET("page/{index}.json")
     suspend fun getPage(@Path("index") index: Int): List<StoryNetworkEntity>
+
+    @GET("page/{index}.json")
+    fun getPageSync(@Path("index") index: Int): Call<List<StoryNetworkEntity>>
 
     @GET("s/{short_id}.json")
     suspend fun getStory(@Path("short_id") shortId: ShortId): StoryNetworkEntity

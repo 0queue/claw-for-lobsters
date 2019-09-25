@@ -17,14 +17,11 @@ CREATE TABLE StoryDatabaseEntity (
     insertedAt INTEGER as Date NOT NULL
 );
 
-selectAll:
-SELECT * FROM StoryDatabaseEntity;
+insertStory:
+INSERT OR REPLACE INTO StoryDatabaseEntity VALUES ?;
 
-countStories:
-SELECT count(*) FROM StoryDatabaseEntity;
+getPage:
+SELECT * FROM StoryDatabaseEntity WHERE pageIndex = :index;
 
-storiesPaged:
-SELECT * FROM StoryDatabaseEntity LIMIT :limit OFFSET :offset;
-
-insert:
-INSERT INTO StoryDatabaseEntity VALUES ?;
+clear:
+DELETE FROM StoryDatabaseEntity;

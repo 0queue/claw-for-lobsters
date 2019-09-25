@@ -2,15 +2,22 @@ package dev.thomasharris.claw.core
 
 import android.app.Application
 import dev.thomasharris.claw.core.di.ComponentStore
+import dev.thomasharris.claw.core.di.DaggerSingletonComponent
 import dev.thomasharris.claw.core.di.SingletonComponent
+import dev.thomasharris.lib.lobsters.di.LobstersModule
 import kotlin.reflect.KClass
 
+@Suppress("unused")
 class ClawApplication : Application(), ComponentStore<SingletonComponent> {
     private val components: MutableSet<Any> = mutableSetOf()
     private lateinit var singletonComponent: SingletonComponent
 
     override fun onCreate() {
         super.onCreate()
+
+        singletonComponent = DaggerSingletonComponent.builder()
+            .lobstersModule(LobstersModule(this))
+            .build()
     }
 
     override fun <T : Any> get(
