@@ -85,12 +85,12 @@ class StoryAdapter : PagedListAdapter<FrontPageItem, RecyclerView.ViewHolder>(Co
     }
 }
 
-class DividerViewHolder(root: View) : RecyclerView.ViewHolder(root) {
+class DividerViewHolder(private val root: View) : RecyclerView.ViewHolder(root) {
 
-    private val divider: TextView = root.findViewById(R.id.item_front_page_divider)
+    private val label: TextView = root.findViewById(R.id.item_front_page_divider_text)
 
     fun bind(item: FrontPageDivider) {
-        divider.text = item.n.toString()
+        label.text = root.context.getString(R.string.page_number, item.n)
     }
 }
 

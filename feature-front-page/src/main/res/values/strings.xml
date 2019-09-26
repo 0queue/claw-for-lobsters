@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="refresh">Refresh</string>
+    <string name="page_number">Page %d</string>
 
     <!-- example: -->
     <!-- by thomas 16 hours ago | 3 comments -->
