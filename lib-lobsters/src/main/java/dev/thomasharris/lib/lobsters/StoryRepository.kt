@@ -14,7 +14,7 @@ class StoryRepository @Inject constructor(
     // use a callback instead of return value so that when
     // a new page is fetched the stories can be inserted
     // after sending them back to the paging library
-    fun getPageSync(index: Int, callback: (List<Story>) -> Unit) {
+    fun getPageSync(index: Int, callback: (List<Story>?) -> Unit) {
 
         // get offline page
         val dbPage = storyQueries.getPage(index.toLong()).executeAsList()
@@ -31,16 +31,16 @@ class StoryRepository @Inject constructor(
         // if page not downloaded, or is old...
         if (dbPage.isEmpty() || isOld == true) {
             // fetch new page
-            val newPage = lobstersService.getPageSync(index + 1).execute().body()?.map {
+            val newPage = lobstersService.getPageSync(index + 1).executeOrNull()?.body()?.map {
                 Story.from(it, tagMap)
-            } ?: throw NullPointerException("TODO")
+            }
 
             // return new page
             callback(newPage)
 
             // store new page
             val now = Date()
-            newPage.forEach {
+            newPage?.forEach {
                 storyQueries.insertStory(it.toDatabaseEntity(index, now))
             }
         } else

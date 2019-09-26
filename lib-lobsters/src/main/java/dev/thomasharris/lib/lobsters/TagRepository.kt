@@ -12,7 +12,7 @@ class TagRepository @Inject constructor(
      */
     fun getTagsSync(): Map<String, TagNetworkEntity> {
         if (tagMap.isEmpty())
-            tagMap = lobstersService.getTagsSync().execute().body()?.map {
+            tagMap = lobstersService.getTagsSync().executeOrNull()?.body()?.map {
                 it.tag to it
             }?.toMap()?.toMutableMap() ?: hashMapOf()
 

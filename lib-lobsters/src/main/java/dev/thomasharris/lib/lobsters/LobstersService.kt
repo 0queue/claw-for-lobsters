@@ -2,8 +2,10 @@ package dev.thomasharris.lib.lobsters
 
 import com.squareup.moshi.Json
 import retrofit2.Call
+import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
+import java.io.IOException
 import java.util.*
 
 interface LobstersService {
@@ -64,3 +66,9 @@ data class TagNetworkEntity(
     val inactive: Boolean,
     @field:Json(name = "hotness_mod") val hotnessMod: Float
 )
+
+fun <T> Call<T>.executeOrNull(): Response<T>? = try {
+    execute()
+} catch (e: IOException) {
+    null
+}

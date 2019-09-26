@@ -1,4 +1,4 @@
-package dev.thomasharris.claw.core
+package dev.thomasharris.claw.core.ext
 
 import com.bluelinelabs.conductor.Controller
 import dev.thomasharris.claw.core.di.ComponentStore
