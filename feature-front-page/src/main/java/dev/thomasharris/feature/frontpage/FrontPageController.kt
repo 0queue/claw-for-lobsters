@@ -56,7 +56,10 @@ class FrontPageController : LifecycleController() {
             }
         }
 
-        (activity as AppCompatActivity?)?.setSupportActionBar(root.findViewById(R.id.front_page_toolbar))
+        (activity as AppCompatActivity?)?.apply {
+            setSupportActionBar(root.findViewById(R.id.front_page_toolbar))
+            supportActionBar?.setDisplayShowTitleEnabled(false)
+        }
 
         liveStories.observe(this, Observer {
             listAdapter.submitList(it)
