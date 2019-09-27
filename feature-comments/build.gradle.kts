@@ -1,4 +1,6 @@
 import dev.thomasharris.build.conductor
+import dev.thomasharris.build.glide
+import dev.thomasharris.build.material
 import dev.thomasharris.build.testing
 
 plugins {
@@ -8,6 +10,8 @@ plugins {
 dependencies {
     testing()
     conductor()
+    material()
+    glide()
 
-    implementation("org.jetbrains.kotlin:kotlin-reflect:1.3.50")
+    implementation(project(":core"))
 }

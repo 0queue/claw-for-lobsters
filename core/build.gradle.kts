@@ -15,9 +15,6 @@ dependencies {
 
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.3.50")
 
-    implementation("androidx.appcompat:appcompat:1.1.0")
-    implementation("androidx.core:core-ktx:1.1.0")
-
     api(project(":lib-lobsters"))
     api(project(":lib-navigator"))
 }

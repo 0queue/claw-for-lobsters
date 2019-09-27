@@ -20,6 +20,8 @@ import dev.thomasharris.claw.feature.frontpage.di.DaggerFrontPageComponent
 import dev.thomasharris.claw.feature.frontpage.di.FrontPageComponent
 import dev.thomasharris.claw.feature.frontpage.di.FrontPageModule
 import dev.thomasharris.claw.frontpage.feature.frontpage.R
+import dev.thomasharris.claw.lib.navigator.Destination
+import dev.thomasharris.claw.lib.navigator.goto
 
 @Suppress("unused")
 class FrontPageController : LifecycleController() {
@@ -40,8 +42,9 @@ class FrontPageController : LifecycleController() {
         component.storyDataSourceFactory().toLiveData(config)
     }
 
-    private val listAdapter: FrontPageAdapter =
-        FrontPageAdapter()
+    private val listAdapter = FrontPageAdapter {
+        goto(Destination.Comments(it))
+    }
 
     private lateinit var toolbar: Toolbar
     private lateinit var toolbarScrollFlags: AppBarLayout.LayoutParams

@@ -18,7 +18,7 @@ class MainActivity : AppCompatActivity(), Navigator {
         val container = findViewById<FrameLayout>(R.id.conductor_container)
         router = Conductor.attachRouter(this, container, savedInstanceState).apply {
             if (!hasRootController())
-                setRoot(Destination.Home.routerTransaction())
+                setRoot(Destination.FrontPage.routerTransaction())
         }
     }
 

@@ -8,4 +8,5 @@ android.defaultConfig.applicationId = "dev.thomasharris.claw"
 dependencies {
     implementation(project(":core"))
     implementation(project(":feature-front-page"))
+    implementation(project(":feature-comments"))
 }

@@ -12,7 +12,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -23,9 +22,10 @@ import java.util.concurrent.TimeUnit
 const val VIEW_TYPE_STORY = 1
 const val VIEW_TYPE_DIVIDER = 2
 
-class FrontPageAdapter : PagedListAdapter<FrontPageItem, RecyclerView.ViewHolder>(
-    Companion
-) {
+class FrontPageAdapter(private val onClick: (String) -> Unit) :
+    PagedListAdapter<FrontPageItem, RecyclerView.ViewHolder>(
+        Companion
+    ) {
 
     override fun getItemViewType(position: Int) = when (getItem(position)) {
         is FrontPageItem.Story -> VIEW_TYPE_STORY
@@ -40,7 +40,8 @@ class FrontPageAdapter : PagedListAdapter<FrontPageItem, RecyclerView.ViewHolder
                     R.layout.item_front_page_story,
                     parent,
                     false
-                )
+                ),
+                onClick
             )
             else -> DividerViewHolder(
                 inflater.inflate(
@@ -103,7 +104,10 @@ class DividerViewHolder(private val root: View) : RecyclerView.ViewHolder(root) 
     }
 }
 
-class StoryViewHolder(private val root: View) : RecyclerView.ViewHolder(root) {
+class StoryViewHolder(
+    private val root: View,
+    private val onClick: (String) -> Unit
+) : RecyclerView.ViewHolder(root) {
     private val title: TextView = root.findViewById(R.id.item_front_page_title)
     private val byline: TextView = root.findViewById(R.id.item_front_page_author)
     private val avatar: ImageView = root.findViewById(R.id.item_front_page_avatar)
@@ -177,7 +181,7 @@ class StoryViewHolder(private val root: View) : RecyclerView.ViewHolder(root) {
 
         byline.text = bylineText
         root.setOnClickListener {
-            Toast.makeText(context, "TODO", Toast.LENGTH_SHORT).show()
+            onClick(story.shortId)
         }
     }
 }

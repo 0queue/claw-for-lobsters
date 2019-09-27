@@ -1,7 +1,9 @@
 package dev.thomasharris.claw.lib.navigator
 
+import androidx.core.os.bundleOf
 import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.RouterTransaction
+import kotlin.reflect.full.primaryConstructor
 
 interface Navigator {
     fun goto(routerTransaction: RouterTransaction)
@@ -11,11 +13,26 @@ interface Navigator {
 sealed class Destination {
     abstract fun routerTransaction(): RouterTransaction
 
-    object Home : Destination() {
+    object FrontPage : Destination() {
         override fun routerTransaction(): RouterTransaction {
             val controller =
                 Class.forName("dev.thomasharris.claw.feature.frontpage.FrontPageController")
                     .newInstance()
+            return RouterTransaction.with(controller as Controller)
+        }
+    }
+
+    class Comments(val shortId: String) : Destination() {
+        override fun routerTransaction(): RouterTransaction {
+            val clazz =
+                Class.forName("dev.thomasharris.claw.feature.comments.CommentsController")
+
+            val controller = clazz.kotlin.primaryConstructor!!.call(
+                bundleOf(
+                    "shortId" to shortId
+                )
+            )
+
             return RouterTransaction.with(controller as Controller)
         }
     }
