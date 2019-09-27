@@ -1,4 +1,4 @@
-package dev.thomasharris.lib.lobsters
+package dev.thomasharris.claw.lib.lobsters
 
 import com.squareup.moshi.Json
 import retrofit2.Call

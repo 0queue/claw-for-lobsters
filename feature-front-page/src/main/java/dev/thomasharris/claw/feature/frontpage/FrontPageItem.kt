@@ -1,6 +1,6 @@
-package dev.thomasharris.feature.frontpage
+package dev.thomasharris.claw.feature.frontpage
 
-import dev.thomasharris.lib.lobsters.FrontPageStory
+import dev.thomasharris.claw.lib.lobsters.FrontPageStory
 import java.net.URI
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -31,15 +31,16 @@ private fun FrontPageStory.postedAgo() = abs(Date().time - createdAt.time).let {
     }.find { it.first > 0 } ?: Pair(0L, TimeUnit.MINUTES)
 }
 
-fun FrontPageStory.toItem(tags: List<Pair<String, Boolean>>) = FrontPageItem.Story(
-    shortId,
-    title,
-    submitterUsername,
-    avatarShortUrl,
-    createdAt,
-    commentCount,
-    score,
-    url,
-    postedAgo(),
-    tags
-)
+fun FrontPageStory.toItem(tags: List<Pair<String, Boolean>>) =
+    FrontPageItem.Story(
+        shortId,
+        title,
+        submitterUsername,
+        avatarShortUrl,
+        createdAt,
+        commentCount,
+        score,
+        url,
+        postedAgo(),
+        tags
+    )

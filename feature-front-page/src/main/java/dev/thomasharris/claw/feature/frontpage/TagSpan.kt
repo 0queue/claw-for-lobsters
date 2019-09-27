@@ -1,4 +1,4 @@
-package dev.thomasharris.feature.frontpage
+package dev.thomasharris.claw.feature.frontpage
 
 import android.graphics.*
 import android.text.style.ReplacementSpan

@@ -1,4 +1,4 @@
-package dev.thomasharris.lib.lobsters
+package dev.thomasharris.claw.lib.lobsters
 
 import javax.inject.Inject
 

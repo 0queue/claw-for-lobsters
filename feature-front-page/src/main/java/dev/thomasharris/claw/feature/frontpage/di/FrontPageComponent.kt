@@ -1,13 +1,13 @@
-package dev.thomasharris.feature.frontpage.di
+package dev.thomasharris.claw.feature.frontpage.di
 
 import dagger.Component
 import dagger.Module
 import dagger.Provides
 import dev.thomasharris.claw.core.di.FeatureScope
 import dev.thomasharris.claw.core.di.SingletonComponent
-import dev.thomasharris.feature.frontpage.StoryDataSourceFactory
-import dev.thomasharris.lib.lobsters.StoryRepository
-import dev.thomasharris.lib.lobsters.TagRepository
+import dev.thomasharris.claw.feature.frontpage.StoryDataSourceFactory
+import dev.thomasharris.claw.lib.lobsters.StoryRepository
+import dev.thomasharris.claw.lib.lobsters.TagRepository
 
 @Component(dependencies = [SingletonComponent::class], modules = [FrontPageModule::class])
 @FeatureScope
@@ -22,5 +22,8 @@ class FrontPageModule {
     fun storyDataSourceFactory(
         storyRepository: StoryRepository,
         tagRepository: TagRepository
-    ) = StoryDataSourceFactory(storyRepository, tagRepository)
+    ) = StoryDataSourceFactory(
+        storyRepository,
+        tagRepository
+    )
 }

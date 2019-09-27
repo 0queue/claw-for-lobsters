@@ -19,4 +19,5 @@ dependencies {
     implementation("androidx.core:core-ktx:1.1.0")
 
     api(project(":lib-lobsters"))
+    api(project(":lib-navigator"))
 }

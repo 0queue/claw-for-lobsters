@@ -1,4 +1,4 @@
-package dev.thomasharris.feature.frontpage
+package dev.thomasharris.claw.feature.frontpage
 
 import android.view.LayoutInflater
 import android.view.View
@@ -16,9 +16,10 @@ import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.button.MaterialButton
 import dev.thomasharris.claw.core.ext.getComponent
 import dev.thomasharris.claw.core.ext.observe
-import dev.thomasharris.feature.frontpage.di.DaggerFrontPageComponent
-import dev.thomasharris.feature.frontpage.di.FrontPageComponent
-import dev.thomasharris.feature.frontpage.di.FrontPageModule
+import dev.thomasharris.claw.feature.frontpage.di.DaggerFrontPageComponent
+import dev.thomasharris.claw.feature.frontpage.di.FrontPageComponent
+import dev.thomasharris.claw.feature.frontpage.di.FrontPageModule
+import dev.thomasharris.claw.frontpage.feature.frontpage.R
 
 @Suppress("unused")
 class FrontPageController : LifecycleController() {
@@ -39,7 +40,8 @@ class FrontPageController : LifecycleController() {
         component.storyDataSourceFactory().toLiveData(config)
     }
 
-    private val listAdapter: FrontPageAdapter = FrontPageAdapter()
+    private val listAdapter: FrontPageAdapter =
+        FrontPageAdapter()
 
     private lateinit var toolbar: Toolbar
     private lateinit var toolbarScrollFlags: AppBarLayout.LayoutParams

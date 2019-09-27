@@ -1,4 +1,4 @@
-package dev.thomasharris.feature.frontpage
+package dev.thomasharris.claw.feature.frontpage
 
 import android.content.Context
 import android.graphics.Typeface
@@ -17,12 +17,15 @@ import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import dev.thomasharris.claw.frontpage.feature.frontpage.R
 import java.util.concurrent.TimeUnit
 
 const val VIEW_TYPE_STORY = 1
 const val VIEW_TYPE_DIVIDER = 2
 
-class FrontPageAdapter : PagedListAdapter<FrontPageItem, RecyclerView.ViewHolder>(Companion) {
+class FrontPageAdapter : PagedListAdapter<FrontPageItem, RecyclerView.ViewHolder>(
+    Companion
+) {
 
     override fun getItemViewType(position: Int) = when (getItem(position)) {
         is FrontPageItem.Story -> VIEW_TYPE_STORY
@@ -40,7 +43,11 @@ class FrontPageAdapter : PagedListAdapter<FrontPageItem, RecyclerView.ViewHolder
                 )
             )
             else -> DividerViewHolder(
-                inflater.inflate(R.layout.item_front_page_divider, parent, false)
+                inflater.inflate(
+                    R.layout.item_front_page_divider,
+                    parent,
+                    false
+                )
             )
         }
     }

@@ -1,2 +1,2 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="dev.thomasharris.claw.lib.lobsters" />
+    package="dev.thomasharris.claw.lib.navigator" />

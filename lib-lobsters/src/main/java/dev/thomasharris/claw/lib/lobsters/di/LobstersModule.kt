@@ -1,4 +1,4 @@
-package dev.thomasharris.lib.lobsters.di
+package dev.thomasharris.claw.lib.lobsters.di
 
 import android.content.Context
 import com.squareup.moshi.Moshi
@@ -7,10 +7,10 @@ import com.squareup.sqldelight.ColumnAdapter
 import com.squareup.sqldelight.android.AndroidSqliteDriver
 import dagger.Module
 import dagger.Provides
-import dev.thomasharris.lib.lobsters.Database
-import dev.thomasharris.lib.lobsters.LobstersService
-import dev.thomasharris.lib.lobsters.StoryDatabaseEntity
-import dev.thomasharris.lib.lobsters.UserDatabaseEntity
+import dev.thomasharris.claw.lib.lobsters.Database
+import dev.thomasharris.claw.lib.lobsters.LobstersService
+import dev.thomasharris.claw.lib.lobsters.StoryDatabaseEntity
+import dev.thomasharris.claw.lib.lobsters.UserDatabaseEntity
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import java.util.*

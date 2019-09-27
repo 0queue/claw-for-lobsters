@@ -1,4 +1,5 @@
 import dev.thomasharris.build.conductor
+import dev.thomasharris.build.glide
 import dev.thomasharris.build.material
 import dev.thomasharris.build.testing
 
@@ -10,11 +11,9 @@ dependencies {
     testing()
     conductor()
     material()
+    glide()
 
     implementation(project(":core"))
 
     implementation("androidx.paging:paging-runtime-ktx:2.1.0")
-
-    implementation("com.github.bumptech.glide:glide:4.10.0")
-    kapt("com.github.bumptech.glide:compiler:4.10.0")
 }

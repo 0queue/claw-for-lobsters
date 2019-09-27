@@ -1,12 +1,12 @@
-package dev.thomasharris.feature.frontpage
+package dev.thomasharris.claw.feature.frontpage
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.paging.DataSource
 import androidx.paging.PageKeyedDataSource
-import dev.thomasharris.lib.lobsters.FrontPageTag
-import dev.thomasharris.lib.lobsters.StoryRepository
-import dev.thomasharris.lib.lobsters.TagRepository
+import dev.thomasharris.claw.lib.lobsters.FrontPageTag
+import dev.thomasharris.claw.lib.lobsters.StoryRepository
+import dev.thomasharris.claw.lib.lobsters.TagRepository
 
 /**
  * All the load methods occur on an IO thread already,
@@ -83,7 +83,11 @@ class StoryDataSourceFactory(
     val loadingStatus: LiveData<LoadingStatus> = _loadingStatus
 
     override fun create(): DataSource<Int, FrontPageItem> =
-        FrontPageDataSource(storyRepository, tagRepository, _loadingStatus)
+        FrontPageDataSource(
+            storyRepository,
+            tagRepository,
+            _loadingStatus
+        )
 }
 
 enum class LoadingStatus {

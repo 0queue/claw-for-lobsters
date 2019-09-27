@@ -4,7 +4,7 @@ import android.app.Application
 import dev.thomasharris.claw.core.di.ComponentStore
 import dev.thomasharris.claw.core.di.DaggerSingletonComponent
 import dev.thomasharris.claw.core.di.SingletonComponent
-import dev.thomasharris.lib.lobsters.di.LobstersModule
+import dev.thomasharris.claw.lib.lobsters.di.LobstersModule
 import kotlin.reflect.KClass
 
 @Suppress("unused")
