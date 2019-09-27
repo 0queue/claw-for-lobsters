@@ -1,0 +1,86 @@
+import java.util.Date;
+import kotlin.collections.List;
+
+CREATE TABLE StoryDatabaseEntity (
+    shortId TEXT NOT NULL UNIQUE PRIMARY KEY,
+    title TEXT NOT NULL,
+    createdAt INTEGER as Date NOT NULL,
+    url TEXT NOT NULL,
+    score INTEGER as Int NOT NULL,
+    upvotes INTEGER as Int NOT NULL,
+    downvotes INTEGER as Int NOT NULL,
+    commentCount INTEGER as Int NOT NULL,
+    description TEXT NOT NULL,
+    submitterUsername TEXT NOT NULL,
+    tags TEXT as List<String> NOT NULL,
+    pageIndex INTEGER as Int NOT NULL,
+    insertedAt INTEGER as Date NOT NULL
+);
+
+CREATE TABLE UserDatabaseEntity(
+    username TEXT NOT NULL UNIQUE PRIMARY KEY,
+    createdAt INTEGER as Date NOT NULL,
+    isAdmin INTEGER as Boolean NOT NULL,
+    about TEXT NOT NULL,
+    isModerator INTEGER AS Boolean NOT NULL,
+    karma INTEGER as Int NOT NULL,
+    avatarShortUrl TEXT NOT NULL,
+    invitedByUser TEXT NOT NULL,
+    insertedAt INTEGER as Date NOT NULL
+);
+
+CREATE TABLE TagDatabaseEntity(
+    tag TEXT NOT NULL UNIQUE PRIMARY KEY,
+    id INTEGER as Int NOT NULL,
+    description TEXT NOT NULL,
+    privileged INTEGER as Boolean NOT NULL,
+    isMedia INTEGER as Boolean NOT NULL,
+    isInactive INTEGER as Boolean NOT NULL,
+    hotnessMod REAL as Float NOT NULL
+);
+
+CREATE VIEW FrontPageStory AS
+SELECT
+    StoryDatabaseEntity.shortId,
+    StoryDatabaseEntity.title,
+    StoryDatabaseEntity.submitterUsername,
+    UserDatabaseEntity.avatarShortUrl,
+    StoryDatabaseEntity.createdAt,
+    StoryDatabaseEntity.commentCount,
+    StoryDatabaseEntity.score,
+    StoryDatabaseEntity.url,
+    StoryDatabaseEntity.tags,
+    StoryDatabaseEntity.pageIndex,
+    StoryDatabaseEntity.insertedAt
+FROM StoryDatabaseEntity
+JOIN UserDatabaseEntity ON StoryDatabaseEntity.submitterUsername = UserDatabaseEntity.username;
+
+CREATE VIEW FrontPageTag AS
+SELECT
+    TagDatabaseEntity.tag,
+    TagDatabaseEntity.isMedia
+FROM TagDatabaseEntity;
+
+insertStory:
+INSERT OR REPLACE INTO StoryDatabaseEntity VALUES ?;
+
+insertUser:
+INSERT OR REPLACE INTO UserDatabaseEntity VALUES ?;
+
+getPage:
+SELECT * FROM StoryDatabaseEntity WHERE pageIndex = :index;
+
+getFrontPage:
+SELECT * FROM FrontPageStory WHERE pageIndex = :index;
+
+clear:
+DELETE FROM StoryDatabaseEntity;
+
+insertTag:
+INSERT OR REPLACE INTO TagDatabaseEntity VALUES ?;
+
+getTags:
+SELECT * FROM TagDatabaseEntity;
+
+getFrontPageTags:
+SELECT * FROM FrontPageTag;

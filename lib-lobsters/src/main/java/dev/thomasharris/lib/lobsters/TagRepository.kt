@@ -3,19 +3,45 @@ package dev.thomasharris.lib.lobsters
 import javax.inject.Inject
 
 class TagRepository @Inject constructor(
-    private val lobstersService: LobstersService
+    private val lobstersService: LobstersService,
+    private val lobstersQueries: LobstersQueries
 ) {
-    private var tagMap: MutableMap<String, TagNetworkEntity> = hashMapOf()
 
-    /**
-     * TODO store offline
-     */
-    fun getTagsSync(): Map<String, TagNetworkEntity> {
-        if (tagMap.isEmpty())
-            tagMap = lobstersService.getTagsSync().executeOrNull()?.body()?.map {
-                it.tag to it
-            }?.toMap()?.toMutableMap() ?: hashMapOf()
+    private var tagCache: Map<String, FrontPageTag>? = null
 
-        return tagMap
+    fun getFrontPageTagsSync(): Map<String, FrontPageTag> {
+
+        tagCache?.let {
+            return it
+        }
+
+        var tags = lobstersQueries.getFrontPageTags().executeAsList()
+
+        // not the most efficient but there aren't a ton of tags out there
+        if (tags.isEmpty() /* TODO or is old?*/) {
+            lobstersService.getTagsSync().executeOrNull()?.body()?.forEach {
+                lobstersQueries.insertTag(
+                    TagDatabaseEntity.Impl(
+                        it.tag,
+                        it.id,
+                        it.description,
+                        it.privileged,
+                        it.isMedia,
+                        it.inactive,
+                        it.hotnessMod
+                    )
+                )
+            }
+
+            tags = lobstersQueries.getFrontPageTags().executeAsList()
+        }
+
+        tagCache = tags.map { it.tag to it }.toMap()
+
+        return tagCache!!
+    }
+
+    fun invalidate() {
+        tagCache = null
     }
 }

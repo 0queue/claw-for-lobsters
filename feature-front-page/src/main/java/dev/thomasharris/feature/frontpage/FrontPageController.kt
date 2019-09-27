@@ -39,7 +39,7 @@ class FrontPageController : LifecycleController() {
         component.storyDataSourceFactory().toLiveData(config)
     }
 
-    private val listAdapter: StoryAdapter = StoryAdapter()
+    private val listAdapter: FrontPageAdapter = FrontPageAdapter()
 
     private lateinit var toolbar: Toolbar
     private lateinit var toolbarScrollFlags: AppBarLayout.LayoutParams

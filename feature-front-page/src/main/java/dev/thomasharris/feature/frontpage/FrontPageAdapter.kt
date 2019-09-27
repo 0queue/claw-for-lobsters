@@ -22,10 +22,10 @@ import java.util.concurrent.TimeUnit
 const val VIEW_TYPE_STORY = 1
 const val VIEW_TYPE_DIVIDER = 2
 
-class StoryAdapter : PagedListAdapter<FrontPageItem, RecyclerView.ViewHolder>(Companion) {
+class FrontPageAdapter : PagedListAdapter<FrontPageItem, RecyclerView.ViewHolder>(Companion) {
 
     override fun getItemViewType(position: Int) = when (getItem(position)) {
-        is FrontPageStory -> VIEW_TYPE_STORY
+        is FrontPageItem.Story -> VIEW_TYPE_STORY
         else -> VIEW_TYPE_DIVIDER
     }
 
@@ -47,21 +47,21 @@ class StoryAdapter : PagedListAdapter<FrontPageItem, RecyclerView.ViewHolder>(Co
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder.itemViewType) {
-            VIEW_TYPE_STORY -> (holder as StoryViewHolder).bind(getItem(position) as FrontPageStory)
-            VIEW_TYPE_DIVIDER -> (holder as DividerViewHolder).bind(getItem(position) as FrontPageDivider)
+            VIEW_TYPE_STORY -> (holder as StoryViewHolder).bind(getItem(position) as FrontPageItem.Story)
+            VIEW_TYPE_DIVIDER -> (holder as DividerViewHolder).bind(getItem(position) as FrontPageItem.Divider)
         }
     }
 
     companion object : DiffUtil.ItemCallback<FrontPageItem>() {
         override fun areContentsTheSame(oldItem: FrontPageItem, newItem: FrontPageItem): Boolean {
-            (oldItem as? FrontPageStory)?.let { old ->
-                (newItem as? FrontPageStory)?.let { new ->
+            (oldItem as? FrontPageItem.Story)?.let { old ->
+                (newItem as? FrontPageItem.Story)?.let { new ->
                     return old == new
                 }
             }
 
-            (oldItem as? FrontPageDivider)?.let { old ->
-                (newItem as? FrontPageDivider)?.let { new ->
+            (oldItem as? FrontPageItem.Divider)?.let { old ->
+                (newItem as? FrontPageItem.Divider)?.let { new ->
                     return old == new
                 }
             }
@@ -70,14 +70,14 @@ class StoryAdapter : PagedListAdapter<FrontPageItem, RecyclerView.ViewHolder>(Co
         }
 
         override fun areItemsTheSame(oldItem: FrontPageItem, newItem: FrontPageItem): Boolean {
-            (oldItem as? FrontPageStory)?.let { old ->
-                (newItem as? FrontPageStory)?.let { new ->
+            (oldItem as? FrontPageItem.Story)?.let { old ->
+                (newItem as? FrontPageItem.Story)?.let { new ->
                     return old.shortId == new.shortId
                 }
             }
 
-            (oldItem as? FrontPageDivider)?.let { old ->
-                (newItem as? FrontPageDivider)?.let { new ->
+            (oldItem as? FrontPageItem.Divider)?.let { old ->
+                (newItem as? FrontPageItem.Divider)?.let { new ->
                     return old.n == new.n
                 }
             }
@@ -91,7 +91,7 @@ class DividerViewHolder(private val root: View) : RecyclerView.ViewHolder(root) 
 
     private val label: TextView = root.findViewById(R.id.item_front_page_divider_text)
 
-    fun bind(item: FrontPageDivider) {
+    fun bind(item: FrontPageItem.Divider) {
         label.text = root.context.getString(R.string.page_number, item.n)
     }
 }
@@ -101,24 +101,24 @@ class StoryViewHolder(private val root: View) : RecyclerView.ViewHolder(root) {
     private val byline: TextView = root.findViewById(R.id.item_front_page_author)
     private val avatar: ImageView = root.findViewById(R.id.item_front_page_avatar)
 
-    fun bind(story: FrontPageStory) {
+    fun bind(story: FrontPageItem.Story) {
         val context = root.context
 
         Glide.with(root)
-            .load("https://lobste.rs/${story.avatarURL}")
+            .load("https://lobste.rs/${story.avatarShortUrl}")
             .circleCrop()
             .into(avatar)
 
         val titleText = SpannableStringBuilder().apply {
             append(story.title)
-            story.tags.forEach { tag ->
+            story.tags.forEach { (tag, isMedia) ->
                 append(" ")
-                append(SpannableString(tag.tag).apply {
+                append(SpannableString(tag).apply {
                     val span = TagSpan(
-                        backgroundColor = context.tagBackgroundColor(tag),
-                        borderColor = context.tagBorderColor(tag)
+                        backgroundColor = context.tagBackgroundColor(tag, isMedia),
+                        borderColor = context.tagBorderColor(tag, isMedia)
                     )
-                    setSpan(span, 0, tag.tag.length, Spannable.SPAN_INCLUSIVE_EXCLUSIVE)
+                    setSpan(span, 0, tag.length, Spannable.SPAN_INCLUSIVE_EXCLUSIVE)
                 })
             }
         }
@@ -139,23 +139,23 @@ class StoryViewHolder(private val root: View) : RecyclerView.ViewHolder(root) {
             }
         }
 
-        val comments = with(story.numComments) {
+        val comments = with(story.commentCount) {
             context.resources.getQuantityString(R.plurals.numberOfComments, this, this)
         }
 
-        val voteCount = String.format("%+d", story.voteTotal)
+        val voteCount = String.format("%+d", story.score)
 
         val bylineText = SpannableStringBuilder().apply {
             append(
                 context.getString(
                     R.string.front_page_caption,
                     voteCount,
-                    story.username,
+                    story.submitterUsername,
                     ago,
                     comments
                 )
             )
-            story.shortURL?.let { url ->
+            story.shortUrl()?.let { url ->
                 append(" | ")
                 append(SpannableString(url).apply {
                     setSpan(
@@ -180,18 +180,18 @@ fun Context.resolveColor(attr: () -> Int) = TypedValue().run {
     data
 }
 
-fun Context.tagBorderColor(tag: FrontPageTag) = resolveColor {
+fun Context.tagBorderColor(tag: String, isMedia: Boolean) = resolveColor {
     when {
-        (tag.tag == "show") || (tag.tag == "ask") -> R.attr.colorTagBorderShowAsk
-        tag.isMedia -> R.attr.colorTagBorderMedia
+        (tag == "show") || (tag == "ask") -> R.attr.colorTagBorderShowAsk
+        isMedia -> R.attr.colorTagBorderMedia
         else -> R.attr.colorTagBorder
     }
 }
 
-fun Context.tagBackgroundColor(tag: FrontPageTag) = resolveColor {
+fun Context.tagBackgroundColor(tag: String, isMedia: Boolean) = resolveColor {
     when {
-        (tag.tag == "show") || (tag.tag == "ask") -> R.attr.colorTagBackgroundShowAsk
-        tag.isMedia -> R.attr.colorTagBackgroundMedia
+        (tag == "show") || (tag == "ask") -> R.attr.colorTagBackgroundShowAsk
+        isMedia -> R.attr.colorTagBackgroundMedia
         else -> R.attr.colorTagBackground
     }
 }

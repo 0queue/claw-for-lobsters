@@ -10,6 +10,7 @@ import dagger.Provides
 import dev.thomasharris.lib.lobsters.Database
 import dev.thomasharris.lib.lobsters.LobstersService
 import dev.thomasharris.lib.lobsters.StoryDatabaseEntity
+import dev.thomasharris.lib.lobsters.UserDatabaseEntity
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import java.util.*
@@ -54,10 +55,14 @@ class LobstersModule(private val context: Context) {
                 },
                 createdAtAdapter = dateAdapter,
                 insertedAtAdapter = dateAdapter
+            ),
+            UserDatabaseEntityAdapter = UserDatabaseEntity.Adapter(
+                createdAtAdapter = dateAdapter,
+                insertedAtAdapter = dateAdapter
             )
         )
     }
 
     @Provides
-    fun storyQueries(database: Database) = database.storyDatabaseEntityQueries
+    fun lobstersQueries(database: Database) = database.lobstersQueries
 }
