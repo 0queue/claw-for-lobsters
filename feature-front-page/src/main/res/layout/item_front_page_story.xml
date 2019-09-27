@@ -19,13 +19,29 @@
         android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
         tools:text="This is an example title that could stretch quite a ways" />
 
-    <TextView
-        android:id="@+id/item_front_page_author"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:ellipsize="end"
-        android:maxLines="1"
-        android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
-        tools:text="online_username" />
+        android:orientation="horizontal"
+        tools:ignore="UseCompoundDrawables">
+
+        <ImageView
+            android:id="@+id/item_front_page_avatar"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="2dp"
+            android:contentDescription="@string/avatar_content_description" />
+
+        <TextView
+            android:id="@+id/item_front_page_author"
+            android:layout_width="match_parent"
+            android:layout_height="16dp"
+            android:layout_marginTop="2dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+            tools:text="online_username" />
+    </LinearLayout>
 
 </LinearLayout>

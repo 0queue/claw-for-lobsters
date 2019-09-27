@@ -65,6 +65,7 @@ data class Story(
     val commentCount: Int,
     val description: String,
     val submitterUsername: String,
+    val submitterAvatarURL: String,
     val tags: List<TagNetworkEntity>
 ) {
 
@@ -83,6 +84,7 @@ data class Story(
             commentCount.toLong(),
             description,
             submitterUsername,
+            submitterAvatarURL,
             tags.map(TagNetworkEntity::tag),
             index.toLong(),
             insertedAt
@@ -106,6 +108,7 @@ data class Story(
                     commentCount,
                     description,
                     submitter.username,
+                    submitter.avatarUrl,
                     tags.mapNotNull { tagMap[it] }
                 )
             }
@@ -127,6 +130,7 @@ data class Story(
                     commentCount.toInt(),
                     description,
                     submitterUsername,
+                    submitterAvatarShortURL,
                     tags.mapNotNull { tagMap[it] }
                 )
             }

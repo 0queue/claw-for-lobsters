@@ -10,11 +10,13 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import java.util.concurrent.TimeUnit
 
 const val VIEW_TYPE_STORY = 1
@@ -97,9 +99,15 @@ class DividerViewHolder(private val root: View) : RecyclerView.ViewHolder(root) 
 class StoryViewHolder(private val root: View) : RecyclerView.ViewHolder(root) {
     private val title: TextView = root.findViewById(R.id.item_front_page_title)
     private val byline: TextView = root.findViewById(R.id.item_front_page_author)
+    private val avatar: ImageView = root.findViewById(R.id.item_front_page_avatar)
 
     fun bind(story: FrontPageStory) {
         val context = root.context
+
+        Glide.with(root)
+            .load("https://lobste.rs/${story.avatarURL}")
+            .circleCrop()
+            .into(avatar)
 
         val titleText = SpannableStringBuilder().apply {
             append(story.title)

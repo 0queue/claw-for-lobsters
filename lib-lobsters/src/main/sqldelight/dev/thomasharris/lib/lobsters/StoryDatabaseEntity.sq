@@ -12,6 +12,7 @@ CREATE TABLE StoryDatabaseEntity (
     commentCount INTEGER NOT NULL,
     description TEXT NOT NULL,
     submitterUsername TEXT NOT NULL,
+    submitterAvatarShortURL TEXT NOT NULL,
     tags TEXT as List<String> NOT NULL,
     pageIndex INTEGER NOT NULL,
     insertedAt INTEGER as Date NOT NULL

@@ -8,6 +8,7 @@
     <string name="front_page_caption">%s | by %s %s | %s</string>
     <string name="front_page_error_message">Couldn\'t reach lobste.rs</string>
     <string name="reload_label">Reload</string>
+    <string name="avatar_content_description">Submitter\'s profile picture</string>
     <plurals name="numberOfMinutes">
         <item quantity="one">%d minute ago</item>
         <item quantity="other">%d minutes ago</item>
