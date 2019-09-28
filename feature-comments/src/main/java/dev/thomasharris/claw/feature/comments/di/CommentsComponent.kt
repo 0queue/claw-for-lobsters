@@ -1,18 +1,12 @@
 package dev.thomasharris.claw.feature.comments.di
 
 import dagger.Component
-import dagger.Module
 import dev.thomasharris.claw.core.di.FeatureScope
 import dev.thomasharris.claw.core.di.SingletonComponent
-import dev.thomasharris.claw.lib.lobsters.LobstersService
+import dev.thomasharris.claw.lib.lobsters.CommentRepository
 
-@Component(dependencies = [SingletonComponent::class], modules = [CommentsModule::class])
+@Component(dependencies = [SingletonComponent::class])
 @FeatureScope
 interface CommentsComponent {
-    fun lobstersService(): LobstersService
-}
-
-@Module
-class CommentsModule {
-
+    fun commentRepository(): CommentRepository
 }

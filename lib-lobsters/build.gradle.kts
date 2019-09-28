@@ -14,4 +14,5 @@ dependencies {
 
     implementation("com.squareup.sqldelight:android-driver:1.2.0")
     api("com.squareup.sqldelight:android-paging-extensions:1.2.0")
+    implementation("com.squareup.sqldelight:coroutines-extensions:1.2.0")
 }

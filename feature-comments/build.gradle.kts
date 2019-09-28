@@ -13,8 +13,7 @@ dependencies {
     material()
     glide()
 
-    // TODO REMOVE!!!
-    implementation("com.squareup.retrofit2:retrofit:2.6.1")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.2.0-alpha05")
 
     implementation(project(":core"))
 }

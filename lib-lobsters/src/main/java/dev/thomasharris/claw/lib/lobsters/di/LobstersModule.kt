@@ -7,13 +7,12 @@ import com.squareup.sqldelight.ColumnAdapter
 import com.squareup.sqldelight.android.AndroidSqliteDriver
 import dagger.Module
 import dagger.Provides
-import dev.thomasharris.claw.lib.lobsters.Database
-import dev.thomasharris.claw.lib.lobsters.LobstersService
-import dev.thomasharris.claw.lib.lobsters.StoryDatabaseEntity
-import dev.thomasharris.claw.lib.lobsters.UserDatabaseEntity
+import dev.thomasharris.claw.lib.lobsters.*
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import java.util.*
+import java.util.concurrent.Executor
+import java.util.concurrent.Executors
 import javax.inject.Singleton
 
 @Module
@@ -59,10 +58,19 @@ class LobstersModule(private val context: Context) {
             UserDatabaseEntityAdapter = UserDatabaseEntity.Adapter(
                 createdAtAdapter = dateAdapter,
                 insertedAtAdapter = dateAdapter
+            ),
+            CommentDatabaseEntityAdapter = CommentDatabaseEntity.Adapter(
+                createdAtAdapter = dateAdapter,
+                updatedAtAdapter = dateAdapter,
+                insertedAtAdapter = dateAdapter
             )
         )
     }
 
     @Provides
     fun lobstersQueries(database: Database) = database.lobstersQueries
+
+    @Provides
+    @Singleton
+    fun backgroundExecutor(): Executor = Executors.newSingleThreadExecutor()
 }

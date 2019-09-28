@@ -39,6 +39,24 @@ CREATE TABLE TagDatabaseEntity(
     hotnessMod REAL as Float NOT NULL
 );
 
+CREATE TABLE CommentDatabaseEntity(
+    shortId TEXT NOT NULL UNIQUE PRIMARY KEY,
+    storyShortId TEXT NOT NULL,
+    commentIndex INTEGER as Int NOT NULL,
+    shortIdUrl TEXT NOT NULL,
+    createdAt INTEGER as Date NOT NULL,
+    updatedAt INTEGER as Date NOT NULL,
+    isDeleted INTEGER as Boolean NOT NULL,
+    isModerated INTEGER as Boolean NOT NULL,
+    score INTEGER as Int NOT NULL,
+    upvotes INTEGER as Int NOT NULL,
+    downvotes INTEGER as Int NOT NULL,
+    comment TEXT NOT NULL,
+    indentLevel INTEGER as Int NOT NULL,
+    commentUsername TEXT NOT NULL,
+    insertedAt INTEGER as Date NOT NULL
+);
+
 CREATE VIEW FrontPageStory AS
 SELECT
     StoryDatabaseEntity.shortId,
@@ -84,3 +102,12 @@ SELECT * FROM TagDatabaseEntity;
 
 getFrontPageTags:
 SELECT * FROM FrontPageTag;
+
+getStory:
+SELECT * FROM StoryDatabaseEntity WHERE shortId = :shortId;
+
+insertComment:
+INSERT OR REPLACE INTO CommentDatabaseEntity VALUES ?;
+
+getComments:
+SELECT * FROM CommentDatabaseEntity WHERE storyShortId = :storyShortId ORDER BY commentIndex;
