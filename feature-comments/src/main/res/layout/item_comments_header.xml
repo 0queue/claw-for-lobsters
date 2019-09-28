@@ -6,14 +6,11 @@
     android:layout_marginLeft="8dp"
     android:layout_marginRight="8dp"
     android:layout_marginBottom="8dp"
-    android:background="@drawable/background_ripple"
-    android:clickable="true"
-    android:focusable="true"
     android:orientation="vertical"
     android:padding="8dp">
 
     <TextView
-        android:id="@+id/item_front_page_title"
+        android:id="@+id/comments_header_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
@@ -22,11 +19,12 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center_vertical"
         android:orientation="horizontal"
         tools:ignore="UseCompoundDrawables">
 
         <ImageView
-            android:id="@+id/item_front_page_avatar"
+            android:id="@+id/comments_header_avatar"
             android:layout_width="16dp"
             android:layout_height="16dp"
             android:layout_marginTop="2dp"
@@ -35,14 +33,20 @@
             tools:background="#00f" />
 
         <TextView
-            android:id="@+id/item_front_page_author"
+            android:id="@+id/comments_header_author"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
-            android:ellipsize="end"
-            android:maxLines="1"
             android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
-            tools:text="online_username" />
+            tools:text="online_username | what if there were a bunch of word here followed by blog.example.com" />
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/comments_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+        tools:text="This is an example description that a lobster may provide, stretching for a while" />
 
 </LinearLayout>

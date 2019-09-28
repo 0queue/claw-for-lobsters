@@ -13,5 +13,8 @@ dependencies {
     material()
     glide()
 
+    // TODO REMOVE!!!
+    implementation("com.squareup.retrofit2:retrofit:2.6.1")
+
     implementation(project(":core"))
 }

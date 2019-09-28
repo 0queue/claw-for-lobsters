@@ -22,6 +22,9 @@ interface LobstersService {
     @GET("s/{short_id}.json")
     suspend fun getStory(@Path("short_id") shortId: ShortId): StoryNetworkEntity
 
+    @GET("s/{short_id}.json")
+    fun getStorySync(@Path("short_id") shortId: String): Call<StoryNetworkEntity>
+
     @GET("tags.json")
     suspend fun getTags(): List<TagNetworkEntity>
 
@@ -43,7 +46,24 @@ data class StoryNetworkEntity(
     @field:Json(name = "comment_count") val commentCount: Int,
     val description: String,
     @field:Json(name = "submitter_user") val submitter: UserNetworkEntity,
-    val tags: List<String>
+    val tags: List<String>,
+    val comments: List<CommentNetworkEntity>? = null
+)
+
+data class CommentNetworkEntity(
+    @field:Json(name = "short_id") val shortId: ShortId,
+    @field:Json(name = "short_id_url") val shortIdUrl: String,
+    @field:Json(name = "created_at") val createdAt: Date,
+    @field:Json(name = "updated_at") val updatedAt: Date,
+    @field:Json(name = "is_deleted") val isDeleted: Boolean,
+    @field:Json(name = "is_moderated") val isModerated: Boolean,
+    val score: Int,
+    val upvotes: Int,
+    val downvotes: Int,
+    val comment: String,
+    val url: String,
+    @field:Json(name = "indent_level") val indentLevel: Int, // starts at 1
+    @field:Json(name = "commenting_user") val commentingUser: UserNetworkEntity
 )
 
 data class UserNetworkEntity(
