@@ -34,9 +34,9 @@ class StoryRepository @Inject constructor(
         // store new page
 
         val now = Date()
-        newPage.forEach {
-            lobstersQueries.insertStory(it.toDB(index, now))
-            lobstersQueries.insertUser(it.submitter.toDB(now))
+        newPage.forEachIndexed { i, np ->
+            lobstersQueries.insertStory(np.toDB(index, i, now))
+            lobstersQueries.insertUser(np.submitter.toDB(now))
         }
 
         // re fetch and return
@@ -48,7 +48,7 @@ class StoryRepository @Inject constructor(
     }
 }
 
-fun StoryNetworkEntity.toDB(index: Int, now: Date = Date()) =
+fun StoryNetworkEntity.toDB(pageIndex: Int, subIndex: Int, now: Date = Date()) =
     StoryDatabaseEntity.Impl(
         shortId,
         title,
@@ -61,7 +61,8 @@ fun StoryNetworkEntity.toDB(index: Int, now: Date = Date()) =
         description,
         submitter.username,
         tags,
-        index,
+        pageIndex,
+        subIndex,
         now
     )
 

@@ -14,6 +14,7 @@ CREATE TABLE StoryDatabaseEntity (
     submitterUsername TEXT NOT NULL,
     tags TEXT as List<String> NOT NULL,
     pageIndex INTEGER as Int NOT NULL,
+    pageSubIndex INTEGER as Int NOT NULL,
     insertedAt INTEGER as Date NOT NULL
 );
 
@@ -72,7 +73,8 @@ SELECT
     StoryDatabaseEntity.insertedAt,
     StoryDatabaseEntity.description
 FROM StoryDatabaseEntity
-JOIN UserDatabaseEntity ON StoryDatabaseEntity.submitterUsername = UserDatabaseEntity.username;
+JOIN UserDatabaseEntity ON StoryDatabaseEntity.submitterUsername = UserDatabaseEntity.username
+ORDER BY StoryDatabaseEntity.pageSubIndex;
 
 CREATE VIEW FrontPageTag AS
 SELECT

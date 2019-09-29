@@ -38,7 +38,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
             android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
-            tools:text="online_username | what if there were a bunch of word here followed by blog.example.com" />
+            tools:text="online_username | what if there were " />
     </LinearLayout>
 
     <TextView

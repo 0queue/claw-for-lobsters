@@ -2,8 +2,12 @@ package dev.thomasharris.claw.feature.comments
 
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.graphics.Typeface
 import android.os.Bundle
-import android.util.Log
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.SpannableStringBuilder
+import android.text.style.StyleSpan
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -17,16 +21,22 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.bluelinelabs.conductor.archlifecycle.LifecycleController
 import com.bumptech.glide.Glide
 import com.google.android.material.appbar.AppBarLayout
-import dev.thomasharris.claw.core.ext.getComponent
+import com.google.android.material.button.MaterialButton
+import dev.thomasharris.claw.core.ext.*
 import dev.thomasharris.claw.feature.comments.di.CommentsComponent
 import dev.thomasharris.claw.feature.comments.di.DaggerCommentsComponent
 import dev.thomasharris.claw.lib.lobsters.CommentView
 import dev.thomasharris.claw.lib.lobsters.FrontPageStory
+import dev.thomasharris.claw.lib.lobsters.LoadingStatus
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import java.util.concurrent.TimeUnit
 
 @Suppress("unused")
 class CommentsController constructor(args: Bundle) : LifecycleController(args) {
@@ -39,15 +49,22 @@ class CommentsController constructor(args: Bundle) : LifecycleController(args) {
 
     private val shortId: String = getArgs().getString("shortId")!!
 
+    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
     private lateinit var recycler: RecyclerView
     private lateinit var appBarLayout: AppBarLayout
     private lateinit var toolbar: Toolbar
 
+    private lateinit var errorView: View
+    private lateinit var errorReload: MaterialButton
+
     private val listAdapter = CommentsAdapter()
 
+    @FlowPreview
+    @ExperimentalCoroutinesApi
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
         val root = inflater.inflate(R.layout.comments, container, false)
 
+        swipeRefreshLayout = root.findViewById(R.id.comments_swipe_refresh)
         recycler = root.findViewById(R.id.comments_recycler)
         appBarLayout = root.findViewById(R.id.comments_app_bar_layout)
         toolbar = root.findViewById<Toolbar>(R.id.comments_toolbar).apply {
@@ -57,6 +74,8 @@ class CommentsController constructor(args: Bundle) : LifecycleController(args) {
 
             title = "Comments"
         }
+        errorView = root.findViewById(R.id.comments_error_view)
+        errorReload = root.findViewById(R.id.comments_error_view_reload)
 
         recycler.apply {
             adapter = listAdapter
@@ -80,14 +99,28 @@ class CommentsController constructor(args: Bundle) : LifecycleController(args) {
                 val tail = comments.map { CommentsItem.Comment(it) }
                 listAdapter.submitList(head + tail)
             }
-
-
         }
 
-        // TODO observe repository status here
+        lifecycleScope.launch {
+            component.commentRepository().liveStatus().collect { status ->
+                swipeRefreshLayout.isRefreshing = status == LoadingStatus.LOADING
+                errorView.fade(status == LoadingStatus.ERROR)
+                recycler.fade(status != LoadingStatus.ERROR)
+                toolbar.setScrollEnabled(status != LoadingStatus.ERROR)
+            }
+        }
 
+        swipeRefreshLayout.setOnRefreshListener {
+            component.commentRepository().refresh(shortId, true)
+        }
 
+        // hmm refreshing should maybe always be forced for a story?
+        // or just add another condition for comment mismatches?
         component.commentRepository().refresh(shortId)
+
+        errorReload.setOnClickListener {
+            component.commentRepository().refresh(shortId, true)
+        }
 
         return root
     }
@@ -106,14 +139,66 @@ class HeaderViewHolder(private val root: View) : RecyclerView.ViewHolder(root) {
     private val description: TextView = root.findViewById(R.id.comments_description)
 
     fun bind(header: CommentsItem.Header) {
-        title.text = header.frontPageStory.title
+        title.text = header.frontPageStory.title // TODO Tags
 
         Glide.with(root)
             .load("https://lobste.rs/${header.frontPageStory.avatarShortUrl}")
             .circleCrop()
             .into(avatar)
 
-        author.text = header.frontPageStory.submitterUsername
+        // wow I need to move some stuff to :core
+        val ago = with(header.frontPageStory.postedAgo()) {
+            val t = first.toInt()
+            when (val unit = second) {
+                TimeUnit.DAYS -> root.context.resources.getQuantityString(
+                    R.plurals.numberOfDays,
+                    t,
+                    t
+                )
+                TimeUnit.HOURS -> root.context.resources.getQuantityString(
+                    R.plurals.numberOfHours,
+                    t,
+                    t
+                )
+                TimeUnit.MINUTES -> root.context.resources.getQuantityString(
+                    R.plurals.numberOfMinutes,
+                    t,
+                    t
+                )
+                else -> throw IllegalStateException("Invalid TimeUnit: $unit")
+            }
+        }
+
+        val comments = with(header.frontPageStory.commentCount) {
+            root.context.resources.getQuantityString(R.plurals.numberOfComments, this, this)
+        }
+
+        val voteCount = String.format("%+d", header.frontPageStory.score)
+
+        val bylineText = SpannableStringBuilder().apply {
+            append(
+                root.context.getString(
+                    R.string.front_page_caption,
+                    voteCount,
+                    header.frontPageStory.submitterUsername,
+                    ago,
+                    comments
+                )
+            )
+            header.frontPageStory.shortUrl()?.let { url ->
+                append(" | ")
+                append(SpannableString(url).apply {
+                    setSpan(
+                        StyleSpan(Typeface.ITALIC),
+                        0,
+                        url.length,
+                        Spannable.SPAN_INCLUSIVE_EXCLUSIVE
+                    )
+                })
+            }
+        }
+
+        author.text = bylineText
         description.text = HtmlCompat.fromHtml(
             header.frontPageStory.description,
             HtmlCompat.FROM_HTML_MODE_LEGACY
@@ -156,8 +241,7 @@ val DIFF = object : DiffUtil.ItemCallback<CommentsItem>() {
     override fun areContentsTheSame(oldItem: CommentsItem, newItem: CommentsItem): Boolean {
         (oldItem as? CommentsItem.Header)?.let { old ->
             (newItem as? CommentsItem.Header)?.let { new ->
-                Log.i("TEH", "${old == new}")
-                return old == new // TODO this doesn't work remember, causes flickering
+                return old == new
             }
         }
 

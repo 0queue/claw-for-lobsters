@@ -1,5 +1,6 @@
 package dev.thomasharris.claw.feature.frontpage
 
+import dev.thomasharris.claw.core.ext.postedAgo
 import dev.thomasharris.claw.lib.lobsters.FrontPageStory
 import java.net.URI
 import java.util.*
@@ -23,12 +24,6 @@ sealed class FrontPageItem {
     }
 
     data class Divider(val n: Int) : FrontPageItem()
-}
-
-private fun FrontPageStory.postedAgo() = abs(Date().time - createdAt.time).let { t ->
-    listOf(TimeUnit.DAYS, TimeUnit.HOURS, TimeUnit.MINUTES).map {
-        Pair(it.convert(t, TimeUnit.MILLISECONDS), it)
-    }.find { it.first > 0 } ?: Pair(0L, TimeUnit.MINUTES)
 }
 
 fun FrontPageStory.toItem(tags: List<Pair<String, Boolean>>) =

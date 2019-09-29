@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.paging.DataSource
 import androidx.paging.PageKeyedDataSource
 import dev.thomasharris.claw.lib.lobsters.FrontPageTag
+import dev.thomasharris.claw.lib.lobsters.LoadingStatus
 import dev.thomasharris.claw.lib.lobsters.StoryRepository
 import dev.thomasharris.claw.lib.lobsters.TagRepository
 
@@ -88,10 +89,4 @@ class StoryDataSourceFactory(
             tagRepository,
             _loadingStatus
         )
-}
-
-enum class LoadingStatus {
-    LOADING,
-    ERROR,
-    DONE
 }

@@ -14,12 +14,15 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.bluelinelabs.conductor.archlifecycle.LifecycleController
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.button.MaterialButton
+import dev.thomasharris.claw.core.ext.fade
 import dev.thomasharris.claw.core.ext.getComponent
 import dev.thomasharris.claw.core.ext.observe
+import dev.thomasharris.claw.core.ext.setScrollEnabled
 import dev.thomasharris.claw.feature.frontpage.di.DaggerFrontPageComponent
 import dev.thomasharris.claw.feature.frontpage.di.FrontPageComponent
 import dev.thomasharris.claw.feature.frontpage.di.FrontPageModule
 import dev.thomasharris.claw.frontpage.feature.frontpage.R
+import dev.thomasharris.claw.lib.lobsters.LoadingStatus
 import dev.thomasharris.claw.lib.navigator.Destination
 import dev.thomasharris.claw.lib.navigator.goto
 
@@ -47,8 +50,6 @@ class FrontPageController : LifecycleController() {
     }
 
     private lateinit var toolbar: Toolbar
-    private lateinit var toolbarScrollFlags: AppBarLayout.LayoutParams
-    private lateinit var toolbarNoScrollFlags: AppBarLayout.LayoutParams
 
     private lateinit var recycler: RecyclerView
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
@@ -60,10 +61,6 @@ class FrontPageController : LifecycleController() {
         val root = inflater.inflate(R.layout.front_page, container, false)
         // viewBinding please
         toolbar = root.findViewById(R.id.front_page_toolbar)
-        toolbarScrollFlags = toolbar.layoutParams as AppBarLayout.LayoutParams
-        toolbarNoScrollFlags = AppBarLayout.LayoutParams(toolbarScrollFlags).apply {
-            scrollFlags = AppBarLayout.LayoutParams.SCROLL_FLAG_NO_SCROLL
-        }
         recycler = root.findViewById(R.id.front_page_recycler)
         swipeRefreshLayout = root.findViewById(R.id.front_page_swipe_refresh)
         appBarLayout = root.findViewById(R.id.front_page_app_bar_layout)
@@ -85,15 +82,8 @@ class FrontPageController : LifecycleController() {
 
         component.storyDataSourceFactory().loadingStatus.observe(this) {
             swipeRefreshLayout.isRefreshing = it == LoadingStatus.LOADING
-            if (it == LoadingStatus.ERROR)
-                errorView.fadeIn()
-            else
-                errorView.fadeOut()
-
-            toolbar.layoutParams = if (it == LoadingStatus.ERROR)
-                toolbarNoScrollFlags
-            else
-                toolbarScrollFlags
+            errorView.fade(it == LoadingStatus.ERROR)
+            toolbar.setScrollEnabled(it != LoadingStatus.ERROR)
         }
 
         liveStories.observe(this) {
@@ -109,27 +99,5 @@ class FrontPageController : LifecycleController() {
         }
 
         return root
-    }
-}
-
-fun View.fadeIn() {
-    visibility = View.VISIBLE
-    animate().apply {
-        duration = context.resources.getInteger(android.R.integer.config_shortAnimTime).toLong()
-        alpha(1f)
-        setListener(null)
-    }
-}
-
-fun View.fadeOut() {
-    if (visibility == View.GONE)
-        return
-
-    animate().apply {
-        alpha(0f)
-        duration = context.resources.getInteger(android.R.integer.config_shortAnimTime).toLong()
-        withEndAction {
-            visibility = View.GONE
-        }
     }
 }

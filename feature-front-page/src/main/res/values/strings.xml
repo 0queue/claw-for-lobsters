@@ -3,28 +3,5 @@
     <string name="refresh">Refresh</string>
     <string name="page_number">Page %d</string>
 
-    <!-- example: -->
-    <!-- by thomas 16 hours ago | 3 comments -->
-    <string name="front_page_caption">%s | by %s %s | %s</string>
-    <string name="front_page_error_message">Couldn\'t reach lobste.rs</string>
-    <string name="reload_label">Reload</string>
-    <plurals name="numberOfMinutes">
-        <item quantity="one">%d minute ago</item>
-        <item quantity="other">%d minutes ago</item>
-    </plurals>
 
-    <plurals name="numberOfHours">
-        <item quantity="one">%d hour ago</item>
-        <item quantity="other">%d hours ago</item>
-    </plurals>
-
-    <plurals name="numberOfDays">
-        <item quantity="one">%d day ago</item>
-        <item quantity="other">%d days ago</item>
-    </plurals>
-
-    <plurals name="numberOfComments">
-        <item quantity="one">%d comment</item>
-        <item quantity="other">%d comments</item>
-    </plurals>
 </resources>
