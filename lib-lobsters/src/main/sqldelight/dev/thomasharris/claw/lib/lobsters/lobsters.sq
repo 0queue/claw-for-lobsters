@@ -69,7 +69,8 @@ SELECT
     StoryDatabaseEntity.url,
     StoryDatabaseEntity.tags,
     StoryDatabaseEntity.pageIndex,
-    StoryDatabaseEntity.insertedAt
+    StoryDatabaseEntity.insertedAt,
+    StoryDatabaseEntity.description
 FROM StoryDatabaseEntity
 JOIN UserDatabaseEntity ON StoryDatabaseEntity.submitterUsername = UserDatabaseEntity.username;
 
@@ -78,6 +79,24 @@ SELECT
     TagDatabaseEntity.tag,
     TagDatabaseEntity.isMedia
 FROM TagDatabaseEntity;
+
+CREATE VIEW CommentView AS
+SELECT
+    CommentDatabaseEntity.shortId,
+    CommentDatabaseEntity.storyShortId,
+    CommentDatabaseEntity.commentIndex,
+    CommentDatabaseEntity.createdAt,
+    CommentDatabaseEntity.updatedAt,
+    CommentDatabaseEntity.isDeleted,
+    CommentDatabaseEntity.isModerated,
+    CommentDatabaseEntity.score,
+    CommentDatabaseEntity.comment,
+    CommentDatabaseEntity.indentLevel,
+    CommentDatabaseEntity.commentUsername,
+    CommentDatabaseEntity.insertedAt,
+    UserDatabaseEntity.avatarShortUrl
+FROM CommentDatabaseEntity
+LEFT JOIN UserDatabaseEntity ON CommentDatabaseEntity.commentUsername = UserDatabaseEntity.username;
 
 insertStory:
 INSERT OR REPLACE INTO StoryDatabaseEntity VALUES ?;
@@ -90,6 +109,9 @@ SELECT * FROM StoryDatabaseEntity WHERE pageIndex = :index;
 
 getFrontPage:
 SELECT * FROM FrontPageStory WHERE pageIndex = :index;
+
+getFrontPageStory:
+SELECT * FROM FrontPageStory WHERE shortId = :shortId;
 
 clear:
 DELETE FROM StoryDatabaseEntity;
@@ -110,4 +132,4 @@ insertComment:
 INSERT OR REPLACE INTO CommentDatabaseEntity VALUES ?;
 
 getComments:
-SELECT * FROM CommentDatabaseEntity WHERE storyShortId = :storyShortId ORDER BY commentIndex;
+SELECT * FROM CommentView WHERE storyShortId = :storyShortId ORDER BY commentIndex;

@@ -2,7 +2,6 @@ package dev.thomasharris.claw.feature.comments
 
 import android.content.res.ColorStateList
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
 import android.util.TypedValue
@@ -12,7 +11,6 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
-import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DiffUtil
@@ -20,12 +18,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bluelinelabs.conductor.archlifecycle.LifecycleController
+import com.bumptech.glide.Glide
 import com.google.android.material.appbar.AppBarLayout
 import dev.thomasharris.claw.core.ext.getComponent
 import dev.thomasharris.claw.feature.comments.di.CommentsComponent
 import dev.thomasharris.claw.feature.comments.di.DaggerCommentsComponent
-import dev.thomasharris.claw.lib.lobsters.CommentDatabaseEntity
-import dev.thomasharris.claw.lib.lobsters.StoryDatabaseEntity
+import dev.thomasharris.claw.lib.lobsters.CommentView
+import dev.thomasharris.claw.lib.lobsters.FrontPageStory
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
@@ -67,22 +66,8 @@ class CommentsController constructor(args: Bundle) : LifecycleController(args) {
             }
         }
 
-        // Okay what am I doing
-        // if I want to observe, then:
-        //  I can just flow.collect here?
-        //   if I get a new Story, then
-        //   get the current list adapter,
-        //   and replace the head
-        //   if I get a new List<Comment>
-        //   get the head, and replace the
-        //   tail
-        //  when to refresh?
-        //  when requested by swiping
-        //  or onCreateView(force = false)
         lifecycleScope.launch {
-            Log.i("TEH", "executing story collect")
             component.commentRepository().liveStory(shortId).collect { story ->
-                Log.i("TEH", "Collecting a story!")
                 val head = CommentsItem.Header(story)
                 val tail = listAdapter.currentList.filterIsInstance<CommentsItem.Comment>()
                 listAdapter.submitList(listOf(head) + tail)
@@ -90,12 +75,9 @@ class CommentsController constructor(args: Bundle) : LifecycleController(args) {
         }
 
         lifecycleScope.launch {
-            Log.i("TEH", "executing comment collect")
             component.commentRepository().liveComments(shortId).collect { comments ->
-                Log.i("TEH", "Collecting a comments!")
                 val head = listAdapter.currentList.filterIsInstance<CommentsItem.Header>()
                 val tail = comments.map { CommentsItem.Comment(it) }
-                Log.i("TEH", "n comments: ${tail.size}")
                 listAdapter.submitList(head + tail)
             }
 
@@ -112,8 +94,8 @@ class CommentsController constructor(args: Bundle) : LifecycleController(args) {
 }
 
 sealed class CommentsItem {
-    data class Header(val storyDatabaseEntity: StoryDatabaseEntity) : CommentsItem()
-    data class Comment(val commentDatabaseEntity: CommentDatabaseEntity) : CommentsItem()
+    data class Header(val frontPageStory: FrontPageStory) : CommentsItem()
+    data class Comment(val commentView: CommentView) : CommentsItem()
 }
 
 class HeaderViewHolder(private val root: View) : RecyclerView.ViewHolder(root) {
@@ -124,19 +106,16 @@ class HeaderViewHolder(private val root: View) : RecyclerView.ViewHolder(root) {
     private val description: TextView = root.findViewById(R.id.comments_description)
 
     fun bind(header: CommentsItem.Header) {
-        title.text = header.storyDatabaseEntity.title
+        title.text = header.frontPageStory.title
 
-        // TODO whoops need a view
-        avatar.background =
-            ColorDrawable(ContextCompat.getColor(root.context, R.color.colorPrimary))
-//        Glide.with(root)
-//            .load("https://lobste.rs/${header.storyNetworkEntity.submitter.avatarUrl}")
-//            .circleCrop()
-//            .into(avatar)
+        Glide.with(root)
+            .load("https://lobste.rs/${header.frontPageStory.avatarShortUrl}")
+            .circleCrop()
+            .into(avatar)
 
-        author.text = header.storyDatabaseEntity.submitterUsername
+        author.text = header.frontPageStory.submitterUsername
         description.text = HtmlCompat.fromHtml(
-            header.storyDatabaseEntity.description,
+            header.frontPageStory.description,
             HtmlCompat.FROM_HTML_MODE_LEGACY
         ).trimEnd()
     }
@@ -151,26 +130,23 @@ class CommentViewHolder(private val root: View) : RecyclerView.ViewHolder(root) 
     fun bind(comment: CommentsItem.Comment) {
         val colors = listOf(Color.RED, Color.BLUE, Color.GREEN)
         marker.backgroundTintList =
-            ColorStateList.valueOf(colors[comment.commentDatabaseEntity.indentLevel % colors.size])
+            ColorStateList.valueOf(colors[comment.commentView.indentLevel % colors.size])
 
         marker.layoutParams = (marker.layoutParams as? ViewGroup.MarginLayoutParams)?.let {
             val displayMetrics = root.context.resources.displayMetrics
             val px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8f, displayMetrics)
-            it.leftMargin = (comment.commentDatabaseEntity.indentLevel - 1) * px.toInt()
+            it.leftMargin = (comment.commentView.indentLevel - 1) * px.toInt()
             it
         } ?: marker.layoutParams
 
-        // TODO oops don't have full user now, will need a view
-        avatar.background =
-            ColorDrawable(ContextCompat.getColor(root.context, R.color.colorPrimary))
-//        Glide.with(root)
-//            .load("https://lobste.rs/${comment.commentDatabaseEntity.commentingUser.avatarUrl}")
-//            .circleCrop()
-//            .into(avatar)
+        Glide.with(root)
+            .load("https://lobste.rs/${comment.commentView.avatarShortUrl}")
+            .circleCrop()
+            .into(avatar)
 
-        author.text = comment.commentDatabaseEntity.commentUsername
+        author.text = comment.commentView.commentUsername
         body.text = HtmlCompat.fromHtml(
-            comment.commentDatabaseEntity.comment,
+            comment.commentView.comment,
             HtmlCompat.FROM_HTML_MODE_LEGACY
         ).trimEnd()
     }
@@ -197,13 +173,13 @@ val DIFF = object : DiffUtil.ItemCallback<CommentsItem>() {
     override fun areItemsTheSame(oldItem: CommentsItem, newItem: CommentsItem): Boolean {
         (oldItem as? CommentsItem.Header)?.let { old ->
             (newItem as? CommentsItem.Header)?.let { new ->
-                return old.storyDatabaseEntity.shortId == new.storyDatabaseEntity.shortId
+                return old.frontPageStory.shortId == new.frontPageStory.shortId
             }
         }
 
         (oldItem as? CommentsItem.Comment)?.let { old ->
             (newItem as? CommentsItem.Comment)?.let { new ->
-                return old.commentDatabaseEntity.shortId == new.commentDatabaseEntity.shortId
+                return old.commentView.shortId == new.commentView.shortId
             }
         }
 
