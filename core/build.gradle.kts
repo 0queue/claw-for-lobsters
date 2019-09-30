@@ -1,7 +1,4 @@
-import dev.thomasharris.build.androidTesting
-import dev.thomasharris.build.conductor
-import dev.thomasharris.build.material
-import dev.thomasharris.build.testing
+import dev.thomasharris.build.*
 
 plugins {
     id("dev.thomasharris.claw.android")
@@ -12,6 +9,7 @@ dependencies {
     androidTesting()
     conductor()
     material()
+    glide()
 
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.3.50")
 

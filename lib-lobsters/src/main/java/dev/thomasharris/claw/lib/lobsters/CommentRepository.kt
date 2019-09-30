@@ -7,7 +7,9 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.channels.Channel.Factory.CONFLATED
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.combine
 import java.util.*
 import java.util.concurrent.Executor
 import java.util.concurrent.TimeUnit
@@ -28,9 +30,18 @@ class CommentRepository @Inject constructor(
     @FlowPreview
     fun liveStatus() = statusChannel.asFlow()
 
-    fun liveStory(storyId: String) = lobstersQueries.getFrontPageStory(storyId).asFlow().mapToOne()
+    @ExperimentalCoroutinesApi
+    fun liveComments(storyId: String): Flow<Triple<FrontPageStory, List<FrontPageTag>, List<CommentView>>> {
+        val story = lobstersQueries.getFrontPageStory(storyId).asFlow().mapToOne()
+        val tags = lobstersQueries.getFrontPageTags().asFlow().mapToList()
+        val comments = lobstersQueries.getComments(storyId).asFlow().mapToList()
 
-    fun liveComments(storyId: String) = lobstersQueries.getComments(storyId).asFlow().mapToList()
+        return story.combine(tags) { s, ts ->
+            s to s.tags.mapNotNull { tag -> ts.find { it.tag == tag } }
+        }.combine(comments) { (s, t), c ->
+            Triple(s, t, c)
+        }
+    }
 
     @ExperimentalCoroutinesApi
     fun refresh(storyId: String, force: Boolean = false) {

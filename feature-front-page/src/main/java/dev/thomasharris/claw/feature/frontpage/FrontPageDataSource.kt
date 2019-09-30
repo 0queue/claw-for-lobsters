@@ -69,12 +69,9 @@ class FrontPageDataSource(
 
 // do our own combining of tables here because
 // I don't know how to do that sort of thing in sql
-operator fun Map<String, FrontPageTag>.times(l: List<String>) =
-    l.mapNotNull { name ->
-        get(name)?.isMedia?.let { b ->
-            name to b
-        }
-    }
+operator fun Map<String, FrontPageTag>.times(l: List<String>) = l.mapNotNull {
+    get(it)
+}
 
 class StoryDataSourceFactory(
     private val storyRepository: StoryRepository,

@@ -9,6 +9,12 @@ class TagRepository @Inject constructor(
 
     private var tagCache: Map<String, FrontPageTag>? = null
 
+    /**
+     * API NOTE: some tags are not returned from tags.json
+     *   but are colored special, namely #announce
+     *
+     * they are currently not handled
+     */
     fun getFrontPageTagsSync(): Map<String, FrontPageTag> {
 
         tagCache?.let {
