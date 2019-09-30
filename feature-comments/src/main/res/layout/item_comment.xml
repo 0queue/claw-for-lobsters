@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginLeft="8dp"
-    android:layout_marginRight="8dp"
     android:layout_marginBottom="8dp"
+    android:layout_marginRight="8dp"
     android:orientation="horizontal"
-    android:padding="8dp">
+    android:paddingStart="8dp"
+    android:paddingEnd="8dp">
 
     <View
         android:id="@+id/comment_marker"
@@ -21,6 +21,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center_vertical"
         android:orientation="vertical">
 
         <LinearLayout
@@ -31,10 +32,9 @@
             tools:ignore="UseCompoundDrawables">
 
             <ImageView
-                android:id="@+id/comment_author_avatar"
+                android:id="@+id/comment_avatar"
                 android:layout_width="16dp"
                 android:layout_height="16dp"
-                android:layout_marginTop="2dp"
                 android:layout_marginEnd="2dp"
                 android:contentDescription="@string/avatar_content_description"
                 tools:background="#00f" />
@@ -43,7 +43,6 @@
                 android:id="@+id/comment_author"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
                 tools:text="online_username 2 hours ago" />
         </LinearLayout>

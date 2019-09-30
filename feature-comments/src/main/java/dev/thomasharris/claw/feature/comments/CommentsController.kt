@@ -1,30 +1,21 @@
 package dev.thomasharris.claw.feature.comments
 
-import android.content.res.ColorStateList
-import android.graphics.Color
 import android.os.Bundle
-import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
-import androidx.core.text.HtmlCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.bluelinelabs.conductor.archlifecycle.LifecycleController
-import com.bumptech.glide.Glide
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.button.MaterialButton
 import dev.thomasharris.claw.core.ext.fade
 import dev.thomasharris.claw.core.ext.getComponent
 import dev.thomasharris.claw.core.ext.setScrollEnabled
-import dev.thomasharris.claw.core.ui.StoryViewHolder
 import dev.thomasharris.claw.feature.comments.di.CommentsComponent
 import dev.thomasharris.claw.feature.comments.di.DaggerCommentsComponent
 import dev.thomasharris.claw.lib.lobsters.CommentView
@@ -114,115 +105,4 @@ class CommentsController constructor(args: Bundle) : LifecycleController(args) {
 
         return root
     }
-}
-
-sealed class CommentsItem {
-    data class Header(val story: FrontPageStory, val tags: List<FrontPageTag>) : CommentsItem()
-    data class Comment(val commentView: CommentView) : CommentsItem()
-}
-
-// TODO make this nice
-class CommentViewHolder(private val root: View) : RecyclerView.ViewHolder(root) {
-    private val marker: View = root.findViewById(R.id.comment_marker)
-    private val avatar: ImageView = root.findViewById(R.id.comment_author_avatar)
-    private val author: TextView = root.findViewById(R.id.comment_author)
-    private val body: TextView = root.findViewById(R.id.comment_body)
-
-    fun bind(comment: CommentsItem.Comment) {
-        val colors = listOf(Color.RED, Color.BLUE, Color.GREEN)
-        marker.backgroundTintList =
-            ColorStateList.valueOf(colors[comment.commentView.indentLevel % colors.size])
-
-        marker.layoutParams = (marker.layoutParams as? ViewGroup.MarginLayoutParams)?.let {
-            val displayMetrics = root.context.resources.displayMetrics
-            val px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8f, displayMetrics)
-            it.leftMargin = (comment.commentView.indentLevel - 1) * px.toInt()
-            it
-        } ?: marker.layoutParams
-
-        Glide.with(root)
-            .load("https://lobste.rs/${comment.commentView.avatarShortUrl}")
-            .circleCrop()
-            .into(avatar)
-
-        author.text = comment.commentView.commentUsername
-        body.text = HtmlCompat.fromHtml(
-            comment.commentView.comment,
-            HtmlCompat.FROM_HTML_MODE_LEGACY
-        ).trimEnd()
-    }
-}
-
-val DIFF = object : DiffUtil.ItemCallback<CommentsItem>() {
-    override fun areContentsTheSame(oldItem: CommentsItem, newItem: CommentsItem): Boolean {
-        (oldItem as? CommentsItem.Header)?.let { old ->
-            (newItem as? CommentsItem.Header)?.let { new ->
-                // TODO is probably not working correctly
-                //  probably should cast to the Impl
-                return old == new
-            }
-        }
-
-        (oldItem as? CommentsItem.Comment)?.let { old ->
-            (newItem as? CommentsItem.Comment)?.let { new ->
-                // TODO is probably not working correctly
-                return old == new
-            }
-        }
-
-        return false
-    }
-
-    override fun areItemsTheSame(oldItem: CommentsItem, newItem: CommentsItem): Boolean {
-        (oldItem as? CommentsItem.Header)?.let { old ->
-            (newItem as? CommentsItem.Header)?.let { new ->
-                return old.story.shortId == new.story.shortId
-            }
-        }
-
-        (oldItem as? CommentsItem.Comment)?.let { old ->
-            (newItem as? CommentsItem.Comment)?.let { new ->
-                return old.commentView.shortId == new.commentView.shortId
-            }
-        }
-
-        return false
-    }
-
-}
-
-const val VIEW_TYPE_HEADER = 1
-const val VIEW_TYPE_COMMENT = 2
-
-class CommentsAdapter : ListAdapter<CommentsItem, RecyclerView.ViewHolder>(DIFF) {
-
-    override fun getItemViewType(position: Int) = when (getItem(position)) {
-        is CommentsItem.Header -> VIEW_TYPE_HEADER
-        is CommentsItem.Comment -> VIEW_TYPE_COMMENT
-    }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        val inflater = LayoutInflater.from(parent.context)
-        return when (viewType) {
-            VIEW_TYPE_HEADER -> StoryViewHolder.inflate(parent.context, parent)
-            else -> CommentViewHolder(
-                inflater.inflate(
-                    R.layout.item_comments_comment,
-                    parent,
-                    false
-                )
-            )
-        }
-    }
-
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        when (holder.itemViewType) {
-            VIEW_TYPE_HEADER -> {
-                val (story, tags) = getItem(position) as CommentsItem.Header
-                (holder as StoryViewHolder).bind(story, tags, isCompact = false)
-            }
-            VIEW_TYPE_COMMENT -> (holder as CommentViewHolder).bind(getItem(position) as CommentsItem.Comment)
-        }
-    }
-
 }

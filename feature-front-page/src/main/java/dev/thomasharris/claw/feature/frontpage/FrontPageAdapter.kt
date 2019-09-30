@@ -26,7 +26,7 @@ class FrontPageAdapter(private val onClick: (String) -> Unit) :
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
-            VIEW_TYPE_STORY -> StoryViewHolder.inflate(parent.context, parent)
+            VIEW_TYPE_STORY -> StoryViewHolder.inflate(parent)
             else -> DividerViewHolder(
                 inflater.inflate(
                     R.layout.item_front_page_divider,

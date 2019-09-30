@@ -20,9 +20,9 @@ import com.bumptech.glide.Glide
 import dev.thomasharris.claw.core.R
 import dev.thomasharris.claw.core.ext.postedAgo
 import dev.thomasharris.claw.core.ext.shortUrl
+import dev.thomasharris.claw.core.ext.toString
 import dev.thomasharris.claw.lib.lobsters.FrontPageStory
 import dev.thomasharris.claw.lib.lobsters.FrontPageTag
-import java.util.concurrent.TimeUnit
 
 class StoryViewHolder private constructor(private val root: View) : RecyclerView.ViewHolder(root) {
     private val context: Context = root.context
@@ -58,7 +58,7 @@ class StoryViewHolder private constructor(private val root: View) : RecyclerView
         }
 
         author.text = SpannableStringBuilder().apply {
-            val ago = story.postedAgo().toString(context)
+            val ago = story.createdAt.postedAgo().toString(context)
             val numComments = context.resources.getQuantityString(
                 R.plurals.numberOfComments,
                 story.commentCount,
@@ -107,8 +107,8 @@ class StoryViewHolder private constructor(private val root: View) : RecyclerView
     }
 
     companion object {
-        fun inflate(context: Context, parent: ViewGroup) = StoryViewHolder(
-            LayoutInflater.from(context).inflate(
+        fun inflate(parent: ViewGroup) = StoryViewHolder(
+            LayoutInflater.from(parent.context).inflate(
                 R.layout.story_view,
                 parent,
                 false
@@ -135,19 +135,5 @@ private fun Context.tagBackgroundColor(tag: String, isMedia: Boolean) = resolveC
         (tag == "show") || (tag == "ask") -> R.attr.colorTagBackgroundShowAsk
         isMedia -> R.attr.colorTagBackgroundMedia
         else -> R.attr.colorTagBackground
-    }
-}
-
-private fun Pair<Long, TimeUnit>.toString(context: Context): String {
-    val t = first.toInt()
-    return when (val unit = second) {
-        TimeUnit.DAYS -> context.resources.getQuantityString(R.plurals.numberOfDays, t, t)
-        TimeUnit.HOURS -> context.resources.getQuantityString(R.plurals.numberOfHours, t, t)
-        TimeUnit.MINUTES -> context.resources.getQuantityString(
-            R.plurals.numberOfMinutes,
-            t,
-            t
-        )
-        else -> throw IllegalStateException("Invalid TimeUnit: $unit")
     }
 }
