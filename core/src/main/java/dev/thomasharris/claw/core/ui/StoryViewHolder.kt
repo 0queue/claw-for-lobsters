@@ -7,7 +7,6 @@ import android.text.SpannableString
 import android.text.SpannableStringBuilder
 import android.text.TextUtils
 import android.text.style.StyleSpan
-import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -21,8 +20,8 @@ import dev.thomasharris.claw.core.R
 import dev.thomasharris.claw.core.ext.postedAgo
 import dev.thomasharris.claw.core.ext.shortUrl
 import dev.thomasharris.claw.core.ext.toString
-import dev.thomasharris.claw.lib.lobsters.FrontPageStory
-import dev.thomasharris.claw.lib.lobsters.FrontPageTag
+import dev.thomasharris.claw.lib.lobsters.StoryModel
+import dev.thomasharris.claw.lib.lobsters.TagModel
 
 class StoryViewHolder private constructor(private val root: View) : RecyclerView.ViewHolder(root) {
     private val context: Context = root.context
@@ -32,8 +31,8 @@ class StoryViewHolder private constructor(private val root: View) : RecyclerView
     private val description: TextView = root.findViewById(R.id.story_view_description)
 
     fun bind(
-        story: FrontPageStory,
-        tags: List<FrontPageTag>,
+        story: StoryModel,
+        tags: List<TagModel>,
         isCompact: Boolean = true,
         onClickListener: ((String) -> Unit)? = null
     ) {
@@ -71,13 +70,12 @@ class StoryViewHolder private constructor(private val root: View) : RecyclerView
                 context.getString(
                     R.string.story_view_author,
                     numVotes,
-                    story.submitterUsername,
+                    story.username,
                     ago,
                     numComments
                 )
             )
 
-            Log.i("TEH", "${story.shortUrl()} ${story.shortUrl()?.length}")
             story.shortUrl()?.let { url ->
                 append(" | ")
                 append(SpannableStringBuilder(url).apply {

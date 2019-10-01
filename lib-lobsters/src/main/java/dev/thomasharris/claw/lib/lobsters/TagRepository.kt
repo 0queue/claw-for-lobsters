@@ -7,7 +7,7 @@ class TagRepository @Inject constructor(
     private val lobstersQueries: LobstersQueries
 ) {
 
-    private var tagCache: Map<String, FrontPageTag>? = null
+    private var tagCache: Map<String, TagModel>? = null
 
     /**
      * API NOTE: some tags are not returned from tags.json
@@ -15,19 +15,19 @@ class TagRepository @Inject constructor(
      *
      * they are currently not handled
      */
-    fun getFrontPageTagsSync(): Map<String, FrontPageTag> {
+    fun getFrontPageTagsSync(): Map<String, TagModel> {
 
         tagCache?.let {
             return it
         }
 
-        var tags = lobstersQueries.getFrontPageTags().executeAsList()
+        var tags = lobstersQueries.getTagModels().executeAsList()
 
         // not the most efficient but there aren't a ton of tags out there
         if (tags.isEmpty() /* TODO or is old?*/) {
             lobstersService.getTagsSync().executeOrNull()?.body()?.forEach {
                 lobstersQueries.insertTag(
-                    TagDatabaseEntity.Impl(
+                    Tag.Impl(
                         it.tag,
                         it.id,
                         it.description,
@@ -39,7 +39,7 @@ class TagRepository @Inject constructor(
                 )
             }
 
-            tags = lobstersQueries.getFrontPageTags().executeAsList()
+            tags = lobstersQueries.getTagModels().executeAsList()
         }
 
         tagCache = tags.map { it.tag to it }.toMap()

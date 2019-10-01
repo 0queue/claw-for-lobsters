@@ -10,9 +10,9 @@ class StoryRepository @Inject constructor(
     private val lobstersQueries: LobstersQueries
 ) {
 
-    fun getFrontPageSync(index: Int): List<FrontPageStory>? {
+    fun getFrontPageSync(index: Int): List<StoryModel>? {
         // check db
-        val dbPage = lobstersQueries.getFrontPage(index).executeAsList()
+        val dbPage = lobstersQueries.getPage(index).executeAsList()
 
         // should refresh?
         val isOld: Boolean? = dbPage.minBy {
@@ -40,7 +40,7 @@ class StoryRepository @Inject constructor(
         }
 
         // re fetch and return
-        return lobstersQueries.getFrontPage(index).executeAsList()
+        return lobstersQueries.getPage(index).executeAsList()
     }
 
     fun invalidate() {
@@ -49,7 +49,7 @@ class StoryRepository @Inject constructor(
 }
 
 fun StoryNetworkEntity.toDB(pageIndex: Int, subIndex: Int, now: Date = Date()) =
-    StoryDatabaseEntity.Impl(
+    Story.Impl(
         shortId,
         title,
         createdAt,
@@ -67,7 +67,7 @@ fun StoryNetworkEntity.toDB(pageIndex: Int, subIndex: Int, now: Date = Date()) =
     )
 
 fun UserNetworkEntity.toDB(now: Date = Date()) =
-    UserDatabaseEntity.Impl(
+    User.Impl(
         username,
         createdAt,
         isAdmin,

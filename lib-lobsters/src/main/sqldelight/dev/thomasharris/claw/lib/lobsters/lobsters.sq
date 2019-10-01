@@ -1,7 +1,7 @@
 import java.util.Date;
 import kotlin.collections.List;
 
-CREATE TABLE StoryDatabaseEntity (
+CREATE TABLE story (
     shortId TEXT NOT NULL UNIQUE PRIMARY KEY,
     title TEXT NOT NULL,
     createdAt INTEGER as Date NOT NULL,
@@ -11,14 +11,14 @@ CREATE TABLE StoryDatabaseEntity (
     downvotes INTEGER as Int NOT NULL,
     commentCount INTEGER as Int NOT NULL,
     description TEXT NOT NULL,
-    submitterUsername TEXT NOT NULL,
+    username TEXT NOT NULL,
     tags TEXT as List<String> NOT NULL,
     pageIndex INTEGER as Int NOT NULL,
     pageSubIndex INTEGER as Int NOT NULL,
     insertedAt INTEGER as Date NOT NULL
 );
 
-CREATE TABLE UserDatabaseEntity(
+CREATE TABLE user (
     username TEXT NOT NULL UNIQUE PRIMARY KEY,
     createdAt INTEGER as Date NOT NULL,
     isAdmin INTEGER as Boolean NOT NULL,
@@ -30,7 +30,7 @@ CREATE TABLE UserDatabaseEntity(
     insertedAt INTEGER as Date NOT NULL
 );
 
-CREATE TABLE TagDatabaseEntity(
+CREATE TABLE tag (
     tag TEXT NOT NULL UNIQUE PRIMARY KEY,
     id INTEGER as Int NOT NULL,
     description TEXT NOT NULL,
@@ -40,9 +40,9 @@ CREATE TABLE TagDatabaseEntity(
     hotnessMod REAL as Float NOT NULL
 );
 
-CREATE TABLE CommentDatabaseEntity(
+CREATE TABLE comment (
     shortId TEXT NOT NULL UNIQUE PRIMARY KEY,
-    storyShortId TEXT NOT NULL,
+    storyId TEXT NOT NULL,
     commentIndex INTEGER as Int NOT NULL,
     shortIdUrl TEXT NOT NULL,
     createdAt INTEGER as Date NOT NULL,
@@ -54,84 +54,90 @@ CREATE TABLE CommentDatabaseEntity(
     downvotes INTEGER as Int NOT NULL,
     comment TEXT NOT NULL,
     indentLevel INTEGER as Int NOT NULL,
-    commentUsername TEXT NOT NULL,
+    username TEXT NOT NULL,
     insertedAt INTEGER as Date NOT NULL
 );
 
-CREATE VIEW FrontPageStory AS
+CREATE VIEW storyModel AS
 SELECT
-    StoryDatabaseEntity.shortId,
-    StoryDatabaseEntity.title,
-    StoryDatabaseEntity.submitterUsername,
-    UserDatabaseEntity.avatarShortUrl,
-    StoryDatabaseEntity.createdAt,
-    StoryDatabaseEntity.commentCount,
-    StoryDatabaseEntity.score,
-    StoryDatabaseEntity.url,
-    StoryDatabaseEntity.tags,
-    StoryDatabaseEntity.pageIndex,
-    StoryDatabaseEntity.insertedAt,
-    StoryDatabaseEntity.description
-FROM StoryDatabaseEntity
-JOIN UserDatabaseEntity ON StoryDatabaseEntity.submitterUsername = UserDatabaseEntity.username
-ORDER BY StoryDatabaseEntity.pageSubIndex;
+    story.shortId,
+    story.title,
+    story.username,
+    user.avatarShortUrl,
+    story.createdAt,
+    story.commentCount,
+    story.score,
+    story.url,
+    story.tags,
+    story.pageIndex,
+    story.insertedAt,
+    story.description
+FROM story
+JOIN user ON story.username = user.username
+ORDER BY story.pageSubIndex;
 
-CREATE VIEW FrontPageTag AS
+CREATE VIEW tagModel AS
 SELECT
-    TagDatabaseEntity.tag,
-    TagDatabaseEntity.isMedia
-FROM TagDatabaseEntity;
+    tag.tag,
+    tag.isMedia
+FROM tag;
 
-CREATE VIEW CommentView AS
+CREATE VIEW commentModel AS
 SELECT
-    CommentDatabaseEntity.shortId,
-    CommentDatabaseEntity.storyShortId,
-    CommentDatabaseEntity.commentIndex,
-    CommentDatabaseEntity.createdAt,
-    CommentDatabaseEntity.updatedAt,
-    CommentDatabaseEntity.isDeleted,
-    CommentDatabaseEntity.isModerated,
-    CommentDatabaseEntity.score,
-    CommentDatabaseEntity.comment,
-    CommentDatabaseEntity.indentLevel,
-    CommentDatabaseEntity.commentUsername,
-    CommentDatabaseEntity.insertedAt,
-    UserDatabaseEntity.avatarShortUrl
-FROM CommentDatabaseEntity
-LEFT JOIN UserDatabaseEntity ON CommentDatabaseEntity.commentUsername = UserDatabaseEntity.username;
+    comment.shortId,
+    comment.storyId,
+    comment.commentIndex,
+    comment.createdAt,
+    comment.updatedAt,
+    comment.isDeleted,
+    comment.isModerated,
+    comment.score,
+    comment.comment,
+    comment.indentLevel,
+    comment.username,
+    comment.insertedAt,
+    user.avatarShortUrl
+FROM comment
+LEFT JOIN user ON comment.username = user.username;
 
+
+-- Story methods
 insertStory:
-INSERT OR REPLACE INTO StoryDatabaseEntity VALUES ?;
-
-insertUser:
-INSERT OR REPLACE INTO UserDatabaseEntity VALUES ?;
+INSERT OR REPLACE INTO story VALUES ?;
 
 getPage:
-SELECT * FROM StoryDatabaseEntity WHERE pageIndex = :index;
+SELECT * FROM storyModel WHERE pageIndex = :pageIndex;
 
-getFrontPage:
-SELECT * FROM FrontPageStory WHERE pageIndex = :index;
-
-getFrontPageStory:
-SELECT * FROM FrontPageStory WHERE shortId = :shortId;
-
-clear:
-DELETE FROM StoryDatabaseEntity;
-
-insertTag:
-INSERT OR REPLACE INTO TagDatabaseEntity VALUES ?;
-
-getTags:
-SELECT * FROM TagDatabaseEntity;
-
-getFrontPageTags:
-SELECT * FROM FrontPageTag;
+getStoryModel:
+SELECT * FROM storyModel WHERE shortId = :shortId;
 
 getStory:
-SELECT * FROM StoryDatabaseEntity WHERE shortId = :shortId;
+SELECT * FROM story WHERE shortId = :shortId;
 
+
+-- user methods
+insertUser:
+INSERT OR REPLACE INTO user VALUES ?;
+
+-- misc
+clear:
+DELETE FROM story;
+
+
+-- tag methods
+insertTag:
+INSERT OR REPLACE INTO tag VALUES ?;
+
+getTags:
+SELECT * FROM tag;
+
+getTagModels:
+SELECT * FROM tagModel;
+
+
+-- comment methods
 insertComment:
-INSERT OR REPLACE INTO CommentDatabaseEntity VALUES ?;
+INSERT OR REPLACE INTO comment VALUES ?;
 
-getComments:
-SELECT * FROM CommentView WHERE storyShortId = :storyShortId ORDER BY commentIndex;
+getCommentModels:
+SELECT * FROM commentModel WHERE storyId = :storyId ORDER BY commentIndex;

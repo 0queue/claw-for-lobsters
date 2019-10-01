@@ -5,16 +5,16 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import dev.thomasharris.claw.core.ui.StoryViewHolder
-import dev.thomasharris.claw.lib.lobsters.CommentView
-import dev.thomasharris.claw.lib.lobsters.FrontPageStory
-import dev.thomasharris.claw.lib.lobsters.FrontPageTag
+import dev.thomasharris.claw.lib.lobsters.CommentModel
+import dev.thomasharris.claw.lib.lobsters.StoryModel
+import dev.thomasharris.claw.lib.lobsters.TagModel
 
 const val VIEW_TYPE_HEADER = 1
 const val VIEW_TYPE_COMMENT = 2
 
 sealed class CommentsItem {
-    data class Header(val story: FrontPageStory, val tags: List<FrontPageTag>) : CommentsItem()
-    data class Comment(val commentView: CommentView) : CommentsItem()
+    data class Header(val story: StoryModel, val tags: List<TagModel>) : CommentsItem()
+    data class Comment(val commentView: CommentModel) : CommentsItem()
 }
 
 

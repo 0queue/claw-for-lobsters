@@ -13,7 +13,7 @@ import com.bumptech.glide.Glide
 import dev.thomasharris.claw.core.ext.dipToPx
 import dev.thomasharris.claw.core.ext.postedAgo
 import dev.thomasharris.claw.core.ext.toString
-import dev.thomasharris.claw.lib.lobsters.CommentView
+import dev.thomasharris.claw.lib.lobsters.CommentModel
 import java.util.*
 import kotlin.math.min
 
@@ -28,7 +28,7 @@ class CommentViewHolder private constructor(
     private val colors = root.context.resources.getIntArray(R.array.indentation_colors).toList()
 
     @SuppressLint("SetTextI18n")
-    fun bind(comment: CommentView, position: Int) {
+    fun bind(comment: CommentModel, position: Int) {
         marker.backgroundTintList =
             ColorStateList.valueOf(colors[(comment.indentLevel - 1) % colors.size])
 
@@ -48,7 +48,7 @@ class CommentViewHolder private constructor(
 
         val t = Date(min(comment.createdAt.time, comment.updatedAt.time)).postedAgo()
         val action = if (comment.createdAt != comment.updatedAt) " edited" else ""
-        author.text = "${comment.commentUsername} $action ${t.toString(root.context)}"
+        author.text = "${comment.username} $action ${t.toString(root.context)}"
 
         body.text = HtmlCompat.fromHtml(comment.comment, HtmlCompat.FROM_HTML_MODE_LEGACY).trimEnd()
     }

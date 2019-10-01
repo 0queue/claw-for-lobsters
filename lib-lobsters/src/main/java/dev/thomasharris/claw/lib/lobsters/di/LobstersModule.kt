@@ -44,7 +44,7 @@ class LobstersModule(private val context: Context) {
 
         return Database(
             driver = AndroidSqliteDriver(Database.Schema, context, "claw.db"),
-            StoryDatabaseEntityAdapter = StoryDatabaseEntity.Adapter(
+            storyAdapter = Story.Adapter(
                 tagsAdapter = object : ColumnAdapter<List<String>, String> {
                     override fun decode(databaseValue: String) =
                         databaseValue.split(",")
@@ -55,11 +55,11 @@ class LobstersModule(private val context: Context) {
                 createdAtAdapter = dateAdapter,
                 insertedAtAdapter = dateAdapter
             ),
-            UserDatabaseEntityAdapter = UserDatabaseEntity.Adapter(
+            userAdapter = User.Adapter(
                 createdAtAdapter = dateAdapter,
                 insertedAtAdapter = dateAdapter
             ),
-            CommentDatabaseEntityAdapter = CommentDatabaseEntity.Adapter(
+            commentAdapter = Comment.Adapter(
                 createdAtAdapter = dateAdapter,
                 updatedAtAdapter = dateAdapter,
                 insertedAtAdapter = dateAdapter

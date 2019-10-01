@@ -1,15 +1,15 @@
 package dev.thomasharris.claw.feature.frontpage
 
-import dev.thomasharris.claw.lib.lobsters.FrontPageStory
-import dev.thomasharris.claw.lib.lobsters.FrontPageTag
+import dev.thomasharris.claw.lib.lobsters.StoryModel
+import dev.thomasharris.claw.lib.lobsters.TagModel
 
 sealed class FrontPageItem {
     data class Story(
-        val frontPageStory: FrontPageStory,
-        val tags: List<FrontPageTag>
+        val frontPageStory: StoryModel,
+        val tags: List<TagModel>
     ) : FrontPageItem()
 
     data class Divider(val n: Int) : FrontPageItem()
 }
 
-fun FrontPageStory.toItem(tags: List<FrontPageTag>) = FrontPageItem.Story(this, tags)
+fun StoryModel.toItem(tags: List<TagModel>) = FrontPageItem.Story(this, tags)

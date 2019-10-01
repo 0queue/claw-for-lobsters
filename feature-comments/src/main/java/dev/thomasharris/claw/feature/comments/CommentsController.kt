@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -18,9 +17,6 @@ import dev.thomasharris.claw.core.ext.getComponent
 import dev.thomasharris.claw.core.ext.setScrollEnabled
 import dev.thomasharris.claw.feature.comments.di.CommentsComponent
 import dev.thomasharris.claw.feature.comments.di.DaggerCommentsComponent
-import dev.thomasharris.claw.lib.lobsters.CommentView
-import dev.thomasharris.claw.lib.lobsters.FrontPageStory
-import dev.thomasharris.claw.lib.lobsters.FrontPageTag
 import dev.thomasharris.claw.lib.lobsters.LoadingStatus
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview

@@ -4,9 +4,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.paging.DataSource
 import androidx.paging.PageKeyedDataSource
-import dev.thomasharris.claw.lib.lobsters.FrontPageTag
 import dev.thomasharris.claw.lib.lobsters.LoadingStatus
 import dev.thomasharris.claw.lib.lobsters.StoryRepository
+import dev.thomasharris.claw.lib.lobsters.TagModel
 import dev.thomasharris.claw.lib.lobsters.TagRepository
 
 /**
@@ -69,7 +69,7 @@ class FrontPageDataSource(
 
 // do our own combining of tables here because
 // I don't know how to do that sort of thing in sql
-operator fun Map<String, FrontPageTag>.times(l: List<String>) = l.mapNotNull {
+operator fun Map<String, TagModel>.times(l: List<String>) = l.mapNotNull {
     get(it)
 }
 

@@ -31,10 +31,10 @@ class CommentRepository @Inject constructor(
     fun liveStatus() = statusChannel.asFlow()
 
     @ExperimentalCoroutinesApi
-    fun liveComments(storyId: String): Flow<Triple<FrontPageStory, List<FrontPageTag>, List<CommentView>>> {
-        val story = lobstersQueries.getFrontPageStory(storyId).asFlow().mapToOne()
-        val tags = lobstersQueries.getFrontPageTags().asFlow().mapToList()
-        val comments = lobstersQueries.getComments(storyId).asFlow().mapToList()
+    fun liveComments(storyId: String): Flow<Triple<StoryModel, List<TagModel>, List<CommentModel>>> {
+        val story = lobstersQueries.getStoryModel(storyId).asFlow().mapToOne()
+        val tags = lobstersQueries.getTagModels().asFlow().mapToList()
+        val comments = lobstersQueries.getCommentModels(storyId).asFlow().mapToList()
 
         return story.combine(tags) { s, ts ->
             s to s.tags.mapNotNull { tag -> ts.find { it.tag == tag } }
@@ -49,7 +49,7 @@ class CommentRepository @Inject constructor(
             val storyDb = lobstersQueries.getStory(storyId).executeAsOne()
 
             val shouldRefresh = if (force) true else {
-                val comments = lobstersQueries.getComments(storyId).executeAsList()
+                val comments = lobstersQueries.getCommentModels(storyId).executeAsList()
                 storyDb.insertedAt.isOld() || (comments.minBy {
                     it.insertedAt.time
                 }?.insertedAt?.isOld() ?: true)
@@ -84,7 +84,7 @@ fun CommentNetworkEntity.toDB(
     storyId: String,
     index: Int,
     insertedAt: Date
-) = CommentDatabaseEntity.Impl(
+) = Comment.Impl(
     shortId,
     storyId,
     index,
