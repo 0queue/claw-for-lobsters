@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.paging.DataSource
 import androidx.paging.PageKeyedDataSource
 import dev.thomasharris.claw.lib.lobsters.LoadingStatus
+import dev.thomasharris.claw.lib.lobsters.StoryModel
 import dev.thomasharris.claw.lib.lobsters.StoryRepository
 import dev.thomasharris.claw.lib.lobsters.TagModel
 import dev.thomasharris.claw.lib.lobsters.TagRepository
@@ -28,9 +29,7 @@ class FrontPageDataSource(
         val tagMap = tagRepository.getFrontPageTagsSync()
         loadingStatus.postValue(if (page != null) LoadingStatus.DONE else LoadingStatus.ERROR)
         page?.let { p ->
-            callback.onResult(p.map {
-                it.toItem(tagMap * it.tags)
-            } + FrontPageItem.Divider(2), null, 1)
+            callback.onResult(p.map { it x tagMap } + FrontPageItem.Divider(2), null, 1)
         }
     }
 
@@ -38,9 +37,7 @@ class FrontPageDataSource(
         val tagMap = tagRepository.getFrontPageTagsSync()
         storyRepository.getFrontPageSync(params.key)?.let { page ->
             callback.onResult(
-                page.map {
-                    it.toItem(tagMap * it.tags)
-                } + FrontPageItem.Divider(params.key + 2),
+                page.map { it x tagMap } + FrontPageItem.Divider(params.key + 2),
                 params.key + 1
             )
         }
@@ -50,11 +47,9 @@ class FrontPageDataSource(
     override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, FrontPageItem>) {
         val tagMap = tagRepository.getFrontPageTagsSync()
         storyRepository.getFrontPageSync(params.key)?.let { page ->
-            val adjacentKey = if (params.key == 0) null else params.key + 1
+            val adjacentKey = if (params.key == 0) null else params.key - 1
             callback.onResult(
-                page.map {
-                    it.toItem(tagMap * it.tags)
-                } + FrontPageItem.Divider(params.key + 2),
+                page.map { it x tagMap } + FrontPageItem.Divider(params.key + 2),
                 adjacentKey
             )
         }
@@ -67,11 +62,10 @@ class FrontPageDataSource(
     }
 }
 
-// do our own combining of tables here because
-// I don't know how to do that sort of thing in sql
-operator fun Map<String, TagModel>.times(l: List<String>) = l.mapNotNull {
-    get(it)
-}
+infix fun StoryModel.x(tagMap: Map<String, TagModel>) =
+    FrontPageItem.Story(this, tags.map {
+        tagMap[it] ?: TagModel.Impl(it, false)
+    })
 
 class StoryDataSourceFactory(
     private val storyRepository: StoryRepository,

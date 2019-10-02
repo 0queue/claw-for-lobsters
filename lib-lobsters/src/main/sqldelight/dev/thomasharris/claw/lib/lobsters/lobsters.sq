@@ -70,6 +70,7 @@ SELECT
     story.url,
     story.tags,
     story.pageIndex,
+    story.pageSubIndex,
     story.insertedAt,
     story.description
 FROM story
@@ -106,7 +107,7 @@ insertStory:
 INSERT OR REPLACE INTO story VALUES ?;
 
 getPage:
-SELECT * FROM storyModel WHERE pageIndex = :pageIndex;
+SELECT * FROM storyModel WHERE pageIndex = :pageIndex ORDER BY pageIndex, pageSubIndex;
 
 getStoryModel:
 SELECT * FROM storyModel WHERE shortId = :shortId;
@@ -119,6 +120,7 @@ SELECT * FROM story WHERE shortId = :shortId;
 insertUser:
 INSERT OR REPLACE INTO user VALUES ?;
 
+
 -- misc
 clear:
 DELETE FROM story;
@@ -127,9 +129,6 @@ DELETE FROM story;
 -- tag methods
 insertTag:
 INSERT OR REPLACE INTO tag VALUES ?;
-
-getTags:
-SELECT * FROM tag;
 
 getTagModels:
 SELECT * FROM tagModel;
