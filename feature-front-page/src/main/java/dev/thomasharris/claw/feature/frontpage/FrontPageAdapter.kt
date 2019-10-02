@@ -13,7 +13,7 @@ import dev.thomasharris.claw.frontpage.feature.frontpage.R
 const val VIEW_TYPE_STORY = 1
 const val VIEW_TYPE_DIVIDER = 2
 
-class FrontPageAdapter(private val onClick: (String) -> Unit) :
+class FrontPageAdapter(private val onClick: (String, String) -> Unit) :
     PagedListAdapter<FrontPageItem, RecyclerView.ViewHolder>(
         Companion
     ) {

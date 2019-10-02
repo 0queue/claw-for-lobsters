@@ -22,14 +22,15 @@ sealed class Destination {
         }
     }
 
-    class Comments(val shortId: String) : Destination() {
+    class Comments(private val shortId: String, private val url: String) : Destination() {
         override fun routerTransaction(): RouterTransaction {
             val clazz =
                 Class.forName("dev.thomasharris.claw.feature.comments.CommentsController")
 
             val controller = clazz.kotlin.primaryConstructor!!.call(
                 bundleOf(
-                    "shortId" to shortId
+                    "shortId" to shortId,
+                    "url" to url
                 )
             )
 

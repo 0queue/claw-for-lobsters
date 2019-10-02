@@ -34,7 +34,7 @@ class StoryViewHolder private constructor(private val root: View) : RecyclerView
         story: StoryModel,
         tags: List<TagModel>,
         isCompact: Boolean = true,
-        onClickListener: ((String) -> Unit)? = null
+        onClickListener: ((String, String) -> Unit)? = null
     ) {
         Glide.with(context)
             .load("https://lobste.rs/${story.avatarShortUrl}")
@@ -93,7 +93,7 @@ class StoryViewHolder private constructor(private val root: View) : RecyclerView
 
         if (onClickListener != null)
             root.setOnClickListener {
-                onClickListener(story.shortId)
+                onClickListener(story.shortId, story.url)
             }
 
         val shouldShowDescription = !isCompact && story.description.isNotBlank()

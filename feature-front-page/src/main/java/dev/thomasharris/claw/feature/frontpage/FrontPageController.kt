@@ -45,8 +45,8 @@ class FrontPageController : LifecycleController() {
         component.storyDataSourceFactory().toLiveData(config)
     }
 
-    private val listAdapter = FrontPageAdapter {
-        goto(Destination.Comments(it))
+    private val listAdapter = FrontPageAdapter { shortId, url ->
+        goto(Destination.Comments(shortId, url))
     }
 
     private lateinit var toolbar: Toolbar

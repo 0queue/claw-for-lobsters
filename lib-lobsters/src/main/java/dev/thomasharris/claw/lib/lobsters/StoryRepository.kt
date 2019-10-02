@@ -1,6 +1,6 @@
 package dev.thomasharris.claw.lib.lobsters
 
-import java.util.*
+import java.util.Date
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 

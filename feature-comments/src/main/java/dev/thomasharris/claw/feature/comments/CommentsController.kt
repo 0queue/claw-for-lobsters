@@ -1,10 +1,16 @@
 package dev.thomasharris.claw.feature.comments
 
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.Toolbar
+import androidx.browser.customtabs.CustomTabsIntent
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -33,6 +39,7 @@ class CommentsController constructor(args: Bundle) : LifecycleController(args) {
     }
 
     private val shortId: String = getArgs().getString("shortId")!!
+    private val url: String = getArgs().getString("url")!!
 
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
     private lateinit var recycler: RecyclerView
@@ -42,7 +49,27 @@ class CommentsController constructor(args: Bundle) : LifecycleController(args) {
     private lateinit var errorView: View
     private lateinit var errorReload: MaterialButton
 
-    private val listAdapter = CommentsAdapter()
+    private val customTabLifecycleHelper = CustomTabLifecycleHelper(url) {
+        activity!! // called in onStart, should be safe
+    }.also {
+        lifecycle.addObserver(it)
+    }
+
+    private val listAdapter = CommentsAdapter { _, url ->
+        // TODO eventually fallback to web view
+        CustomTabsIntent.Builder(customTabLifecycleHelper.session).apply {
+            // TODO the drawable has some built in transparency, should probably
+            //  tweak somehow for future night mode/get proper transparency values
+            activity?.bitmapFromVector(R.drawable.ic_arrow_back_black_24dp)?.let {
+                setCloseButtonIcon(it)
+            }
+
+            activity?.let {
+                setStartAnimations(it, R.anim.slide_in_from_right, R.anim.nothing)
+                setExitAnimations(it, R.anim.nothing, R.anim.slide_out_to_right)
+            }
+        }.build().launchUrl(activity, Uri.parse(url))
+    }
 
     @FlowPreview
     @ExperimentalCoroutinesApi
@@ -101,4 +128,18 @@ class CommentsController constructor(args: Bundle) : LifecycleController(args) {
 
         return root
     }
+}
+
+fun Context.bitmapFromVector(drawableId: Int): Bitmap? {
+    val drawable = ContextCompat.getDrawable(this, drawableId) ?: return null
+    val bitmap = Bitmap.createBitmap(
+        drawable.intrinsicWidth,
+        drawable.intrinsicHeight,
+        Bitmap.Config.ARGB_8888
+    )
+
+    val canvas = Canvas(bitmap)
+    drawable.setBounds(0, 0, canvas.width, canvas.height)
+    drawable.draw(canvas)
+    return bitmap
 }
