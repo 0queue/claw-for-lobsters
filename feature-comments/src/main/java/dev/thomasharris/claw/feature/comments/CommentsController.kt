@@ -74,7 +74,7 @@ class CommentsController constructor(args: Bundle) : LifecycleController(args) {
             component.commentRepository().liveComments(shortId).collect { (story, tags, comments) ->
                 val head = CommentsItem.Header(story, tags)
                 val tail = comments.map { CommentsItem.Comment(it) }
-                listAdapter.submitList(listOf(head) + tail)
+                listAdapter.submitList(listOf(head) + tail + CommentsItem.Spacer)
             }
         }
 
