@@ -74,7 +74,11 @@ class CommentsController constructor(args: Bundle) : LifecycleController(args) {
     @FlowPreview
     @ExperimentalCoroutinesApi
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
-        val root = inflater.inflate(R.layout.comments, container, false)
+        val root = inflater.inflate(
+            R.layout.comments,
+            container,
+            false
+        ) as TouchInterceptingCoordinatorLayout
 
         swipeRefreshLayout = root.findViewById(R.id.comments_swipe_refresh)
         recycler = root.findViewById(R.id.comments_recycler)
@@ -95,6 +99,10 @@ class CommentsController constructor(args: Bundle) : LifecycleController(args) {
             setOnScrollChangeListener { v, _, _, _, _ ->
                 appBarLayout.isSelected = v.canScrollVertically(-1)
             }
+        }
+
+        root.listener = CommentsTouchListener(root.context) {
+            router.popCurrentController()
         }
 
         lifecycleScope.launch {

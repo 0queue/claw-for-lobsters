@@ -35,6 +35,8 @@ sealed class Destination {
             )
 
             return RouterTransaction.with(controller as Controller)
+                .popChangeHandler(SlideChangeHandler(200)) // TODO magic number
+                .pushChangeHandler(SlideChangeHandler(200))
         }
     }
 }

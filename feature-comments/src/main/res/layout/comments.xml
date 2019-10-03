@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<dev.thomasharris.claw.feature.comments.TouchInterceptingCoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/comments_coordinator"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="?colorSurface"
+    android:elevation="4dp">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/comments_app_bar_layout"
@@ -68,4 +70,4 @@
             android:text="@string/reload_label" />
     </LinearLayout>
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</dev.thomasharris.claw.feature.comments.TouchInterceptingCoordinatorLayout>
