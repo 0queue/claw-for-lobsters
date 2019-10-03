@@ -6,6 +6,7 @@ import android.text.Spannable
 import android.text.SpannableString
 import android.text.SpannableStringBuilder
 import android.text.TextUtils
+import android.text.method.LinkMovementMethod
 import android.text.style.StyleSpan
 import android.util.TypedValue
 import android.view.LayoutInflater
@@ -98,10 +99,13 @@ class StoryViewHolder private constructor(private val root: View) : RecyclerView
 
         val shouldShowDescription = !isCompact && story.description.isNotBlank()
         description.visibility = if (shouldShowDescription) View.VISIBLE else View.GONE
-        if (shouldShowDescription) description.text = HtmlCompat.fromHtml(
-            story.description,
-            HtmlCompat.FROM_HTML_MODE_LEGACY
-        ).trimEnd()
+        if (shouldShowDescription) {
+            description.text = HtmlCompat.fromHtml(
+                story.description,
+                HtmlCompat.FROM_HTML_MODE_LEGACY
+            ).trimEnd()
+            description.movementMethod = LinkMovementMethod.getInstance()
+        }
     }
 
     companion object {

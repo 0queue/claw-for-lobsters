@@ -2,6 +2,7 @@ package dev.thomasharris.claw.feature.comments
 
 import android.annotation.SuppressLint
 import android.content.res.ColorStateList
+import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,7 +15,7 @@ import dev.thomasharris.claw.core.ext.dipToPx
 import dev.thomasharris.claw.core.ext.postedAgo
 import dev.thomasharris.claw.core.ext.toString
 import dev.thomasharris.claw.lib.lobsters.CommentModel
-import java.util.*
+import java.util.Date
 import kotlin.math.min
 
 class CommentViewHolder private constructor(
@@ -51,6 +52,7 @@ class CommentViewHolder private constructor(
         author.text = "${comment.username} $action ${t.toString(root.context)}"
 
         body.text = HtmlCompat.fromHtml(comment.comment, HtmlCompat.FROM_HTML_MODE_LEGACY).trimEnd()
+        body.movementMethod = LinkMovementMethod.getInstance()
     }
 
     companion object {

@@ -47,6 +47,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+        android:textIsSelectable="true"
         android:visibility="gone"
         tools:text="Example body text"
         tools:visibility="visible" />
