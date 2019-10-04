@@ -55,7 +55,7 @@ class CommentsController constructor(args: Bundle) : LifecycleController(args) {
         lifecycle.addObserver(it)
     }
 
-    private val listAdapter = CommentsAdapter { _, url ->
+    private val listAdapter = CommentsAdapter({ _, url ->
         // TODO eventually fallback to web view
         CustomTabsIntent.Builder(customTabLifecycleHelper.session).apply {
             // TODO the drawable has some built in transparency, should probably
@@ -69,7 +69,7 @@ class CommentsController constructor(args: Bundle) : LifecycleController(args) {
                 setExitAnimations(it, R.anim.nothing, R.anim.slide_out_to_right)
             }
         }.build().launchUrl(activity, Uri.parse(url))
-    }
+    }, { component.commentRepository().toggleCollapseComment(it) })
 
     @FlowPreview
     @ExperimentalCoroutinesApi
@@ -106,11 +106,12 @@ class CommentsController constructor(args: Bundle) : LifecycleController(args) {
         }
 
         lifecycleScope.launch {
-            component.commentRepository().liveComments(shortId).collect { (story, tags, comments) ->
-                val head = CommentsItem.Header(story, tags)
-                val tail = comments.map { CommentsItem.Comment(it) }
-                listAdapter.submitList(listOf(head) + tail + CommentsItem.Spacer)
-            }
+            component.commentRepository().liveVisibleComments(shortId)
+                .collect { (story, tags, comments) ->
+                    val head = CommentsItem.Header(story, tags)
+                    val tail = comments.map { CommentsItem.Comment(it) }
+                    listAdapter.submitList(listOf(head) + tail + CommentsItem.Spacer)
+                }
         }
 
         lifecycleScope.launch {

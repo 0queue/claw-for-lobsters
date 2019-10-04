@@ -13,7 +13,7 @@ import kotlin.math.max
 
 
 private const val TRANSLATION_SCALAR = 1.75f
-private const val THRESHOLD_PERCENT = .35f
+private const val THRESHOLD_PERCENT = .30f
 private const val MAX_SWIPE_ANGLE = 15f // degrees
 
 class CommentsTouchListener(context: Context, private val onThreshold: () -> Unit) :

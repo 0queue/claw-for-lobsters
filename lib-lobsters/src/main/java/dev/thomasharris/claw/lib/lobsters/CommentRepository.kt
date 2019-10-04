@@ -10,7 +10,7 @@ import kotlinx.coroutines.channels.Channel.Factory.CONFLATED
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.combine
-import java.util.*
+import java.util.Date
 import java.util.concurrent.Executor
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -31,10 +31,10 @@ class CommentRepository @Inject constructor(
     fun liveStatus() = statusChannel.asFlow()
 
     @ExperimentalCoroutinesApi
-    fun liveComments(storyId: String): Flow<Triple<StoryModel, List<TagModel>, List<CommentModel>>> {
+    fun liveVisibleComments(storyId: String): Flow<Triple<StoryModel, List<TagModel>, List<CommentModel>>> {
         val story = lobstersQueries.getStoryModel(storyId).asFlow().mapToOne()
         val tags = lobstersQueries.getTagModels().asFlow().mapToList()
-        val comments = lobstersQueries.getCommentModels(storyId).asFlow().mapToList()
+        val comments = lobstersQueries.getVisibleCommentModels(storyId).asFlow().mapToList()
 
         return story.combine(tags) { s, ts ->
             s to s.tags.mapNotNull { tag -> ts.find { it.tag == tag } }
@@ -78,6 +78,21 @@ class CommentRepository @Inject constructor(
             statusChannel.offer(LoadingStatus.DONE)
         }
     }
+
+    fun toggleCollapseComment(commentId: String) = background.execute {
+        lobstersQueries.transaction {
+            val status = lobstersQueries.getCommentStatus(commentId).executeAsOne()
+            val shouldBeVisible = (status != CommentStatus.VISIBLE)
+            lobstersQueries.setStatus(
+                status = if (shouldBeVisible) CommentStatus.VISIBLE else CommentStatus.COLLAPSED,
+                shortId = commentId
+            )
+            lobstersQueries.setChildrenStatus(
+                status = if (shouldBeVisible) CommentStatus.VISIBLE else CommentStatus.GONE,
+                commentId = commentId
+            )
+        }
+    }
 }
 
 fun CommentNetworkEntity.toDB(
@@ -99,7 +114,8 @@ fun CommentNetworkEntity.toDB(
     comment,
     indentLevel,
     commentingUser.username,
-    insertedAt
+    insertedAt,
+    CommentStatus.VISIBLE
 )
 
 fun Date.isOld(): Boolean {

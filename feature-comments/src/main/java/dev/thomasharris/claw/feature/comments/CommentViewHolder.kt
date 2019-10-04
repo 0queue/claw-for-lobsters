@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -15,7 +16,9 @@ import dev.thomasharris.claw.core.ext.dipToPx
 import dev.thomasharris.claw.core.ext.postedAgo
 import dev.thomasharris.claw.core.ext.toString
 import dev.thomasharris.claw.lib.lobsters.CommentModel
+import dev.thomasharris.claw.lib.lobsters.CommentStatus
 import java.util.Date
+import java.util.Locale
 import kotlin.math.min
 
 class CommentViewHolder private constructor(
@@ -25,11 +28,13 @@ class CommentViewHolder private constructor(
     private val avatar: ImageView = root.findViewById(R.id.comment_avatar)
     private val author: TextView = root.findViewById(R.id.comment_author)
     private val body: TextView = root.findViewById(R.id.comment_body)
+    private val collapsedIndicator: ImageView = root.findViewById(R.id.comment_collapsed_indicator)
+    private val childCount: TextView = root.findViewById(R.id.comment_child_count)
 
     private val colors = root.context.resources.getIntArray(R.array.indentation_colors).toList()
 
     @SuppressLint("SetTextI18n")
-    fun bind(comment: CommentModel, position: Int) {
+    fun bind(comment: CommentModel, position: Int, onClick: (String) -> Unit) {
         marker.backgroundTintList =
             ColorStateList.valueOf(colors[(comment.indentLevel - 1) % colors.size])
 
@@ -38,7 +43,7 @@ class CommentViewHolder private constructor(
         } ?: marker.layoutParams
 
         root.layoutParams = (root.layoutParams as? ViewGroup.MarginLayoutParams)?.apply {
-            topMargin = (if (position != 1 && comment.indentLevel == 1) 16f else 0f)
+            topMargin = (if (position != 1 && comment.indentLevel == 1) 12f else 0f)
                 .dipToPx(root.context).toInt()
         } ?: root.layoutParams
 
@@ -53,6 +58,25 @@ class CommentViewHolder private constructor(
 
         body.text = HtmlCompat.fromHtml(comment.comment, HtmlCompat.FROM_HTML_MODE_LEGACY).trimEnd()
         body.movementMethod = LinkMovementMethod.getInstance()
+
+        val isCollapsed = comment.status == CommentStatus.COLLAPSED
+
+        val indicator = if (isCollapsed)
+            R.drawable.ic_arrow_drop_down_black_24dp
+        else
+            R.drawable.ic_arrow_drop_up_black_24dp
+
+        collapsedIndicator.background =
+            ContextCompat.getDrawable(collapsedIndicator.context, indicator)
+
+        body.visibility = if (isCollapsed) View.GONE else View.VISIBLE
+
+        childCount.visibility = if (isCollapsed && comment.childCount > 0) View.VISIBLE else View.GONE
+        childCount.text = String.format(Locale.US, "%d", comment.childCount)
+
+        root.setOnClickListener {
+            onClick(comment.shortId)
+        }
     }
 
     companion object {

@@ -1,5 +1,6 @@
 import java.util.Date;
 import kotlin.collections.List;
+import dev.thomasharris.claw.lib.lobsters.CommentStatus;
 
 CREATE TABLE story (
     shortId TEXT NOT NULL UNIQUE PRIMARY KEY,
@@ -55,7 +56,8 @@ CREATE TABLE comment (
     comment TEXT NOT NULL,
     indentLevel INTEGER as Int NOT NULL,
     username TEXT NOT NULL,
-    insertedAt INTEGER as Date NOT NULL
+    insertedAt INTEGER as Date NOT NULL,
+    status INTEGER as CommentStatus NOT NULL
 );
 
 CREATE VIEW storyModel AS
@@ -85,22 +87,45 @@ FROM tag;
 
 CREATE VIEW commentModel AS
 SELECT
-    comment.shortId,
-    comment.storyId,
-    comment.commentIndex,
-    comment.createdAt,
-    comment.updatedAt,
-    comment.isDeleted,
-    comment.isModerated,
-    comment.score,
-    comment.comment,
-    comment.indentLevel,
-    comment.username,
-    comment.insertedAt,
-    user.avatarShortUrl
-FROM comment
-LEFT JOIN user ON comment.username = user.username;
-
+    c.shortId,
+    c.storyId,
+    c.commentIndex,
+    c.createdAt,
+    c.updatedAt,
+    c.isDeleted,
+    c.isModerated,
+    c.score,
+    c.comment,
+    c.indentLevel,
+    c.username,
+    c.insertedAt,
+    user.avatarShortUrl,
+    c.status,
+    -- haha yes
+    (
+        WITH comments AS (
+            SELECT shortId, commentIndex, indentLevel
+            FROM comment
+            WHERE comment.storyId = c.storyId
+        ), tail AS (
+            SELECT commentIndex, indentLevel
+            FROM comments
+            WHERE comments.commentIndex > c.commentIndex
+        ), next AS (
+            SELECT commentIndex
+            FROM tail
+            WHERE tail.indentLevel <= c.indentLevel
+            LIMIT 1
+        ), children AS (
+            SELECT comments.shortId
+            FROM comments, next
+            WHERE comments.commentIndex > c.commentIndex
+                AND comments.commentIndex < next.commentIndex
+        )
+        SELECT count(*) FROM children
+    ) childCount
+FROM comment c
+LEFT JOIN user ON c.username = user.username;
 
 -- Story methods
 insertStory:
@@ -140,3 +165,28 @@ INSERT OR REPLACE INTO comment VALUES ?;
 
 getCommentModels:
 SELECT * FROM commentModel WHERE storyId = :storyId ORDER BY commentIndex;
+
+getVisibleCommentModels:
+SELECT * FROM commentModel WHERE storyId = :storyId AND status < 2 ORDER BY commentIndex;
+
+setStatus:
+UPDATE comment SET status = :status WHERE shortId = :shortId;
+
+getCommentStatus:
+SELECT status FROM comment WHERE shortId = :shortId;
+
+setChildrenStatus:
+WITH parent AS (
+    SELECT storyId, commentIndex, indentLevel FROM commentModel WHERE shortId = :commentId
+), comments AS (
+    SELECT commentModel.shortId, commentModel.commentIndex, commentModel.indentLevel, commentModel.status
+    FROM commentModel, parent
+    WHERE commentModel.storyId = parent.storyId
+    ORDER BY commentModel.commentIndex
+), tail AS (
+    SELECT comments.commentIndex, comments.indentLevel FROM comments, parent WHERE comments.commentIndex > parent.commentIndex
+), next AS (
+    SELECT tail.commentIndex FROM tail, parent WHERE tail.indentLevel <= parent.indentLevel LIMIT 1
+), children AS (
+    SELECT comments.shortId FROM comments, parent, next WHERE comments.commentIndex > parent.commentIndex AND comments.commentIndex < next.commentIndex
+) UPDATE comment SET status = :status WHERE shortId IN (SELECT shortId FROM children);

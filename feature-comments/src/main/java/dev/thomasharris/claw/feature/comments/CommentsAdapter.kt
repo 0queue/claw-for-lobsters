@@ -22,7 +22,10 @@ sealed class CommentsItem {
 }
 
 
-class CommentsAdapter(private val onClick: (String, String) -> Unit) : ListAdapter<CommentsItem, RecyclerView.ViewHolder>(DIFF) {
+class CommentsAdapter(
+    private val onHeaderClick: (String, String) -> Unit,
+    private val onCommentClick: (String) -> Unit
+) : ListAdapter<CommentsItem, RecyclerView.ViewHolder>(DIFF) {
     override fun getItemViewType(position: Int) = when (getItem(position)) {
         is CommentsItem.Header -> VIEW_TYPE_HEADER
         is CommentsItem.Comment -> VIEW_TYPE_COMMENT
@@ -39,12 +42,17 @@ class CommentsAdapter(private val onClick: (String, String) -> Unit) : ListAdapt
         when (holder.itemViewType) {
             VIEW_TYPE_HEADER -> {
                 val (story, tags) = getItem(position) as CommentsItem.Header
-                val listener = if (story.url.isNotBlank()) onClick else null
-                (holder as StoryViewHolder).bind(story, tags, isCompact = false, onClickListener = listener)
+                val listener = if (story.url.isNotBlank()) onHeaderClick else null
+                (holder as StoryViewHolder).bind(
+                    story,
+                    tags,
+                    isCompact = false,
+                    onClickListener = listener
+                )
             }
             VIEW_TYPE_COMMENT -> {
                 val comment = getItem(position) as CommentsItem.Comment
-                (holder as CommentViewHolder).bind(comment.commentView, position)
+                (holder as CommentViewHolder).bind(comment.commentView, position, onCommentClick)
             }
         }
     }

@@ -5,10 +5,10 @@
     android:layout_height="wrap_content"
     android:layout_marginLeft="8dp"
     android:layout_marginRight="8dp"
-    android:layout_marginBottom="8dp"
+    android:layout_marginBottom="4dp"
+    android:background="@drawable/background_ripple"
     android:orientation="horizontal"
-    android:paddingStart="8dp"
-    android:paddingEnd="8dp">
+    android:padding="4dp">
 
     <View
         android:id="@+id/comment_marker"
@@ -28,8 +28,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
-            android:orientation="horizontal"
-            tools:ignore="UseCompoundDrawables">
+            android:orientation="horizontal">
 
             <ImageView
                 android:id="@+id/comment_avatar"
@@ -41,10 +40,24 @@
 
             <TextView
                 android:id="@+id/comment_author"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
                 tools:text="online_username 2 hours ago" />
+
+            <TextView
+                android:id="@+id/comment_child_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Caption" />
+
+            <ImageView
+                android:id="@+id/comment_collapsed_indicator"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:background="@drawable/ic_arrow_drop_up_black_24dp"
+                android:contentDescription="@string/collapsed_indicator_content_description" />
         </LinearLayout>
 
         <TextView

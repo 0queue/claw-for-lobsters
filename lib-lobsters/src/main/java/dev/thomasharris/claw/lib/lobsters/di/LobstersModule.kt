@@ -7,10 +7,15 @@ import com.squareup.sqldelight.ColumnAdapter
 import com.squareup.sqldelight.android.AndroidSqliteDriver
 import dagger.Module
 import dagger.Provides
-import dev.thomasharris.claw.lib.lobsters.*
+import dev.thomasharris.claw.lib.lobsters.Comment
+import dev.thomasharris.claw.lib.lobsters.CommentStatus
+import dev.thomasharris.claw.lib.lobsters.Database
+import dev.thomasharris.claw.lib.lobsters.LobstersService
+import dev.thomasharris.claw.lib.lobsters.Story
+import dev.thomasharris.claw.lib.lobsters.User
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
-import java.util.*
+import java.util.Date
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 import javax.inject.Singleton
@@ -42,6 +47,16 @@ class LobstersModule(private val context: Context) {
             }
         }
 
+        val statusAdapter = object : ColumnAdapter<CommentStatus, Long> {
+            override fun decode(databaseValue: Long): CommentStatus {
+                return CommentStatus.values()[databaseValue.toInt()]
+            }
+
+            override fun encode(value: CommentStatus): Long {
+                return value.ordinal.toLong()
+            }
+        }
+
         return Database(
             driver = AndroidSqliteDriver(Database.Schema, context, "claw.db"),
             storyAdapter = Story.Adapter(
@@ -62,7 +77,8 @@ class LobstersModule(private val context: Context) {
             commentAdapter = Comment.Adapter(
                 createdAtAdapter = dateAdapter,
                 updatedAtAdapter = dateAdapter,
-                insertedAtAdapter = dateAdapter
+                insertedAtAdapter = dateAdapter,
+                statusAdapter = statusAdapter
             )
         )
     }
