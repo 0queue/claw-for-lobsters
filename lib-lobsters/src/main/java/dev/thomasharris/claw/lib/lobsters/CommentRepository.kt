@@ -49,10 +49,12 @@ class CommentRepository @Inject constructor(
             val storyDb = lobstersQueries.getStory(storyId).executeAsOne()
 
             val shouldRefresh = if (force) true else {
-                val comments = lobstersQueries.getCommentModels(storyId).executeAsList()
-                storyDb.insertedAt.isOld() || (comments.minBy {
-                    it.insertedAt.time
-                }?.insertedAt?.isOld() ?: true)
+
+                val oldestComment = lobstersQueries.getOldestComment(storyId).executeAsOne()
+
+                storyDb.insertedAt.isOld() || oldestComment.min?.let {
+                    Date(it).isOld()
+                } ?: true
             }
 
             if (!shouldRefresh) {

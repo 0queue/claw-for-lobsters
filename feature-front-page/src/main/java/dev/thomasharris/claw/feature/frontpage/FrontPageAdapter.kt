@@ -51,9 +51,6 @@ class FrontPageAdapter(private val onClick: (String, String) -> Unit) :
         override fun areContentsTheSame(oldItem: FrontPageItem, newItem: FrontPageItem): Boolean {
             (oldItem as? FrontPageItem.Story)?.let { old ->
                 (newItem as? FrontPageItem.Story)?.let { new ->
-                    // TODO does this equality check work?
-                    //  or after refactoring to use observation
-                    //  will it not matter?
                     return old == new
                 }
             }

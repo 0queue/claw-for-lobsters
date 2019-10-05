@@ -63,15 +63,12 @@ object DIFF : DiffUtil.ItemCallback<CommentsItem>() {
     override fun areContentsTheSame(oldItem: CommentsItem, newItem: CommentsItem): Boolean {
         (oldItem as? CommentsItem.Header)?.let { old ->
             (newItem as? CommentsItem.Header)?.let { new ->
-                // TODO is probably not working correctly
-                //  probably should cast to the Impl
                 return old == new
             }
         }
 
         (oldItem as? CommentsItem.Comment)?.let { old ->
             (newItem as? CommentsItem.Comment)?.let { new ->
-                // TODO is probably not working correctly
                 return old == new
             }
         }

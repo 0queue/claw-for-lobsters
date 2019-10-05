@@ -73,7 +73,6 @@ SELECT
     story.tags,
     story.pageIndex,
     story.pageSubIndex,
-    story.insertedAt,
     story.description
 FROM story
 JOIN user ON story.username = user.username
@@ -98,7 +97,6 @@ SELECT
     c.comment,
     c.indentLevel,
     c.username,
-    c.insertedAt,
     user.avatarShortUrl,
     c.status,
     -- haha yes
@@ -134,6 +132,9 @@ INSERT OR REPLACE INTO story VALUES ?;
 getPage:
 SELECT * FROM storyModel WHERE pageIndex = :pageIndex ORDER BY pageIndex, pageSubIndex;
 
+getOldestStory:
+SELECT min(insertedAt) FROM story WHERE pageIndex = :pageIndex;
+
 getStoryModel:
 SELECT * FROM storyModel WHERE shortId = :shortId;
 
@@ -163,8 +164,8 @@ SELECT * FROM tagModel;
 insertComment:
 INSERT OR REPLACE INTO comment VALUES ?;
 
-getCommentModels:
-SELECT * FROM commentModel WHERE storyId = :storyId ORDER BY commentIndex;
+getOldestComment:
+SELECT min(insertedAt) FROM comment WHERE storyId = :storyId;
 
 getVisibleCommentModels:
 SELECT * FROM commentModel WHERE storyId = :storyId AND status < 2 ORDER BY commentIndex;

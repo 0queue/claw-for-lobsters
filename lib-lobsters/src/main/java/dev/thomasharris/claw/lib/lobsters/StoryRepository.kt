@@ -1,7 +1,6 @@
 package dev.thomasharris.claw.lib.lobsters
 
 import java.util.Date
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 
@@ -14,11 +13,10 @@ class StoryRepository @Inject constructor(
         // check db
         val dbPage = lobstersQueries.getPage(index).executeAsList()
 
+        val oldestDate = lobstersQueries.getOldestStory(index).executeAsOne()
         // should refresh?
-        val isOld: Boolean? = dbPage.minBy {
-            it.insertedAt.time
-        }?.insertedAt?.let {
-            TimeUnit.MILLISECONDS.toMinutes(Date().time - it.time) >= 60
+        val isOld: Boolean? = oldestDate.min?.let {
+            Date(it).isOld()
         }
 
         if (dbPage.isNotEmpty() && isOld == false)
