@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.Toolbar
+import androidx.browser.customtabs.CustomTabsClient
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
@@ -49,20 +50,16 @@ class CommentsController constructor(args: Bundle) : LifecycleController(args) {
     private lateinit var errorView: View
     private lateinit var errorReload: MaterialButton
 
-    private val customTabLifecycleHelper = CustomTabLifecycleHelper(url) {
-        activity!! // called in onStart, should be safe
-    }.also {
-        lifecycle.addObserver(it)
-    }
-
     private val listAdapter = CommentsAdapter({ _, url ->
         // TODO eventually fallback to web view
-        CustomTabsIntent.Builder(customTabLifecycleHelper.session).apply {
+        CustomTabsIntent.Builder().apply {
             // TODO the drawable has some built in transparency, should probably
             //  tweak somehow for future night mode/get proper transparency values
             activity?.bitmapFromVector(R.drawable.ic_arrow_back_black_24dp)?.let {
                 setCloseButtonIcon(it)
             }
+
+            setShowTitle(true)
 
             activity?.let {
                 setStartAnimations(it, R.anim.slide_in_from_right, R.anim.nothing)
@@ -99,6 +96,13 @@ class CommentsController constructor(args: Bundle) : LifecycleController(args) {
             setOnScrollChangeListener { v, _, _, _, _ ->
                 appBarLayout.isSelected = v.canScrollVertically(-1)
             }
+            addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
+                override fun onViewDetachedFromWindow(v: View?) {
+                    recycler.adapter = null
+                }
+
+                override fun onViewAttachedToWindow(v: View?) = Unit
+            })
         }
 
         root.listener = CommentsTouchListener(root.context) {
@@ -135,6 +139,7 @@ class CommentsController constructor(args: Bundle) : LifecycleController(args) {
             component.commentRepository().refresh(shortId, true)
         }
 
+        CustomTabsClient.connectAndInitialize(activity, "com.android.chrome")
         return root
     }
 }

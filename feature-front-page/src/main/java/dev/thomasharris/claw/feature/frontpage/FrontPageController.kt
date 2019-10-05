@@ -73,6 +73,14 @@ class FrontPageController : LifecycleController() {
             setOnScrollChangeListener { v, _, _, _, _ ->
                 appBarLayout.isSelected = v.canScrollVertically(-1)
             }
+            addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
+                override fun onViewDetachedFromWindow(v: View?) {
+                    // listAdapter outlives recycler, so make sure to detach it
+                    recycler.adapter = null
+                }
+
+                override fun onViewAttachedToWindow(v: View?) = Unit
+            })
         }
 
         (activity as AppCompatActivity?)?.apply {
