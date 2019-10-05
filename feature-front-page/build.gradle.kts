@@ -1,5 +1,5 @@
+import dev.thomasharris.build.coil
 import dev.thomasharris.build.conductor
-import dev.thomasharris.build.glide
 import dev.thomasharris.build.material
 import dev.thomasharris.build.testing
 
@@ -11,7 +11,7 @@ dependencies {
     testing()
     conductor()
     material()
-    glide()
+    coil()
 
     implementation(project(":core"))
 

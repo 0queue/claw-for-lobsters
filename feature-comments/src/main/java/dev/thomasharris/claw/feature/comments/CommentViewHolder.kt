@@ -11,7 +11,8 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
+import coil.api.load
+import coil.transform.CircleCropTransformation
 import dev.thomasharris.claw.core.ext.dipToPx
 import dev.thomasharris.claw.core.ext.postedAgo
 import dev.thomasharris.claw.core.ext.toString
@@ -47,10 +48,11 @@ class CommentViewHolder private constructor(
                 .dipToPx(root.context).toInt()
         } ?: root.layoutParams
 
-        Glide.with(root)
-            .load("https://lobste.rs/${comment.avatarShortUrl}")
-            .circleCrop()
-            .into(avatar)
+        avatar.load("https://lobste.rs/${comment.avatarShortUrl}") {
+            crossfade(true)
+            placeholder(R.drawable.ic_person_black_24dp)
+            transformations(CircleCropTransformation())
+        }
 
         val t = Date(min(comment.createdAt.time, comment.updatedAt.time)).postedAgo()
         val action = if (comment.createdAt != comment.updatedAt) " edited" else ""
@@ -71,7 +73,8 @@ class CommentViewHolder private constructor(
 
         body.visibility = if (isCollapsed) View.GONE else View.VISIBLE
 
-        childCount.visibility = if (isCollapsed && comment.childCount > 0) View.VISIBLE else View.GONE
+        childCount.visibility =
+            if (isCollapsed && comment.childCount > 0) View.VISIBLE else View.GONE
         childCount.text = String.format(Locale.US, "%d", comment.childCount)
 
         root.setOnClickListener {

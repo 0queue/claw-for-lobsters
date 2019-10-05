@@ -16,7 +16,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.text.HtmlCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
+import coil.api.load
+import coil.transform.CircleCropTransformation
 import dev.thomasharris.claw.core.R
 import dev.thomasharris.claw.core.ext.postedAgo
 import dev.thomasharris.claw.core.ext.shortUrl
@@ -37,10 +38,11 @@ class StoryViewHolder private constructor(private val root: View) : RecyclerView
         isCompact: Boolean = true,
         onClickListener: ((String, String) -> Unit)? = null
     ) {
-        Glide.with(context)
-            .load("https://lobste.rs/${story.avatarShortUrl}")
-            .circleCrop()
-            .into(avatar)
+        avatar.load("https://lobste.rs/${story.avatarShortUrl}") {
+            crossfade(true)
+            placeholder(R.drawable.ic_person_black_24dp)
+            transformations(CircleCropTransformation())
+        }
 
         title.text = SpannableStringBuilder().apply {
             append(story.title)
