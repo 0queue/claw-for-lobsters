@@ -12,7 +12,7 @@ import kotlin.math.atan2
 import kotlin.math.max
 
 
-private const val TRANSLATION_SCALAR = 1.75f
+private const val TRANSLATION_SCALAR = 1.50f
 private const val THRESHOLD_PERCENT = .30f
 private const val MAX_SWIPE_ANGLE = 15f // degrees
 
@@ -23,6 +23,8 @@ class CommentsTouchListener(context: Context, private val onThreshold: () -> Uni
     private var startY = 0f
     private var startTranslationX = 0f // for "catching" the recyclerview
     private var objectAnimator: ObjectAnimator? = null
+    private var lastX = 0f
+    private var movingRight = false
 
     private val gestureDetector =
         GestureDetector(context, object : GestureDetector.SimpleOnGestureListener() {
@@ -38,7 +40,7 @@ class CommentsTouchListener(context: Context, private val onThreshold: () -> Uni
                     return false
 
                 val angle = atan2(e1.rawY - e2.rawY, e2.rawX - e1.rawX) * (180f / PI)
-                if (abs(angle) < MAX_SWIPE_ANGLE) {
+                if (abs(angle) < MAX_SWIPE_ANGLE && velocityX > 1000) {
                     onThreshold()
                     return true
                 }
@@ -77,6 +79,8 @@ class CommentsTouchListener(context: Context, private val onThreshold: () -> Uni
                 (startTranslationX + (event.rawX - startX) / TRANSLATION_SCALAR).let {
                     view.translationX = max(it, 0f)
                 }
+                movingRight = event.rawX - lastX > 0
+                lastX = event.rawX
                 return true
             }
             MotionEvent.ACTION_UP -> {
@@ -86,7 +90,7 @@ class CommentsTouchListener(context: Context, private val onThreshold: () -> Uni
                 //
                 // presumably because no one else consumes it?
 
-                if (view.translationX > view.width * THRESHOLD_PERCENT)
+                if (view.translationX > view.width * THRESHOLD_PERCENT && movingRight)
                     onThreshold()
                 else if (view.translationX > 0) objectAnimator =
                     ObjectAnimator.ofFloat(view, "translationX", 0f).apply {
