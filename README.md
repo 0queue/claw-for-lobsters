@@ -10,7 +10,7 @@ low number of features, and only two real library modules (:core, :lib-lobsters)
 
 In any case, the structure as of the beginning of October 2019 is:
 
-
+```
      +--> :feature-front-page
      |                   |
      |                   V       +---> :lib-lobsters (api)
@@ -18,7 +18,8 @@ In any case, the structure as of the beginning of October 2019 is:
      |                   ^       +---> :lib-navigation (api)
      |                   |       
      +--> :feature-comments
-     
+```
+
 Where :app is pretty much empty except for the manifest,
 features contain Conductor controllers, :core contains
 Android pieces that are useful in all (both) features,
