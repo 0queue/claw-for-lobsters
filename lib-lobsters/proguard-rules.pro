@@ -1,0 +1,2 @@
+-keep class dev.thomasharris.claw.lib.lobsters.StoryRepositoryKt { *; }
+-keep class dev.thomasharris.claw.lib.lobsters.UserNetworkEntity { *; }

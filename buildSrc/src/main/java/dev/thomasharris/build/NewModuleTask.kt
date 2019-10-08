@@ -77,5 +77,11 @@ open class NewModuleTask : DefaultTask() {
         }
 
         File(project.rootDir, "settings.gradle.kts").appendText("\ninclude(\":$moduleName\")")
+
+        // create proguard-rules.pro
+        with (File(project.rootDir, "proguard-rules.pro")){
+            createNewFile()
+            appendText("# -dontobfuscate")
+        }
     }
 }

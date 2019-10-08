@@ -3,7 +3,6 @@ package dev.thomasharris.claw.lib.navigator
 import androidx.core.os.bundleOf
 import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.RouterTransaction
-import kotlin.reflect.full.primaryConstructor
 
 interface Navigator {
     fun goto(routerTransaction: RouterTransaction)
@@ -27,7 +26,8 @@ sealed class Destination {
             val clazz =
                 Class.forName("dev.thomasharris.claw.feature.comments.CommentsController")
 
-            val controller = clazz.kotlin.primaryConstructor!!.call(
+            // the normal java reflection seems to work better
+            val controller = clazz.constructors[0].newInstance(
                 bundleOf(
                     "shortId" to shortId,
                     "url" to url

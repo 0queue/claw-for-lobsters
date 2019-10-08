@@ -5,6 +5,8 @@ plugins {
     id("com.squareup.sqldelight")
 }
 
+android.buildTypes.getByName("release").consumerProguardFile("proguard-rules.pro")
+
 dependencies {
     testing()
 

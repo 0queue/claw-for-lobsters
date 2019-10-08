@@ -1,11 +1,14 @@
 package dev.thomasharris.build
 
+import com.android.build.gradle.AppExtension
 import com.android.build.gradle.BaseExtension
+import com.android.build.gradle.LibraryExtension
 import com.android.build.gradle.api.AndroidBasePlugin
 import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.dsl.DependencyHandler
+import org.gradle.kotlin.dsl.findByType
 import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.plugin.KaptExtension
@@ -49,46 +52,57 @@ open class ClawAndroidPlugin : Plugin<Project> {
 
 internal fun Project.hasAndroid() = plugins.any { it is AndroidBasePlugin }
 
-internal fun Project.configureAndroid() = this.extensions.getByType<BaseExtension>().run {
-    compileSdkVersion(29)
-    defaultConfig {
-        minSdkVersion(23)
-        targetSdkVersion(29)
-        versionCode = 1
-        versionName = "1.0"
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-    }
-
-    signingConfigs {
-        create("release") {
-            val props = Properties().apply {
-                load(rootProject.file("keystore.properties").inputStream())
-            }
-            // fine with this all crashing if the types are wrong
-            storeFile = rootProject.file(props["storeFile"]!!)
-            storePassword = props["storePassword"] as String
-            keyAlias = props["keyAlias"] as String
-            keyPassword = props["keyPassword"] as String
+internal fun Project.configureAndroid() {
+    extensions.getByType<BaseExtension>().run {
+        compileSdkVersion(29)
+        defaultConfig {
+            minSdkVersion(23)
+            targetSdkVersion(29)
+            versionCode = 1
+            versionName = "1.0"
+            testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         }
+
+        signingConfigs {
+            create("release") {
+                val props = Properties().apply {
+                    load(rootProject.file("keystore.properties").inputStream())
+                }
+                // fine with this all crashing if the types are wrong
+                storeFile = rootProject.file(props["storeFile"]!!)
+                storePassword = props["storePassword"] as String
+                keyAlias = props["keyAlias"] as String
+                keyPassword = props["keyPassword"] as String
+            }
+        }
+
+        buildTypes {
+            getByName("release") {
+                signingConfig = signingConfigs.getByName("release")
+                isMinifyEnabled = true
+            }
+        }
+
+        compileOptions {
+            sourceCompatibility = JavaVersion.VERSION_1_8
+            targetCompatibility = JavaVersion.VERSION_1_8
+        }
+
+        dependencies.add("implementation", "androidx.core:core-ktx:1.1.0")
     }
 
-    buildTypes {
-        getByName("release") {
-            signingConfig = signingConfigs.getByName("release")
-            isMinifyEnabled = false
+    extensions.findByType<LibraryExtension>()?.run {
+        buildTypes.getByName("release").consumerProguardFile("proguard-rules.pro")
+    }
+
+    extensions.findByType<AppExtension>()?.run {
+        buildTypes.getByName("release") {
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
         }
     }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
-
-    dependencies.add("implementation", "androidx.core:core-ktx:1.1.0")
 }
 
 /**
@@ -103,7 +117,7 @@ internal fun Project.configureDependencies() {
 
     dependencies.run {
         add("implementation", "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.3.50")
-        add("implementation", "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.0")
+        add("implementation", "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.2")
         add("implementation", "com.google.dagger:dagger:2.22.1")
         add("kapt", "com.google.dagger:dagger-compiler:2.22.1")
     }

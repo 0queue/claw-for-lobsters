@@ -1,0 +1,1 @@
+-keep class dev.thomasharris.claw.lib.navigator.SlideChangeHandler { *; }

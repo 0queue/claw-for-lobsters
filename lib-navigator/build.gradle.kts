@@ -8,6 +8,4 @@ plugins {
 dependencies {
     testing()
     conductor()
-
-    implementation("org.jetbrains.kotlin:kotlin-reflect:1.3.50")
 }
