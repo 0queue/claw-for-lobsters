@@ -65,7 +65,7 @@ out/
 .gradle/
 gradle/
 */build/
-build/
+build/*
 
 # Local configuration file (sdk path, etc)
 local.properties
@@ -91,6 +91,7 @@ captures/
 
 # Keystore files
 *.jks
+keystore.properties
 
 # External native build folder generated in Android Studio 2.2 and later
 .externalNativeBuild
