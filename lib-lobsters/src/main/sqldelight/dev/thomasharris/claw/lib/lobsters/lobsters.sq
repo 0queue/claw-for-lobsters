@@ -185,9 +185,18 @@ WITH parent AS (
     WHERE commentModel.storyId = parent.storyId
     ORDER BY commentModel.commentIndex
 ), tail AS (
-    SELECT comments.commentIndex, comments.indentLevel FROM comments, parent WHERE comments.commentIndex > parent.commentIndex
+    SELECT comments.shortId, comments.commentIndex, comments.indentLevel
+    FROM comments, parent
+    WHERE comments.commentIndex > parent.commentIndex
 ), next AS (
-    SELECT tail.commentIndex FROM tail, parent WHERE tail.indentLevel <= parent.indentLevel LIMIT 1
+    SELECT tail.commentIndex
+    FROM tail, parent
+    WHERE tail.indentLevel <= parent.indentLevel LIMIT 1
+), hasNext AS (
+    SELECT count(*) c FROM next
 ), children AS (
-    SELECT comments.shortId FROM comments, parent, next WHERE comments.commentIndex > parent.commentIndex AND comments.commentIndex < next.commentIndex
+    SELECT tail.shortId
+    FROM tail, hasNext
+    LEFT JOIN next ON tail.commentIndex < next.commentIndex
+    WHERE (hasNext.c == 0 AND next.commentIndex IS NULL) OR (hasNext.c > 0 AND tail.commentIndex < next.commentIndex)
 ) UPDATE comment SET status = :status WHERE shortId IN (SELECT shortId FROM children);
