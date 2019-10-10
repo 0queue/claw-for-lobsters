@@ -4,8 +4,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.lifecycle.lifecycleScope
 import androidx.paging.PagedList
 import androidx.paging.toLiveData
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -14,10 +16,8 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.bluelinelabs.conductor.archlifecycle.LifecycleController
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.button.MaterialButton
-import dev.thomasharris.claw.core.ext.fade
 import dev.thomasharris.claw.core.ext.getComponent
 import dev.thomasharris.claw.core.ext.observe
-import dev.thomasharris.claw.core.ext.setScrollEnabled
 import dev.thomasharris.claw.feature.frontpage.di.DaggerFrontPageComponent
 import dev.thomasharris.claw.feature.frontpage.di.FrontPageComponent
 import dev.thomasharris.claw.feature.frontpage.di.FrontPageModule
@@ -25,6 +25,8 @@ import dev.thomasharris.claw.frontpage.feature.frontpage.R
 import dev.thomasharris.claw.lib.lobsters.LoadingStatus
 import dev.thomasharris.claw.lib.navigator.Destination
 import dev.thomasharris.claw.lib.navigator.goto
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 @Suppress("unused")
 class FrontPageController : LifecycleController() {
@@ -32,7 +34,7 @@ class FrontPageController : LifecycleController() {
     private val component by getComponent<FrontPageComponent> {
         DaggerFrontPageComponent.builder()
             .singletonComponent(it)
-            .frontPageModule(FrontPageModule())
+            .frontPageModule(FrontPageModule(lifecycleScope))
             .build()
     }
 
@@ -88,10 +90,19 @@ class FrontPageController : LifecycleController() {
             supportActionBar?.setDisplayShowTitleEnabled(false)
         }
 
-        component.storyDataSourceFactory().loadingStatus.observe(this) {
-            swipeRefreshLayout.isRefreshing = it == LoadingStatus.LOADING
-            errorView.fade(it == LoadingStatus.ERROR)
-            toolbar.setScrollEnabled(it != LoadingStatus.ERROR)
+        lifecycleScope.launch {
+            component.storyRepositoryStatus().collect { status ->
+                swipeRefreshLayout.isRefreshing = status.peek() == LoadingStatus.LOADING
+                status.consume {
+                    // TODO snack time, general UI improvements
+                    if (it == LoadingStatus.ERROR)
+                        Toast.makeText(
+                            activity,
+                            "Could not reach lobste.rs",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                }
+            }
         }
 
         liveStories.observe(this) {

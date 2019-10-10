@@ -1,14 +1,14 @@
 package dev.thomasharris.claw.feature.frontpage
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.paging.DataSource
 import androidx.paging.PageKeyedDataSource
-import dev.thomasharris.claw.lib.lobsters.LoadingStatus
 import dev.thomasharris.claw.lib.lobsters.StoryModel
 import dev.thomasharris.claw.lib.lobsters.StoryRepository
 import dev.thomasharris.claw.lib.lobsters.TagModel
 import dev.thomasharris.claw.lib.lobsters.TagRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
 
 /**
  * All the load methods occur on an IO thread already,
@@ -17,22 +17,22 @@ import dev.thomasharris.claw.lib.lobsters.TagRepository
 class FrontPageDataSource(
     private val storyRepository: StoryRepository,
     private val tagRepository: TagRepository,
-    private val loadingStatus: MutableLiveData<LoadingStatus>
+    private val scope: CoroutineScope
 ) : PageKeyedDataSource<Int, FrontPageItem>() {
 
+    @ExperimentalCoroutinesApi
     override fun loadInitial(
         params: LoadInitialParams<Int>,
         callback: LoadInitialCallback<Int, FrontPageItem>
     ) {
-        loadingStatus.postValue(LoadingStatus.LOADING)
         val page = storyRepository.getFrontPageSync(0)
         val tagMap = tagRepository.getFrontPageTagsSync()
-        loadingStatus.postValue(if (page != null) LoadingStatus.DONE else LoadingStatus.ERROR)
         page?.let { p ->
             callback.onResult(p.map { it x tagMap } + FrontPageItem.Divider(2), null, 1)
         }
     }
 
+    @ExperimentalCoroutinesApi
     override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, FrontPageItem>) {
         val tagMap = tagRepository.getFrontPageTagsSync()
         storyRepository.getFrontPageSync(params.key)?.let { page ->
@@ -44,6 +44,7 @@ class FrontPageDataSource(
     }
 
 
+    @ExperimentalCoroutinesApi
     override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, FrontPageItem>) {
         val tagMap = tagRepository.getFrontPageTagsSync()
         storyRepository.getFrontPageSync(params.key)?.let { page ->
@@ -55,10 +56,14 @@ class FrontPageDataSource(
         }
     }
 
+    @ExperimentalCoroutinesApi
     override fun invalidate() {
-        storyRepository.invalidate()
-        tagRepository.invalidate()
-        super.invalidate()
+        scope.launch {
+            if (storyRepository.refresh()) {
+                tagRepository.invalidate()
+                super.invalidate()
+            }
+        }
     }
 }
 
@@ -69,15 +74,14 @@ infix fun StoryModel.x(tagMap: Map<String, TagModel>) =
 
 class StoryDataSourceFactory(
     private val storyRepository: StoryRepository,
-    private val tagRepository: TagRepository
+    private val tagRepository: TagRepository,
+    private val scope: CoroutineScope
 ) : DataSource.Factory<Int, FrontPageItem>() {
-    private val _loadingStatus = MutableLiveData<LoadingStatus>()
-    val loadingStatus: LiveData<LoadingStatus> = _loadingStatus
 
     override fun create(): DataSource<Int, FrontPageItem> =
         FrontPageDataSource(
             storyRepository,
             tagRepository,
-            _loadingStatus
+            scope
         )
 }

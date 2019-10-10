@@ -1,14 +1,32 @@
 package dev.thomasharris.claw.lib.lobsters
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.channels.BroadcastChannel
+import kotlinx.coroutines.channels.Channel.Factory.CONFLATED
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.withContext
+import java.io.IOException
 import java.util.Date
 import javax.inject.Inject
+import javax.inject.Singleton
 
 
+@Singleton
 class StoryRepository @Inject constructor(
     private val lobstersService: LobstersService,
     private val lobstersQueries: LobstersQueries
 ) {
 
+    @ExperimentalCoroutinesApi
+    private val statusChannel = BroadcastChannel<Event<LoadingStatus>>(CONFLATED)
+
+    @ExperimentalCoroutinesApi
+    @FlowPreview
+    val liveStatus = statusChannel.asFlow()
+
+    @ExperimentalCoroutinesApi
     fun getFrontPageSync(index: Int): List<StoryModel>? {
         // check db
         val dbPage = lobstersQueries.getPage(index).executeAsList()
@@ -41,8 +59,31 @@ class StoryRepository @Inject constructor(
         return lobstersQueries.getPage(index).executeAsList()
     }
 
-    fun invalidate() {
-        lobstersQueries.clear()
+    /**
+     * @return True if successfully refreshed, false otherwise
+     */
+    @ExperimentalCoroutinesApi
+    suspend fun refresh(): Boolean = withContext(Dispatchers.IO) {
+        statusChannel.offer(Event(LoadingStatus.LOADING))
+        val newPage = try {
+            lobstersService.getPage(1)
+        } catch (ex: IOException) {
+            statusChannel.offer(Event(LoadingStatus.ERROR))
+            return@withContext false
+        }
+
+        val now = Date()
+        lobstersQueries.transaction {
+            lobstersQueries.clear()
+            newPage.forEachIndexed { i, s ->
+                lobstersQueries.insertStory(s.toDB(1, i, now))
+                lobstersQueries.insertUser(s.submitter.toDB(now))
+            }
+        }
+
+        statusChannel.offer(Event(LoadingStatus.DONE))
+
+        true
     }
 }
 
