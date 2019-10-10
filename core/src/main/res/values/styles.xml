@@ -8,10 +8,10 @@
         <item name="colorSecondary">@color/colorAccent</item>
         <item name="colorSecondaryVariant">@color/colorAccentDark</item>
 
-        <item name="android:colorPrimary">@color/white</item>
-        <item name="android:colorBackground">@color/white</item>
+        <item name="android:colorPrimary">?attr/colorSurface</item>
+        <item name="android:colorBackground">?attr/colorSurface</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightStatusBar">@bool/lightStatusBar</item>
 
         <item name="colorTagBorderShowAsk">@color/colorTagBorderShowAsk</item>
         <item name="colorTagBorderMedia">@color/colorTagBorderMedia</item>

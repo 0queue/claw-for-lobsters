@@ -7,4 +7,6 @@
     <attr name="colorTagBackgroundShowAsk" format="color" />
     <attr name="colorTagBackgroundMedia" format="color" />
     <attr name="colorTagBackground" format="color" />
+
+<!--    <attr name="lightStatusBar" format="boolean" />-->
 </resources>

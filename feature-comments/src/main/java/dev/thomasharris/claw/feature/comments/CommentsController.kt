@@ -5,9 +5,11 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.net.Uri
 import android.os.Bundle
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.AttrRes
 import androidx.appcompat.widget.Toolbar
 import androidx.browser.customtabs.CustomTabsClient
 import androidx.browser.customtabs.CustomTabsIntent
@@ -53,8 +55,6 @@ class CommentsController constructor(args: Bundle) : LifecycleController(args) {
     private val listAdapter = CommentsAdapter({ _, url ->
         // TODO eventually fallback to web view
         CustomTabsIntent.Builder().apply {
-            // TODO the drawable has some built in transparency, should probably
-            //  tweak somehow for future night mode/get proper transparency values
             activity?.bitmapFromVector(R.drawable.ic_arrow_back_black_24dp)?.let {
                 setCloseButtonIcon(it)
             }
@@ -64,6 +64,8 @@ class CommentsController constructor(args: Bundle) : LifecycleController(args) {
             activity?.let {
                 setStartAnimations(it, R.anim.slide_in_from_right, R.anim.nothing)
                 setExitAnimations(it, R.anim.nothing, R.anim.slide_out_to_right)
+                // closest thing to turning on dark mode as far as I can tell
+                setToolbarColor(it.getColorAttr(R.attr.colorSurface))
             }
         }.build().launchUrl(activity, Uri.parse(url))
     }, { component.commentRepository().toggleCollapseComment(it) })
@@ -156,4 +158,11 @@ fun Context.bitmapFromVector(drawableId: Int): Bitmap? {
     drawable.setBounds(0, 0, canvas.width, canvas.height)
     drawable.draw(canvas)
     return bitmap
+}
+
+fun Context.getColorAttr(@AttrRes attr: Int): Int {
+    TypedValue().let {
+        theme.resolveAttribute(attr, it, true)
+        return it.data
+    }
 }

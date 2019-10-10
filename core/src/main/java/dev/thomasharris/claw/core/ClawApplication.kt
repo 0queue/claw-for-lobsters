@@ -1,8 +1,11 @@
 package dev.thomasharris.claw.core
 
 import android.app.Application
+import android.os.Build
+import androidx.appcompat.app.AppCompatDelegate
 import dev.thomasharris.claw.core.di.ComponentStore
 import dev.thomasharris.claw.core.di.DaggerSingletonComponent
+import dev.thomasharris.claw.core.di.PrefsModule
 import dev.thomasharris.claw.core.di.SingletonComponent
 import dev.thomasharris.claw.lib.lobsters.di.LobstersModule
 import kotlin.reflect.KClass
@@ -17,7 +20,17 @@ class ClawApplication : Application(), ComponentStore<SingletonComponent> {
 
         singletonComponent = DaggerSingletonComponent.builder()
             .lobstersModule(LobstersModule(this))
+            .prefsModule(PrefsModule(this))
             .build()
+
+        val default = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+            AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+        else
+            AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY
+
+        val preference = singletonComponent.sharedPreferences()
+            .getInt("NIGHT_MODE", default)
+        AppCompatDelegate.setDefaultNightMode(preference)
     }
 
     override fun <T : Any> get(
