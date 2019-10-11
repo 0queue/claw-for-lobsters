@@ -20,10 +20,8 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.bluelinelabs.conductor.archlifecycle.LifecycleController
 import com.google.android.material.appbar.AppBarLayout
-import com.google.android.material.button.MaterialButton
-import dev.thomasharris.claw.core.ext.fade
+import com.google.android.material.snackbar.Snackbar
 import dev.thomasharris.claw.core.ext.getComponent
-import dev.thomasharris.claw.core.ext.setScrollEnabled
 import dev.thomasharris.claw.feature.comments.di.CommentsComponent
 import dev.thomasharris.claw.feature.comments.di.DaggerCommentsComponent
 import dev.thomasharris.claw.lib.lobsters.LoadingStatus
@@ -49,9 +47,6 @@ class CommentsController constructor(args: Bundle) : LifecycleController(args) {
     private lateinit var recycler: RecyclerView
     private lateinit var appBarLayout: AppBarLayout
     private lateinit var toolbar: Toolbar
-
-    private lateinit var errorView: View
-    private lateinit var errorReload: MaterialButton
 
     private val jobs = mutableListOf<Job>()
 
@@ -92,8 +87,6 @@ class CommentsController constructor(args: Bundle) : LifecycleController(args) {
 
             title = "Comments"
         }
-        errorView = root.findViewById(R.id.comments_error_view)
-        errorReload = root.findViewById(R.id.comments_error_view_reload)
 
         recycler.apply {
             adapter = listAdapter
@@ -119,16 +112,21 @@ class CommentsController constructor(args: Bundle) : LifecycleController(args) {
                 .collect { (story, tags, comments) ->
                     val head = CommentsItem.Header(story, tags)
                     val tail = comments.map { CommentsItem.Comment(it) }
-                    listAdapter.submitList(listOf(head) + tail + CommentsItem.Spacer)
+                    listAdapter.submitList(listOf(head) + tail + CommentsItem.Spacer(tail.isEmpty()))
                 }
         }
 
         jobs += lifecycleScope.launch {
             component.commentRepository().liveStatus().collect { status ->
-                swipeRefreshLayout.isRefreshing = status == LoadingStatus.LOADING
-                errorView.fade(status == LoadingStatus.ERROR)
-                recycler.fade(status != LoadingStatus.ERROR)
-                toolbar.setScrollEnabled(status != LoadingStatus.ERROR)
+                swipeRefreshLayout.isRefreshing = status.peek() == LoadingStatus.LOADING
+                status.consume {
+                    if (it == LoadingStatus.ERROR)
+                        Snackbar.make(
+                            root,
+                            "Couldn't reach lobste.rs",
+                            Snackbar.LENGTH_SHORT
+                        ).show()
+                }
             }
         }
 
@@ -139,10 +137,6 @@ class CommentsController constructor(args: Bundle) : LifecycleController(args) {
         // hmm refreshing should maybe always be forced for a story?
         // or just add another condition for comment mismatches?
         component.commentRepository().refresh(shortId)
-
-        errorReload.setOnClickListener {
-            component.commentRepository().refresh(shortId, true)
-        }
 
         CustomTabsClient.connectAndInitialize(activity, "com.android.chrome")
         return root

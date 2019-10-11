@@ -16,6 +16,7 @@ import com.bluelinelabs.conductor.archlifecycle.LifecycleController
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.snackbar.Snackbar
+import dev.thomasharris.claw.core.ext.fade
 import dev.thomasharris.claw.core.ext.getComponent
 import dev.thomasharris.claw.core.ext.observe
 import dev.thomasharris.claw.feature.frontpage.di.DaggerFrontPageComponent
@@ -108,7 +109,8 @@ class FrontPageController : LifecycleController() {
         }
 
         liveStories.observe(this) {
-            // TODO show empty view here?
+            errorView.fade(it.isEmpty())
+            recycler.fade(it.isNotEmpty())
             listAdapter.submitList(it)
         }
 

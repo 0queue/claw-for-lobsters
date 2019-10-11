@@ -1,8 +1,8 @@
 package dev.thomasharris.claw.feature.comments
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -18,7 +18,7 @@ const val VIEW_TYPE_SPACER = 3
 sealed class CommentsItem {
     data class Header(val story: StoryModel, val tags: List<TagModel>) : CommentsItem()
     data class Comment(val commentView: CommentModel) : CommentsItem()
-    object Spacer : CommentsItem()
+    data class Spacer(val isEmpty: Boolean) : CommentsItem()
 }
 
 
@@ -54,6 +54,10 @@ class CommentsAdapter(
                 val comment = getItem(position) as CommentsItem.Comment
                 (holder as CommentViewHolder).bind(comment.commentView, position, onCommentClick)
             }
+            VIEW_TYPE_SPACER -> {
+                val spacer = getItem(position) as CommentsItem.Spacer
+                (holder as SpacerViewHolder).bind(spacer)
+            }
         }
     }
 
@@ -73,9 +77,9 @@ object DIFF : DiffUtil.ItemCallback<CommentsItem>() {
             }
         }
 
-        (oldItem as? CommentsItem.Spacer)?.let {
-            (newItem as? CommentsItem.Spacer)?.let {
-                return true
+        (oldItem as? CommentsItem.Spacer)?.let { old ->
+            (newItem as? CommentsItem.Spacer)?.let { new ->
+                return old == new
             }
         }
 
@@ -95,9 +99,9 @@ object DIFF : DiffUtil.ItemCallback<CommentsItem>() {
             }
         }
 
-        (oldItem as? CommentsItem.Spacer)?.let {
-            (newItem as? CommentsItem.Spacer)?.let {
-                return true
+        (oldItem as? CommentsItem.Spacer)?.let { old ->
+            (newItem as? CommentsItem.Spacer)?.let { new ->
+                return old.isEmpty == new.isEmpty
             }
         }
 
@@ -105,7 +109,11 @@ object DIFF : DiffUtil.ItemCallback<CommentsItem>() {
     }
 }
 
-class SpacerViewHolder(root: View) : RecyclerView.ViewHolder(root) {
+class SpacerViewHolder(private val root: TextView) : RecyclerView.ViewHolder(root) {
+    fun bind(spacer: CommentsItem.Spacer) {
+        root.text = if (spacer.isEmpty) "No comments" else ""
+    }
+
     companion object {
         fun inflate(parent: ViewGroup) =
             SpacerViewHolder(
@@ -113,7 +121,7 @@ class SpacerViewHolder(root: View) : RecyclerView.ViewHolder(root) {
                     R.layout.item_spacer,
                     parent,
                     false
-                )
+                ) as TextView
             )
     }
 }

@@ -24,7 +24,7 @@ class CommentRepository @Inject constructor(
 ) {
 
     @ExperimentalCoroutinesApi
-    private val statusChannel = BroadcastChannel<LoadingStatus>(CONFLATED)
+    private val statusChannel = BroadcastChannel<Event<LoadingStatus>>(CONFLATED)
 
     @ExperimentalCoroutinesApi
     @FlowPreview
@@ -58,15 +58,15 @@ class CommentRepository @Inject constructor(
             }
 
             if (!shouldRefresh) {
-                statusChannel.offer(LoadingStatus.DONE)
+                statusChannel.offer(Event(LoadingStatus.DONE))
                 return@execute
             }
 
-            statusChannel.offer(LoadingStatus.LOADING)
+            statusChannel.offer(Event(LoadingStatus.LOADING))
             val newStory = lobstersService.getStorySync(storyId).executeOrNull()?.body()
 
             if (newStory == null) {
-                statusChannel.offer(LoadingStatus.ERROR)
+                statusChannel.offer(Event(LoadingStatus.ERROR))
                 return@execute
             }
 
@@ -77,7 +77,7 @@ class CommentRepository @Inject constructor(
                 lobstersQueries.insertComment(c.toDB(storyId, i, now))
             }
 
-            statusChannel.offer(LoadingStatus.DONE)
+            statusChannel.offer(Event(LoadingStatus.DONE))
         }
     }
 

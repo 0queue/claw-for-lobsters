@@ -46,28 +46,4 @@
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-    <!-- this covers the toolbar... TODO -->
-    <LinearLayout
-        android:id="@+id/comments_error_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:alpha="0"
-        android:clickable="true"
-        android:focusable="true"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:visibility="gone">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/front_page_error_message" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/comments_error_view_reload"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/reload_label" />
-    </LinearLayout>
-
 </dev.thomasharris.claw.feature.comments.TouchInterceptingCoordinatorLayout>
