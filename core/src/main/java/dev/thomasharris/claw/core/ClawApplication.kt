@@ -1,7 +1,6 @@
 package dev.thomasharris.claw.core
 
 import android.app.Application
-import android.os.Build
 import androidx.appcompat.app.AppCompatDelegate
 import dev.thomasharris.claw.core.di.ComponentStore
 import dev.thomasharris.claw.core.di.DaggerSingletonComponent
@@ -23,14 +22,8 @@ class ClawApplication : Application(), ComponentStore<SingletonComponent> {
             .prefsModule(PrefsModule(this))
             .build()
 
-        val default = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
-            AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-        else
-            AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY
-
-        val preference = singletonComponent.sharedPreferences()
-            .getInt("NIGHT_MODE", default)
-        AppCompatDelegate.setDefaultNightMode(preference)
+        val preference = singletonComponent.preferencesRepository().getTheme()
+        AppCompatDelegate.setDefaultNightMode(preference.modeNight)
     }
 
     override fun <T : Any> get(

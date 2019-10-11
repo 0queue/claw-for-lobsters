@@ -1,1 +1,2 @@
 -keep class dev.thomasharris.claw.lib.navigator.SlideChangeHandler { *; }
+-keep class com.bluelinelabs.conductor.changehandler.FadeChangeHandler { *; }

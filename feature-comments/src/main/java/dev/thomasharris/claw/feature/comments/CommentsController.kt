@@ -14,7 +14,6 @@ import androidx.appcompat.widget.Toolbar
 import androidx.browser.customtabs.CustomTabsClient
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -139,13 +138,20 @@ class CommentsController constructor(args: Bundle) : LifecycleController(args) {
         // or just add another condition for comment mismatches?
         component.commentRepository().refresh(shortId)
 
+        // Okay this feels like a huge hack...
+        // onAttach -> requestApplyInsets works on the emulator
+        // but not on the one plus for some reason, there is a
+        // 1px line between status bar scrim and the app bar
+        // which I can't find in the layout inspector
+        //
+        // maybe it is because there are two fitsSystemWindows
+        // CoordinatorLayouts in the hierarchy at this point
+        root.setOnApplyWindowInsetsListener { v, insets ->
+            v.onApplyWindowInsets(insets)
+        }
+
         CustomTabsClient.connectAndInitialize(activity, "com.android.chrome")
         return root
-    }
-
-    override fun onAttach(view: View) {
-        super.onAttach(view)
-        ViewCompat.requestApplyInsets(view)
     }
 
     override fun onDestroyView(view: View) {
