@@ -14,6 +14,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.browser.customtabs.CustomTabsClient
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -140,6 +141,11 @@ class CommentsController constructor(args: Bundle) : LifecycleController(args) {
 
         CustomTabsClient.connectAndInitialize(activity, "com.android.chrome")
         return root
+    }
+
+    override fun onAttach(view: View) {
+        super.onAttach(view)
+        ViewCompat.requestApplyInsets(view)
     }
 
     override fun onDestroyView(view: View) {

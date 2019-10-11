@@ -1,11 +1,15 @@
 package dev.thomasharris.claw.feature.frontpage
 
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.ViewCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.PagedList
 import androidx.paging.toLiveData
@@ -62,6 +66,10 @@ class FrontPageController : LifecycleController() {
     private lateinit var appBarLayout: AppBarLayout
     private lateinit var errorView: LinearLayout
     private lateinit var errorReload: MaterialButton
+
+    init {
+        setHasOptionsMenu(true)
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
         val root = inflater.inflate(R.layout.front_page, container, false)
@@ -123,6 +131,23 @@ class FrontPageController : LifecycleController() {
         }
 
         return root
+    }
+
+    override fun onAttach(view: View) {
+        super.onAttach(view)
+        ViewCompat.requestApplyInsets(view)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_front_page, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
+        R.id.menu_item_front_page_settings -> {
+            goto(Destination.Settings)
+            true
+        }
+        else -> super.onOptionsItemSelected(item)
     }
 
     override fun onDestroyView(view: View) {

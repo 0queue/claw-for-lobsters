@@ -2,6 +2,7 @@
 <resources>
     <string name="refresh">Refresh</string>
     <string name="page_number">Page %d</string>
+    <string name="menu_item_settings_label">Settings</string>
 
 
 </resources>
