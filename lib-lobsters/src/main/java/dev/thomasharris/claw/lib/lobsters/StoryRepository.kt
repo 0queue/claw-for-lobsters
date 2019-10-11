@@ -41,7 +41,12 @@ class StoryRepository @Inject constructor(
             return dbPage
 
         // fetch new page
+        if (index == 0) statusChannel.offer(Event(LoadingStatus.LOADING))
+
         val newPage = lobstersService.getPageSync(index + 1).executeOrNull()?.body()
+
+        if (index == 0 && newPage == null) statusChannel.offer(Event(LoadingStatus.ERROR))
+
         if (newPage == null && dbPage.isNotEmpty())
             return dbPage
         else if (newPage == null)
@@ -54,6 +59,8 @@ class StoryRepository @Inject constructor(
             lobstersQueries.insertStory(np.toDB(index, i, now))
             lobstersQueries.insertUser(np.submitter.toDB(now))
         }
+
+        if (index == 0) statusChannel.offer(Event(LoadingStatus.DONE))
 
         // re fetch and return
         return lobstersQueries.getPage(index).executeAsList()
@@ -76,7 +83,7 @@ class StoryRepository @Inject constructor(
         lobstersQueries.transaction {
             lobstersQueries.clear()
             newPage.forEachIndexed { i, s ->
-                lobstersQueries.insertStory(s.toDB(1, i, now))
+                lobstersQueries.insertStory(s.toDB(0, i, now))
                 lobstersQueries.insertUser(s.submitter.toDB(now))
             }
         }
