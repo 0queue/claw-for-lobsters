@@ -29,6 +29,7 @@ import dev.thomasharris.claw.feature.comments.di.DaggerCommentsComponent
 import dev.thomasharris.claw.lib.lobsters.LoadingStatus
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
@@ -51,6 +52,8 @@ class CommentsController constructor(args: Bundle) : LifecycleController(args) {
 
     private lateinit var errorView: View
     private lateinit var errorReload: MaterialButton
+
+    private val jobs = mutableListOf<Job>()
 
     private val listAdapter = CommentsAdapter({ _, url ->
         // TODO eventually fallback to web view
@@ -111,7 +114,7 @@ class CommentsController constructor(args: Bundle) : LifecycleController(args) {
             router.popCurrentController()
         }
 
-        lifecycleScope.launch {
+        jobs += lifecycleScope.launch {
             component.commentRepository().liveVisibleComments(shortId)
                 .collect { (story, tags, comments) ->
                     val head = CommentsItem.Header(story, tags)
@@ -120,7 +123,7 @@ class CommentsController constructor(args: Bundle) : LifecycleController(args) {
                 }
         }
 
-        lifecycleScope.launch {
+        jobs += lifecycleScope.launch {
             component.commentRepository().liveStatus().collect { status ->
                 swipeRefreshLayout.isRefreshing = status == LoadingStatus.LOADING
                 errorView.fade(status == LoadingStatus.ERROR)
@@ -143,6 +146,12 @@ class CommentsController constructor(args: Bundle) : LifecycleController(args) {
 
         CustomTabsClient.connectAndInitialize(activity, "com.android.chrome")
         return root
+    }
+
+    override fun onDestroyView(view: View) {
+        super.onDestroyView(view)
+        jobs.forEach { it.cancel() }
+        jobs.clear()
     }
 }
 

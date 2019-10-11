@@ -4,7 +4,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.lifecycleScope
@@ -16,6 +15,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.bluelinelabs.conductor.archlifecycle.LifecycleController
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.snackbar.Snackbar
 import dev.thomasharris.claw.core.ext.getComponent
 import dev.thomasharris.claw.core.ext.observe
 import dev.thomasharris.claw.feature.frontpage.di.DaggerFrontPageComponent
@@ -25,6 +25,7 @@ import dev.thomasharris.claw.frontpage.feature.frontpage.R
 import dev.thomasharris.claw.lib.lobsters.LoadingStatus
 import dev.thomasharris.claw.lib.navigator.Destination
 import dev.thomasharris.claw.lib.navigator.goto
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
@@ -50,6 +51,8 @@ class FrontPageController : LifecycleController() {
     private val listAdapter = FrontPageAdapter { shortId, url ->
         goto(Destination.Comments(shortId, url))
     }
+
+    private lateinit var job: Job
 
     private lateinit var toolbar: Toolbar
 
@@ -90,22 +93,22 @@ class FrontPageController : LifecycleController() {
             supportActionBar?.setDisplayShowTitleEnabled(false)
         }
 
-        lifecycleScope.launch {
+        job = lifecycleScope.launch {
             component.storyRepositoryStatus().collect { status ->
                 swipeRefreshLayout.isRefreshing = status.peek() == LoadingStatus.LOADING
                 status.consume {
-                    // TODO snack time, general UI improvements
                     if (it == LoadingStatus.ERROR)
-                        Toast.makeText(
-                            activity,
-                            "Could not reach lobste.rs",
-                            Toast.LENGTH_SHORT
+                        Snackbar.make(
+                            root,
+                            "Couldn't reach lobste.rs",
+                            Snackbar.LENGTH_SHORT
                         ).show()
                 }
             }
         }
 
         liveStories.observe(this) {
+            // TODO show empty view here?
             listAdapter.submitList(it)
         }
 
@@ -118,5 +121,10 @@ class FrontPageController : LifecycleController() {
         }
 
         return root
+    }
+
+    override fun onDestroyView(view: View) {
+        super.onDestroyView(view)
+        job.cancel()
     }
 }
