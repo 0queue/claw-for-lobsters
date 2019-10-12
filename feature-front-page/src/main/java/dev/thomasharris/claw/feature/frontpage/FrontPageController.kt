@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.core.view.ViewCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.PagedList
 import androidx.paging.toLiveData
@@ -130,12 +129,12 @@ class FrontPageController : LifecycleController() {
             liveStories.value?.dataSource?.invalidate()
         }
 
-        return root
-    }
+        root.setOnApplyWindowInsetsListener { v, insets ->
+            v.onApplyWindowInsets(insets)
+            insets
+        }
 
-    override fun onAttach(view: View) {
-        super.onAttach(view)
-        ViewCompat.requestApplyInsets(view)
+        return root
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

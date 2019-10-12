@@ -24,15 +24,6 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <!-- scrim to go behind transparent status bar -->
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="?attr/colorSurface"
-        android:outlineProvider="none"
-        android:translationY="-50dp"
-        android:translationZ="16dp" />
-
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/comments_swipe_refresh"
         android:layout_width="match_parent"

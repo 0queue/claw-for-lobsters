@@ -5,6 +5,7 @@
     android:id="@+id/front_page_coordinator"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?colorSurface"
     android:fitsSystemWindows="true">
 
     <com.google.android.material.appbar.AppBarLayout
@@ -34,15 +35,6 @@
         </androidx.appcompat.widget.Toolbar>
 
     </com.google.android.material.appbar.AppBarLayout>
-
-    <!-- scrim to go behind transparent status bar -->
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="?attr/colorSurface"
-        android:outlineProvider="none"
-        android:translationY="-50dp"
-        android:translationZ="16dp" />
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/front_page_swipe_refresh"
