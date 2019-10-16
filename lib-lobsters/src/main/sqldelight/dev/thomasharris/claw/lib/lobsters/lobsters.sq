@@ -200,3 +200,40 @@ WITH parent AS (
     LEFT JOIN next ON tail.commentIndex < next.commentIndex
     WHERE (hasNext.c == 0 AND next.commentIndex IS NULL) OR (hasNext.c > 0 AND tail.commentIndex < next.commentIndex)
 ) UPDATE comment SET status = :status WHERE shortId IN (SELECT shortId FROM children);
+
+getParent:
+WITH target AS (
+    SELECT storyId, commentIndex, indentLevel
+    FROM commentModel
+    WHERE shortId = :shortId
+) SELECT commentModel.shortId
+FROM commentModel, target
+WHERE commentModel.storyId = target.storyId
+    AND commentModel.commentIndex < target.commentIndex
+    AND commentModel.indentLevel < target.indentLevel
+ORDER BY commentModel.commentIndex DESC
+LIMIT 1;
+
+getPredecessors:
+WITH target AS (
+    SELECT storyId, commentIndex, indentLevel
+    FROM commentModel
+    WHERE shortId = :shortId
+), parent AS (
+    SELECT commentModel.commentIndex
+    FROM commentModel, target
+    WHERE commentModel.storyId = target.storyId
+        AND commentModel.commentIndex < target.commentIndex
+        AND commentModel.indentLevel < target.indentLevel
+    ORDER BY commentModel.commentIndex DESC
+    LIMIT 1
+), hasParent AS (
+    SELECT count(*) c FROM parent
+) SELECT commentModel.shortId
+FROM commentModel, hasParent, target
+LEFT JOIN parent
+WHERE commentModel.storyId = target.storyId
+    AND commentModel.indentLevel = target.indentLevel
+    AND commentModel.commentIndex < target.commentIndex
+    AND ((hasParent.c == 0 AND parent.commentIndex IS NULL)
+        OR (hasParent.c > 0 AND commentModel.commentIndex > parent.commentIndex));

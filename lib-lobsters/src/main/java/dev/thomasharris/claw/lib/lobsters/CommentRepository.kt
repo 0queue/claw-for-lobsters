@@ -81,6 +81,9 @@ class CommentRepository @Inject constructor(
         }
     }
 
+    /**
+     * Expand if collapsed, else collapse self
+     */
     fun toggleCollapseComment(commentId: String) = background.execute {
         lobstersQueries.transaction {
             val status = lobstersQueries.getCommentStatus(commentId).executeAsOne()
@@ -94,6 +97,37 @@ class CommentRepository @Inject constructor(
                 commentId = commentId
             )
         }
+    }
+
+    /**
+     * Expand if collapsed, else collapse predecessors and predecessors
+     * of parents
+     */
+    fun collapsePredecessors(commentId: String) = background.execute {
+        lobstersQueries.transaction {
+            val status = lobstersQueries.getCommentStatus(commentId).executeAsOne()
+            if (status != CommentStatus.VISIBLE) {
+                lobstersQueries.setStatus(status = CommentStatus.VISIBLE, shortId = commentId)
+                lobstersQueries.setChildrenStatus(
+                    status = CommentStatus.VISIBLE,
+                    commentId = commentId
+                )
+            } else ancestors(commentId).map {
+                lobstersQueries.getPredecessors(it).executeAsList()
+            }.flatten().forEach {
+                lobstersQueries.setStatus(status = CommentStatus.COLLAPSED, shortId = it)
+                lobstersQueries.setChildrenStatus(status = CommentStatus.GONE, commentId = it)
+            }
+        }
+    }
+
+    // wow I was wondering when tailrec would be useful
+    private tailrec fun ancestors(
+        shortId: String,
+        progress: List<String> = listOf(shortId)
+    ): List<String> {
+        val next = lobstersQueries.getParent(shortId).executeAsOneOrNull() ?: return progress
+        return ancestors(next, progress + next)
     }
 }
 

@@ -66,7 +66,9 @@ class CommentsController constructor(args: Bundle) : LifecycleController(args) {
                 setToolbarColor(it.getColorAttr(R.attr.colorSurface))
             }
         }.build().launchUrl(activity, Uri.parse(url))
-    }, { component.commentRepository().toggleCollapseComment(it) })
+    }) {
+        component.collapseUseCase().collapse(it)
+    }
 
     @FlowPreview
     @ExperimentalCoroutinesApi
