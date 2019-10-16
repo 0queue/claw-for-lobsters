@@ -33,6 +33,8 @@ class SettingsController : LifecycleController() {
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<ConstraintLayout>
     private lateinit var themeToggleGroup: MaterialButtonToggleGroup
     private lateinit var themeDescription: TextView
+    private lateinit var commentCollapseModeToggleGroup: MaterialButtonToggleGroup
+    private lateinit var commentCollapseDescription: TextView
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
@@ -40,6 +42,9 @@ class SettingsController : LifecycleController() {
         val bottomSheet = root.findViewById<ConstraintLayout>(R.id.settings_bottom_sheet)
         themeToggleGroup = root.findViewById(R.id.settings_theme_toggle_group)
         themeDescription = root.findViewById(R.id.settings_theme_description)
+        commentCollapseModeToggleGroup =
+            root.findViewById(R.id.settings_comment_collapsing_toggle_group)
+        commentCollapseDescription = root.findViewById(R.id.settings_comment_collapsing_description)
 
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet).apply {
             bottomSheetCallback = object : BottomSheetBehavior.BottomSheetCallback() {
@@ -68,6 +73,15 @@ class SettingsController : LifecycleController() {
         )
         updateThemeDescription(component.preferencesRepository().getTheme())
 
+        commentCollapseModeToggleGroup.check(
+            when (component.preferencesRepository().commentCollapseMode) {
+                PreferencesRepository.CommentCollapseMode.MOBILE -> R.id.settings_comment_collapsing_mobile_mode
+                PreferencesRepository.CommentCollapseMode.DESKTOP -> R.id.settings_comment_collapsing_desktop_mode
+            }
+        )
+        updateCommentCollapseDescription(component.preferencesRepository().commentCollapseMode)
+
+
         themeToggleGroup.addOnButtonCheckedListener { v, checkedId, isChecked ->
             val themeMode = when (checkedId) {
                 R.id.settings_theme_day_mode -> PreferencesRepository.ThemeMode.DAY
@@ -85,7 +99,26 @@ class SettingsController : LifecycleController() {
             }
         }
 
+        commentCollapseModeToggleGroup.addOnButtonCheckedListener { _, checkedId, isChecked ->
+            val mode = when (checkedId) {
+                R.id.settings_comment_collapsing_mobile_mode -> PreferencesRepository.CommentCollapseMode.MOBILE
+                R.id.settings_comment_collapsing_desktop_mode -> PreferencesRepository.CommentCollapseMode.DESKTOP
+                else -> throw java.lang.IllegalStateException("Comment collapsing mode not recognized")
+            }
+
+            if (isChecked) {
+                updateCommentCollapseDescription(mode)
+                component.preferencesRepository().commentCollapseMode = mode
+            }
+        }
+
         themeToggleGroup.forEach {
+            it.setOnClickListener { b ->
+                (b as MaterialButton).isChecked = true
+            }
+        }
+
+        commentCollapseModeToggleGroup.forEach {
             it.setOnClickListener { b ->
                 (b as MaterialButton).isChecked = true
             }
@@ -117,6 +150,13 @@ class SettingsController : LifecycleController() {
                 "Follow system"
             else
                 "Follow battery saver"
+        }
+    }
+
+    private fun updateCommentCollapseDescription(commentCollapseMode: PreferencesRepository.CommentCollapseMode) {
+        commentCollapseDescription.text = when (commentCollapseMode) {
+            PreferencesRepository.CommentCollapseMode.MOBILE -> "Mobile (collapse predecessors)"
+            PreferencesRepository.CommentCollapseMode.DESKTOP -> "Desktop (collapse self)"
         }
     }
 }
