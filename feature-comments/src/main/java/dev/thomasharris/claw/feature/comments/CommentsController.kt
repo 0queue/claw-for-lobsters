@@ -41,7 +41,6 @@ class CommentsController constructor(args: Bundle) : LifecycleController(args) {
     }
 
     private val shortId: String = getArgs().getString("shortId")!!
-    private val url: String = getArgs().getString("url")!!
 
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
     private lateinit var recycler: RecyclerView
@@ -112,9 +111,9 @@ class CommentsController constructor(args: Bundle) : LifecycleController(args) {
         jobs += lifecycleScope.launch {
             component.commentRepository().liveVisibleComments(shortId)
                 .collect { (story, tags, comments) ->
-                    val head = CommentsItem.Header(story, tags)
+                    val head = story?.let { CommentsItem.Header(it, tags) }
                     val tail = comments.map { CommentsItem.Comment(it) }
-                    listAdapter.submitList(listOf(head) + tail + CommentsItem.Spacer(tail.isEmpty()))
+                    listAdapter.submitList(listOfNotNull(head) + tail + CommentsItem.Spacer(tail.isEmpty()))
                 }
         }
 

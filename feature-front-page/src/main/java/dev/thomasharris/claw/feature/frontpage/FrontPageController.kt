@@ -39,7 +39,7 @@ class FrontPageController : LifecycleController() {
     private val component by getComponent<FrontPageComponent> {
         DaggerFrontPageComponent.builder()
             .singletonComponent(it)
-            .frontPageModule(FrontPageModule(lifecycleScope))
+            .frontPageModule(FrontPageModule())
             .build()
     }
 
@@ -49,11 +49,11 @@ class FrontPageController : LifecycleController() {
             // to mitigate stopping while flinging, although a larger story card will help too
             .setPrefetchDistance(50)
             .build()
-        component.storyDataSourceFactory().toLiveData(config)
+        component.storyDataSourceFactoryFactory().create(lifecycleScope).toLiveData(config)
     }
 
-    private val listAdapter = FrontPageAdapter { shortId, url ->
-        goto(Destination.Comments(shortId, url))
+    private val listAdapter = FrontPageAdapter { shortId, _ ->
+        goto(Destination.Comments(shortId))
     }
 
     private lateinit var job: Job

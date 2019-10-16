@@ -22,18 +22,13 @@ sealed class Destination {
         }
     }
 
-    class Comments(private val shortId: String, private val url: String) : Destination() {
+    class Comments(private val shortId: String) : Destination() {
         override fun routerTransaction(): RouterTransaction {
             val clazz =
                 Class.forName("dev.thomasharris.claw.feature.comments.CommentsController")
 
             // the normal java reflection seems to work better
-            val controller = clazz.constructors[0].newInstance(
-                bundleOf(
-                    "shortId" to shortId,
-                    "url" to url
-                )
-            )
+            val controller = clazz.constructors[0].newInstance(bundleOf("shortId" to shortId))
 
             return RouterTransaction.with(controller as Controller)
                 .popChangeHandler(SlideChangeHandler(200)) // TODO magic number

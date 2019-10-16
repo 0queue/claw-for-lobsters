@@ -9,6 +9,7 @@ import dev.thomasharris.claw.lib.lobsters.TagRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 /**
  * All the load methods occur on an IO thread already,
@@ -84,4 +85,16 @@ class StoryDataSourceFactory(
             tagRepository,
             scope
         )
+}
+
+// uh oh
+// doing this to not give the factory a lifecycleScope,
+// which can cancel and then we never get it back :(
+class StoryDataSourceFactoryFactory @Inject constructor(
+    private val storyRepository: StoryRepository,
+    private val tagRepository: TagRepository
+) {
+    fun create(scope: CoroutineScope): StoryDataSourceFactory {
+        return StoryDataSourceFactory(storyRepository, tagRepository, scope)
+    }
 }

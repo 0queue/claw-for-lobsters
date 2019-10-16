@@ -24,7 +24,7 @@ class StoryRepository @Inject constructor(
 
     @ExperimentalCoroutinesApi
     @FlowPreview
-    val liveStatus = statusChannel.asFlow()
+    fun liveStatus() = statusChannel.asFlow()
 
     @ExperimentalCoroutinesApi
     fun getFrontPageSync(index: Int): List<StoryModel>? {

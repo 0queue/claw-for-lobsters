@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.bluelinelabs.conductor.Conductor
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
+import com.bluelinelabs.conductor.changehandler.SimpleSwapChangeHandler
 import dev.thomasharris.claw.lib.navigator.Destination
 import dev.thomasharris.claw.lib.navigator.Navigator
 
@@ -24,6 +25,13 @@ class MainActivity : AppCompatActivity(), Navigator {
         router = Conductor.attachRouter(this, container, savedInstanceState).apply {
             if (!hasRootController())
                 setRoot(Destination.FrontPage.routerTransaction())
+        }
+
+        intent?.data?.pathSegments?.getOrNull(1)?.let {
+            goto(
+                Destination.Comments(it).routerTransaction()
+                    .pushChangeHandler(SimpleSwapChangeHandler(false))
+            )
         }
     }
 

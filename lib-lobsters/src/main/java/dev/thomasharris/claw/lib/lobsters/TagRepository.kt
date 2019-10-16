@@ -1,7 +1,9 @@
 package dev.thomasharris.claw.lib.lobsters
 
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class TagRepository @Inject constructor(
     private val lobstersService: LobstersService,
     private val lobstersQueries: LobstersQueries

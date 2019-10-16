@@ -2,7 +2,7 @@ package dev.thomasharris.claw.lib.lobsters
 
 import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
-import com.squareup.sqldelight.runtime.coroutines.mapToOne
+import com.squareup.sqldelight.runtime.coroutines.mapToOneOrNull
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.BroadcastChannel
@@ -31,13 +31,13 @@ class CommentRepository @Inject constructor(
     fun liveStatus() = statusChannel.asFlow()
 
     @ExperimentalCoroutinesApi
-    fun liveVisibleComments(storyId: String): Flow<Triple<StoryModel, List<TagModel>, List<CommentModel>>> {
-        val story = lobstersQueries.getStoryModel(storyId).asFlow().mapToOne()
+    fun liveVisibleComments(storyId: String): Flow<Triple<StoryModel?, List<TagModel>, List<CommentModel>>> {
+        val story = lobstersQueries.getStoryModel(storyId).asFlow().mapToOneOrNull()
         val tags = lobstersQueries.getTagModels().asFlow().mapToList()
         val comments = lobstersQueries.getVisibleCommentModels(storyId).asFlow().mapToList()
 
         return story.combine(tags) { s, ts ->
-            s to s.tags.mapNotNull { tag -> ts.find { it.tag == tag } }
+            s to s?.tags.orEmpty().mapNotNull { tag -> ts.find { it.tag == tag } }
         }.combine(comments) { (s, t), c ->
             Triple(s, t, c)
         }
@@ -46,13 +46,13 @@ class CommentRepository @Inject constructor(
     @ExperimentalCoroutinesApi
     fun refresh(storyId: String, force: Boolean = false) {
         background.execute {
-            val storyDb = lobstersQueries.getStory(storyId).executeAsOne()
+            val storyDb = lobstersQueries.getStory(storyId).executeAsOneOrNull()
 
             val shouldRefresh = if (force) true else {
 
                 val oldestComment = lobstersQueries.getOldestComment(storyId).executeAsOne()
 
-                storyDb.insertedAt.isOld() || oldestComment.min?.let {
+                storyDb?.insertedAt?.isOld() ?: true || oldestComment.min?.let {
                     Date(it).isOld()
                 } ?: true
             }
@@ -71,7 +71,10 @@ class CommentRepository @Inject constructor(
             }
 
             val now = Date()
-            lobstersQueries.insertStory(newStory.toDB(storyDb.pageIndex, storyDb.pageSubIndex, now))
+            // if story db is null here, we jumped here from an intent
+            val pageIndex = storyDb?.pageIndex ?: -1
+            val subIndex = storyDb?.pageSubIndex ?: -1
+            lobstersQueries.insertStory(newStory.toDB(pageIndex, subIndex, now))
             newStory.comments?.forEachIndexed { i, c ->
                 lobstersQueries.insertUser(c.commentingUser.toDB(now))
                 lobstersQueries.insertComment(c.toDB(storyId, i, now))
