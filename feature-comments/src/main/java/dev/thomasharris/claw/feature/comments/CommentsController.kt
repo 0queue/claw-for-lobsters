@@ -49,25 +49,13 @@ class CommentsController constructor(args: Bundle) : LifecycleController(args) {
 
     private val jobs = mutableListOf<Job>()
 
-    private val listAdapter = CommentsAdapter({ _, url ->
-        // TODO eventually fallback to web view
-        CustomTabsIntent.Builder().apply {
-            activity?.bitmapFromVector(R.drawable.ic_arrow_back_black_24dp)?.let {
-                setCloseButtonIcon(it)
-            }
-
-            setShowTitle(true)
-
-            activity?.let {
-                setStartAnimations(it, R.anim.slide_in_from_right, R.anim.nothing)
-                setExitAnimations(it, R.anim.nothing, R.anim.slide_out_to_right)
-                // closest thing to turning on dark mode as far as I can tell
-                setToolbarColor(it.getColorAttr(R.attr.colorSurface))
-            }
-        }.build().launchUrl(activity, Uri.parse(url))
-    }) {
-        component.collapseUseCase().collapse(it)
-    }
+    private val listAdapter =
+        CommentsAdapter(this::launchUrl, this::launchUrl) { shortId, isCollapsePredecessors ->
+            if (isCollapsePredecessors)
+                component.commentRepository().collapsePredecessors(shortId)
+            else
+                component.commentRepository().toggleCollapseComment(shortId)
+        }
 
     @FlowPreview
     @ExperimentalCoroutinesApi
@@ -152,6 +140,26 @@ class CommentsController constructor(args: Bundle) : LifecycleController(args) {
         super.onDestroyView(view)
         jobs.forEach { it.cancel() }
         jobs.clear()
+    }
+
+    private fun launchUrl(@Suppress("UNUSED_PARAMETER") _x: Any, url: String) = launchUrl(url)
+
+    private fun launchUrl(url: String) {
+        // TODO eventually fallback to web view
+        CustomTabsIntent.Builder().apply {
+            activity?.bitmapFromVector(R.drawable.ic_arrow_back_black_24dp)?.let {
+                setCloseButtonIcon(it)
+            }
+
+            setShowTitle(true)
+
+            activity?.let {
+                setStartAnimations(it, R.anim.slide_in_from_right, R.anim.nothing)
+                setExitAnimations(it, R.anim.nothing, R.anim.slide_out_to_right)
+                // closest thing to turning on dark mode as far as I can tell
+                setToolbarColor(it.getColorAttr(R.attr.colorSurface))
+            }
+        }.build().launchUrl(activity, Uri.parse(url))
     }
 }
 

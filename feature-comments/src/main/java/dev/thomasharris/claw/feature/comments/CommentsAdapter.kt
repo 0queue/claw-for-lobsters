@@ -24,7 +24,8 @@ sealed class CommentsItem {
 
 class CommentsAdapter(
     private val onHeaderClick: (String, String) -> Unit,
-    private val onCommentClick: (String) -> Unit
+    private val onLinkClick: (String) -> Unit,
+    private val onCommentClick: (String, Boolean) -> Unit
 ) : ListAdapter<CommentsItem, RecyclerView.ViewHolder>(DIFF) {
     override fun getItemViewType(position: Int) = when (getItem(position)) {
         is CommentsItem.Header -> VIEW_TYPE_HEADER
@@ -52,7 +53,7 @@ class CommentsAdapter(
             }
             VIEW_TYPE_COMMENT -> {
                 val comment = getItem(position) as CommentsItem.Comment
-                (holder as CommentViewHolder).bind(comment.commentView, position, onCommentClick)
+                (holder as CommentViewHolder).bind(comment.commentView, position, onCommentClick, onLinkClick)
             }
             VIEW_TYPE_SPACER -> {
                 val spacer = getItem(position) as CommentsItem.Spacer

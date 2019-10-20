@@ -2,7 +2,6 @@ package dev.thomasharris.claw.feature.comments
 
 import android.annotation.SuppressLint
 import android.content.res.ColorStateList
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -37,7 +36,12 @@ class CommentViewHolder private constructor(
     private val colors = root.context.resources.getIntArray(R.array.indentation_colors).toList()
 
     @SuppressLint("SetTextI18n")
-    fun bind(comment: CommentModel, position: Int, onClick: (String) -> Unit) {
+    fun bind(
+        comment: CommentModel,
+        position: Int,
+        onClick: (String, Boolean) -> Unit,
+        onLinkClicked: (String) -> Unit
+    ) {
         marker.backgroundTintList =
             ColorStateList.valueOf(colors[(comment.indentLevel - 1) % colors.size])
 
@@ -64,8 +68,8 @@ class CommentViewHolder private constructor(
             .replaceUrlSpans()
             .trimEnd()
         body.movementMethod = PressableLinkMovementMethod {
-            // TODO
-            Log.i("TEH", "Link clicked: $it")
+            if (it != null)
+                onLinkClicked(it)
         }
 
         val isCollapsed = comment.status == CommentStatus.COLLAPSED
@@ -77,6 +81,9 @@ class CommentViewHolder private constructor(
 
         collapsedIndicator.background =
             ContextCompat.getDrawable(collapsedIndicator.context, indicator)
+        collapsedIndicator.setOnClickListener {
+            onClick(comment.shortId, true)
+        }
 
         body.visibility = if (isCollapsed) View.GONE else View.VISIBLE
 
@@ -85,7 +92,7 @@ class CommentViewHolder private constructor(
         childCount.text = String.format(Locale.US, "%d", comment.childCount)
 
         root.setOnClickListener {
-            onClick(comment.shortId)
+            onClick(comment.shortId, false)
         }
     }
 
