@@ -1,4 +1,4 @@
-package dev.thomasharris.claw.feature.comments
+package dev.thomasharris.claw.core.ui.betterlinks
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -24,6 +24,10 @@ class LinkTextView : TextView {
      *
      *  This is actually basically the same as the super, with editable
      *  stuff removed
+     *
+     *  I guess I'm not super sure why I'm using a link movement method anymore,
+     *  except that it might work better for a11y.  Not quite sure how to check
+     *  that though
      */
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent?): Boolean {

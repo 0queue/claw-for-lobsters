@@ -2,9 +2,6 @@ package dev.thomasharris.claw.feature.comments
 
 import android.annotation.SuppressLint
 import android.content.res.ColorStateList
-import android.text.SpannableString
-import android.text.Spanned
-import android.text.style.URLSpan
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -19,6 +16,8 @@ import coil.transform.CircleCropTransformation
 import dev.thomasharris.claw.core.ext.dipToPx
 import dev.thomasharris.claw.core.ext.postedAgo
 import dev.thomasharris.claw.core.ext.toString
+import dev.thomasharris.claw.core.ui.betterlinks.PressableLinkMovementMethod
+import dev.thomasharris.claw.core.ui.betterlinks.replaceUrlSpans
 import dev.thomasharris.claw.lib.lobsters.CommentModel
 import dev.thomasharris.claw.lib.lobsters.CommentStatus
 import java.util.Date
@@ -64,7 +63,7 @@ class CommentViewHolder private constructor(
         body.text = HtmlCompat.fromHtml(comment.comment, HtmlCompat.FROM_HTML_MODE_LEGACY)
             .replaceUrlSpans()
             .trimEnd()
-        body.movementMethod = OnPressLinkMovementMethod {
+        body.movementMethod = PressableLinkMovementMethod {
             // TODO
             Log.i("TEH", "Link clicked: $it")
         }
@@ -99,15 +98,5 @@ class CommentViewHolder private constructor(
                     false
                 )
             )
-    }
-}
-
-private fun Spanned.replaceUrlSpans(): SpannableString = SpannableString(this).apply {
-    getSpans(0, length, URLSpan::class.java).forEach {
-        val start = getSpanStart(it)
-        val end = getSpanEnd(it)
-        removeSpan(it)
-        Log.i("TEH", "Replacing! ${it.url}")
-        setSpan(PressableSpan(it.url), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
     }
 }

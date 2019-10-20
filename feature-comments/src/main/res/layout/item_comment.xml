@@ -60,7 +60,7 @@
                 android:contentDescription="@string/collapsed_indicator_content_description" />
         </LinearLayout>
 
-        <dev.thomasharris.claw.feature.comments.LinkTextView
+        <dev.thomasharris.claw.core.ui.betterlinks.LinkTextView
             android:id="@+id/comment_body"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
