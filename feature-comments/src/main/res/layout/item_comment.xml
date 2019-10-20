@@ -60,13 +60,12 @@
                 android:contentDescription="@string/collapsed_indicator_content_description" />
         </LinearLayout>
 
-        <TextView
+        <dev.thomasharris.claw.feature.comments.LinkTextView
             android:id="@+id/comment_body"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
-            android:textIsSelectable="true"
             tools:text="This is an example comment that a lobster may provide, stretching for a while\n\nmore text" />
 
     </LinearLayout>

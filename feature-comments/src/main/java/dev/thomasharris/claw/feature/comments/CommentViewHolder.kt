@@ -2,7 +2,6 @@ package dev.thomasharris.claw.feature.comments
 
 import android.annotation.SuppressLint
 import android.content.res.ColorStateList
-import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -59,7 +58,7 @@ class CommentViewHolder private constructor(
         author.text = "${comment.username} $action ${t.toString(root.context)}"
 
         body.text = HtmlCompat.fromHtml(comment.comment, HtmlCompat.FROM_HTML_MODE_LEGACY).trimEnd()
-        body.movementMethod = LinkMovementMethod.getInstance()
+        body.movementMethod = OnPressLinkMovementMethod.INSTANCE
 
         val isCollapsed = comment.status == CommentStatus.COLLAPSED
 
