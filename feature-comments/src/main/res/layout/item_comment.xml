@@ -8,13 +8,16 @@
     android:layout_marginBottom="4dp"
     android:background="@drawable/background_ripple"
     android:orientation="horizontal"
-    android:padding="4dp">
+    android:paddingStart="4dp"
+    android:paddingEnd="4dp">
 
     <View
         android:id="@+id/comment_marker"
         android:layout_width="4dp"
         android:layout_height="match_parent"
+        android:layout_marginTop="4dp"
         android:layout_marginEnd="4dp"
+        android:layout_marginBottom="4dp"
         android:background="@drawable/background_comment"
         tools:backgroundTint="#00f" />
 
@@ -54,18 +57,20 @@
 
             <ImageView
                 android:id="@+id/comment_collapsed_indicator"
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:background="@drawable/ic_arrow_drop_up_black_24dp"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
                 android:contentDescription="@string/collapsed_indicator_content_description"
-                android:foreground="@drawable/background_ripple"/>
+                android:foreground="@drawable/background_ripple"
+                android:scaleType="center"
+                android:src="@drawable/ic_arrow_drop_up_black_16dp" />
         </LinearLayout>
 
         <dev.thomasharris.claw.core.ui.betterlinks.LinkTextView
             android:id="@+id/comment_body"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
             android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
             tools:text="This is an example comment that a lobster may provide, stretching for a while\n\nmore text" />
 

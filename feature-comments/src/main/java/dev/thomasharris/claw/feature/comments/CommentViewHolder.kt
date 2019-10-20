@@ -75,12 +75,16 @@ class CommentViewHolder private constructor(
         val isCollapsed = comment.status == CommentStatus.COLLAPSED
 
         val indicator = if (isCollapsed)
-            R.drawable.ic_arrow_drop_down_black_24dp
+            R.drawable.ic_arrow_drop_down_black_16dp
         else
-            R.drawable.ic_arrow_drop_up_black_24dp
+            R.drawable.ic_arrow_drop_up_black_16dp
 
-        collapsedIndicator.background =
-            ContextCompat.getDrawable(collapsedIndicator.context, indicator)
+        collapsedIndicator.setImageDrawable(
+            ContextCompat.getDrawable(
+                collapsedIndicator.context,
+                indicator
+            )
+        )
         collapsedIndicator.setOnClickListener {
             onClick(comment.shortId, true)
         }

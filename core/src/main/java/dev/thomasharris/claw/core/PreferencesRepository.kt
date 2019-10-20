@@ -13,12 +13,6 @@ class PreferencesRepository @Inject constructor(
     private val prefs: SharedPreferences
 ) {
 
-    var commentCollapseMode: CommentCollapseMode
-        set(value) = prefs.edit {
-            putString("COMMENT_COLLAPSE_MODE", value.toString())
-        }
-        get() = CommentCollapseMode.valueOf(prefs.getString("COMMENT_COLLAPSE_MODE", "MOBILE")!!)
-
     fun setTheme(value: ThemeMode) = prefs.edit {
         putString("THEME_MODE", value.toString())
     }
@@ -34,10 +28,5 @@ class PreferencesRepository @Inject constructor(
             else
                 AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY
         )
-    }
-
-    enum class CommentCollapseMode {
-        MOBILE,
-        DESKTOP
     }
 }
