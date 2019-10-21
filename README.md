@@ -43,11 +43,14 @@ Hopefully I remembered them all
 - Dagger 2
 - Paging Architecture Component
 - Coil
+- Chrome custom tabs
 
 ## Future plans
 
-- Night mode
-- Better comment rendering (HtmlCompat.fromHtml(...) is really inadequate)
-- Settings page
-- Tag filtering
+- ~~Night mode~~
+- ~~Better comment rendering (HtmlCompat.fromHtml(...) is really inadequate)~~
+  (URLSpan has been replaced)
+- ~~Settings page~~
+- Github releases, maybe
 - Feature to see profile pages
+- Tag filtering
