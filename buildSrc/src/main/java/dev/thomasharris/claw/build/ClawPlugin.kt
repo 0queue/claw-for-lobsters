@@ -1,4 +1,4 @@
-package dev.thomasharris.build
+package dev.thomasharris.claw.build
 
 import com.android.build.gradle.AppExtension
 import com.android.build.gradle.BaseExtension

@@ -1,4 +1,4 @@
-import dev.thomasharris.build.NewModuleTask
+import dev.thomasharris.claw.build.NewModuleTask
 
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 

@@ -1,4 +1,4 @@
-import dev.thomasharris.build.testing
+import dev.thomasharris.claw.build.testing
 
 plugins {
     id("dev.thomasharris.claw.android")

@@ -1,4 +1,4 @@
-package dev.thomasharris.build
+package dev.thomasharris.claw.build
 
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
@@ -79,7 +79,7 @@ open class NewModuleTask : DefaultTask() {
         File(project.rootDir, "settings.gradle.kts").appendText("\ninclude(\":$moduleName\")")
 
         // create proguard-rules.pro
-        with (File(project.rootDir, "proguard-rules.pro")){
+        with (File(project.rootDir, "$moduleName/proguard-rules.pro")){
             createNewFile()
             appendText("# -dontobfuscate")
         }

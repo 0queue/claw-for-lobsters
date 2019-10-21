@@ -1,8 +1,8 @@
-import dev.thomasharris.build.androidTesting
-import dev.thomasharris.build.coil
-import dev.thomasharris.build.conductor
-import dev.thomasharris.build.material
-import dev.thomasharris.build.testing
+import dev.thomasharris.claw.build.androidTesting
+import dev.thomasharris.claw.build.coil
+import dev.thomasharris.claw.build.conductor
+import dev.thomasharris.claw.build.material
+import dev.thomasharris.claw.build.testing
 
 plugins {
     id("dev.thomasharris.claw.android")
