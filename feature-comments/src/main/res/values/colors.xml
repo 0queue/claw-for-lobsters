@@ -19,4 +19,6 @@
         <item>@color/indent_6</item>
     </array>
 
+    <color name="comment_original_poster">#6081bd</color>
+
 </resources>

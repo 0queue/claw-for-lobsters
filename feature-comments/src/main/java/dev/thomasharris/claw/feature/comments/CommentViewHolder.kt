@@ -2,6 +2,9 @@ package dev.thomasharris.claw.feature.comments
 
 import android.annotation.SuppressLint
 import android.content.res.ColorStateList
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -61,8 +64,20 @@ class CommentViewHolder private constructor(
         }
 
         val t = Date(min(comment.createdAt.time, comment.updatedAt.time)).postedAgo()
-        val action = if (comment.createdAt != comment.updatedAt) " edited" else ""
-        author.text = "${comment.username} $action ${t.toString(root.context)}"
+        val action = if (comment.createdAt != comment.updatedAt) "edited" else ""
+        author.text =
+            SpannableString("${comment.username} $action ${t.toString(root.context)}").apply {
+                // CAREFUL slightly hardcoded here
+                if (comment.username == comment.storyAuthor)
+                    setSpan(
+                        ForegroundColorSpan(
+                            ContextCompat.getColor(
+                                root.context,
+                                R.color.comment_original_poster
+                            )
+                        ), 0, comment.username.length, Spannable.SPAN_INCLUSIVE_EXCLUSIVE
+                    )
+            }
 
         body.text = HtmlCompat.fromHtml(comment.comment, HtmlCompat.FROM_HTML_MODE_LEGACY)
             .replaceUrlSpans()

@@ -121,9 +121,11 @@ SELECT
                 AND comments.commentIndex < next.commentIndex
         )
         SELECT count(*) FROM children
-    ) childCount
+    ) childCount,
+    story.username storyAuthor
 FROM comment c
-LEFT JOIN user ON c.username = user.username;
+LEFT JOIN user ON c.username = user.username
+LEFT JOIN story ON c.storyId = story.shortId;
 
 -- Story methods
 insertStory:
