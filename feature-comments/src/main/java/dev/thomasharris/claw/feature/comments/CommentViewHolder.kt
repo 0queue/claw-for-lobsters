@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
@@ -35,6 +36,7 @@ class CommentViewHolder private constructor(
     private val body: TextView = root.findViewById(R.id.comment_body)
     private val collapsedIndicator: ImageView = root.findViewById(R.id.comment_collapsed_indicator)
     private val childCount: TextView = root.findViewById(R.id.comment_child_count)
+    private val contentContainer: LinearLayout = root.findViewById(R.id.comment_content_container)
 
     private val colors = root.context.resources.getIntArray(R.array.indentation_colors).toList()
 
@@ -109,6 +111,10 @@ class CommentViewHolder private constructor(
         childCount.visibility =
             if (isCollapsed && comment.childCount > 0) View.VISIBLE else View.GONE
         childCount.text = String.format(Locale.US, "%d", comment.childCount)
+
+        val commentAlpha = if (comment.score < -2) .7f else 1f
+        contentContainer.alpha = commentAlpha
+        marker.alpha = commentAlpha
 
         root.setOnClickListener {
             onClick(comment.shortId, false)
