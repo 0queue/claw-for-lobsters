@@ -4,6 +4,7 @@ import androidx.core.os.bundleOf
 import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
+import com.bluelinelabs.conductor.changehandler.SimpleSwapChangeHandler
 
 interface Navigator {
     fun goto(routerTransaction: RouterTransaction)
@@ -44,6 +45,17 @@ sealed class Destination {
             return RouterTransaction.with(controller as Controller)
                 .pushChangeHandler(FadeChangeHandler(100, false))
                 .popChangeHandler(FadeChangeHandler(100))
+        }
+    }
+
+    class WebPage(private val webPageUrl: String) : Destination() {
+        override fun routerTransaction(): RouterTransaction {
+            val clazz = Class.forName("dev.thomasharris.claw.feature.webpage.WebPageController")
+            val controller = clazz.constructors[0].newInstance(bundleOf("webPageUrl" to webPageUrl))
+
+            return RouterTransaction.with(controller as Controller)
+                .pushChangeHandler(SimpleSwapChangeHandler(false))
+                .popChangeHandler(SimpleSwapChangeHandler(false))
         }
     }
 }

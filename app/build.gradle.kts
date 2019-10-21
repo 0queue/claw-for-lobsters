@@ -12,6 +12,7 @@ dependencies {
     implementation(project(":feature-front-page"))
     implementation(project(":feature-comments"))
     implementation(project(":feature-settings"))
+    implementation(project(":feature-web-page"))
 
     debugImplementation("com.squareup.leakcanary:leakcanary-android:2.0-beta-3")
 }

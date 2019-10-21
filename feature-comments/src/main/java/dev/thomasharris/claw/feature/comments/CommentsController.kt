@@ -1,19 +1,11 @@
 package dev.thomasharris.claw.feature.comments
 
-import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.net.Uri
 import android.os.Bundle
-import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.AttrRes
 import androidx.appcompat.widget.Toolbar
 import androidx.browser.customtabs.CustomTabsClient
-import androidx.browser.customtabs.CustomTabsIntent
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -25,6 +17,8 @@ import dev.thomasharris.claw.core.ext.getComponent
 import dev.thomasharris.claw.feature.comments.di.CommentsComponent
 import dev.thomasharris.claw.feature.comments.di.DaggerCommentsComponent
 import dev.thomasharris.claw.lib.lobsters.LoadingStatus
+import dev.thomasharris.claw.lib.navigator.Destination
+import dev.thomasharris.claw.lib.navigator.goto
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
@@ -132,6 +126,7 @@ class CommentsController constructor(args: Bundle) : LifecycleController(args) {
             insets
         }
 
+        // warm up custom tabs a little
         CustomTabsClient.connectAndInitialize(activity, "com.android.chrome")
         return root
     }
@@ -143,43 +138,5 @@ class CommentsController constructor(args: Bundle) : LifecycleController(args) {
     }
 
     private fun launchUrl(@Suppress("UNUSED_PARAMETER") _x: Any, url: String) = launchUrl(url)
-
-    private fun launchUrl(url: String) {
-        // TODO eventually fallback to web view
-        CustomTabsIntent.Builder().apply {
-            activity?.bitmapFromVector(R.drawable.ic_arrow_back_black_24dp)?.let {
-                setCloseButtonIcon(it)
-            }
-
-            setShowTitle(true)
-
-            activity?.let {
-                setStartAnimations(it, R.anim.slide_in_from_right, R.anim.nothing)
-                setExitAnimations(it, R.anim.nothing, R.anim.slide_out_to_right)
-                // closest thing to turning on dark mode as far as I can tell
-                setToolbarColor(it.getColorAttr(R.attr.colorSurface))
-            }
-        }.build().launchUrl(activity, Uri.parse(url))
-    }
-}
-
-fun Context.bitmapFromVector(drawableId: Int): Bitmap? {
-    val drawable = ContextCompat.getDrawable(this, drawableId) ?: return null
-    val bitmap = Bitmap.createBitmap(
-        drawable.intrinsicWidth,
-        drawable.intrinsicHeight,
-        Bitmap.Config.ARGB_8888
-    )
-
-    val canvas = Canvas(bitmap)
-    drawable.setBounds(0, 0, canvas.width, canvas.height)
-    drawable.draw(canvas)
-    return bitmap
-}
-
-fun Context.getColorAttr(@AttrRes attr: Int): Int {
-    TypedValue().let {
-        theme.resolveAttribute(attr, it, true)
-        return it.data
-    }
+    private fun launchUrl(url: String) = goto(Destination.WebPage(url))
 }
