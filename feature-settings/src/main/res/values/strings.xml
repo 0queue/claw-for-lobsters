@@ -3,4 +3,6 @@
     <string name="settings_title">Settings</string>
     <string name="settings_theme_label_text">Theme</string>
     <string name="settings_comment_collapsing_label_text">Comment Collapsing</string>
+    <!-- Claw for Lobsters v<1>< (debug)> -->
+    <string name="settings_app_info_text">Claw for Lobsters v%1$d%2$s</string>
 </resources>

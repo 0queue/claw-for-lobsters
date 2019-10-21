@@ -37,6 +37,17 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <TextView
+            android:id="@+id/settings_app_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+            android:textStyle="italic"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/settings_title"
+            tools:text="Claw for Lobsters v1 (debug)" />
+
 
         <TextView
             android:id="@+id/settings_theme_label"
@@ -45,7 +56,7 @@
             android:text="@string/settings_theme_label_text"
             android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/settings_title" />
+            app:layout_constraintTop_toBottomOf="@id/settings_app_info" />
 
         <com.google.android.material.button.MaterialButtonToggleGroup
             android:id="@+id/settings_theme_toggle_group"

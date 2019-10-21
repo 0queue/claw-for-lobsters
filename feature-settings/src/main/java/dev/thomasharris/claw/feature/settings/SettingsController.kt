@@ -30,6 +30,8 @@ class SettingsController : LifecycleController() {
             .build()
     }
 
+    private lateinit var appInfo: TextView
+
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<ConstraintLayout>
     private lateinit var themeToggleGroup: MaterialButtonToggleGroup
     private lateinit var themeDescription: TextView
@@ -40,6 +42,8 @@ class SettingsController : LifecycleController() {
         val bottomSheet = root.findViewById<ConstraintLayout>(R.id.settings_bottom_sheet)
         themeToggleGroup = root.findViewById(R.id.settings_theme_toggle_group)
         themeDescription = root.findViewById(R.id.settings_theme_description)
+
+        appInfo = root.findViewById(R.id.settings_app_info)
 
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet).apply {
             bottomSheetCallback = object : BottomSheetBehavior.BottomSheetCallback() {
@@ -90,6 +94,11 @@ class SettingsController : LifecycleController() {
                 (b as MaterialButton).isChecked = true
             }
         }
+
+        @Suppress("ConstantConditionIf")
+        val debug = if (BuildConfig.BUILD_TYPE == "debug") " (debug)" else ""
+        appInfo.text =
+            root.context.getString(R.string.settings_app_info_text, BuildConfig.VERSION_CODE, debug)
 
         return root
     }
