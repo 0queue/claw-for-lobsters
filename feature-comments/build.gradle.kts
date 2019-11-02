@@ -13,7 +13,7 @@ dependencies {
     material()
     coil()
 
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.2.0-alpha05")
     implementation("androidx.browser:browser:1.0.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.2.0-rc01")
     implementation(project(":core"))
 }

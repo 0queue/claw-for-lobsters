@@ -1,6 +1,7 @@
 package dev.thomasharris.claw.lib.lobsters
 
 import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.GET
@@ -28,6 +29,7 @@ interface LobstersService {
 
 typealias ShortId = String
 
+@JsonClass(generateAdapter = true)
 data class StoryNetworkEntity(
     @field:Json(name = "short_id") val shortId: ShortId,
     @field:Json(name = "short_id_url") val shortIdUrl: String,
@@ -44,6 +46,7 @@ data class StoryNetworkEntity(
     val comments: List<CommentNetworkEntity>? = null
 )
 
+@JsonClass(generateAdapter = true)
 data class CommentNetworkEntity(
     @field:Json(name = "short_id") val shortId: ShortId,
     @field:Json(name = "short_id_url") val shortIdUrl: String,
@@ -60,6 +63,7 @@ data class CommentNetworkEntity(
     @field:Json(name = "commenting_user") val commentingUser: UserNetworkEntity
 )
 
+@JsonClass(generateAdapter = true)
 data class UserNetworkEntity(
     val username: String,
     @field:Json(name = "created_at") val createdAt: Date,
@@ -71,6 +75,7 @@ data class UserNetworkEntity(
     @field:Json(name = "invited_by_user") val invitedByUser: String
 )
 
+@JsonClass(generateAdapter = true)
 data class TagNetworkEntity(
     val id: Int,
     val tag: String,

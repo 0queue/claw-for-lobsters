@@ -11,7 +11,6 @@ import org.gradle.api.artifacts.dsl.DependencyHandler
 import org.gradle.kotlin.dsl.findByType
 import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.withType
-import org.jetbrains.kotlin.gradle.plugin.KaptExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.util.Properties
 
@@ -58,8 +57,8 @@ internal fun Project.configureAndroid() {
         defaultConfig {
             minSdkVersion(23)
             targetSdkVersion(29)
-            versionCode = 1
-            versionName = "1.0"
+            versionCode = 2
+            versionName = "2"
             testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         }
 
@@ -109,17 +108,11 @@ internal fun Project.configureAndroid() {
  * Dependencies that everyone has, guaranteed (kotlin, dagger)
  */
 internal fun Project.configureDependencies() {
-    extensions.getByType<KaptExtension>().run {
-        javacOptions {
-            option("-Adagger.gradle.incremental")
-        }
-    }
-
     dependencies.run {
         add("implementation", "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.3.50")
         add("implementation", "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.2")
-        add("implementation", "com.google.dagger:dagger:2.22.1")
-        add("kapt", "com.google.dagger:dagger-compiler:2.22.1")
+        add("implementation", "com.google.dagger:dagger:2.25.2")
+        add("kapt", "com.google.dagger:dagger-compiler:2.25.2")
     }
 }
 
@@ -145,11 +138,11 @@ fun DependencyHandler.conductor() {
 
 fun DependencyHandler.material() {
     add("implementation", "androidx.appcompat:appcompat:1.1.0")
-    add("implementation", "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0-alpha02")
-    add("implementation", "com.google.android.material:material:1.1.0-alpha10")
+    add("implementation", "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0-alpha03")
+    add("implementation", "com.google.android.material:material:1.1.0-beta01")
     add("implementation", "androidx.constraintlayout:constraintlayout:1.1.3")
 }
 
 fun DependencyHandler.coil() {
-    add("implementation", "io.coil-kt:coil:0.7.0")
+    add("implementation", "io.coil-kt:coil:0.8.0")
 }

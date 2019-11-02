@@ -46,14 +46,14 @@ class SettingsController : LifecycleController() {
         appInfo = root.findViewById(R.id.settings_app_info)
 
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet).apply {
-            bottomSheetCallback = object : BottomSheetBehavior.BottomSheetCallback() {
+            addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
                 override fun onSlide(bottomSheet: View, slideOffset: Float) = Unit
 
                 override fun onStateChanged(bottomSheet: View, newState: Int) {
                     if (newState == BottomSheetBehavior.STATE_HIDDEN)
                         back()
                 }
-            }
+            })
 
             state = BottomSheetBehavior.STATE_HIDDEN
         }
