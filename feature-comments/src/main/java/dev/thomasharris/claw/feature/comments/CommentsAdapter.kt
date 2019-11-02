@@ -48,7 +48,8 @@ class CommentsAdapter(
                     story,
                     tags,
                     isCompact = false,
-                    onClickListener = listener
+                    onClickListener = listener,
+                    onLinkClicked = onLinkClick
                 )
             }
             VIEW_TYPE_COMMENT -> {

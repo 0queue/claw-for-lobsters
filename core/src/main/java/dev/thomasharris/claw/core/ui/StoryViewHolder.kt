@@ -6,7 +6,6 @@ import android.text.Spannable
 import android.text.SpannableString
 import android.text.SpannableStringBuilder
 import android.text.TextUtils
-import android.text.method.LinkMovementMethod
 import android.text.style.StyleSpan
 import android.util.TypedValue
 import android.view.LayoutInflater
@@ -22,6 +21,8 @@ import dev.thomasharris.claw.core.R
 import dev.thomasharris.claw.core.ext.postedAgo
 import dev.thomasharris.claw.core.ext.shortUrl
 import dev.thomasharris.claw.core.ext.toString
+import dev.thomasharris.claw.core.ui.betterlinks.PressableLinkMovementMethod
+import dev.thomasharris.claw.core.ui.betterlinks.replaceUrlSpans
 import dev.thomasharris.claw.lib.lobsters.StoryModel
 import dev.thomasharris.claw.lib.lobsters.TagModel
 
@@ -36,7 +37,8 @@ class StoryViewHolder private constructor(private val root: View) : RecyclerView
         story: StoryModel,
         tags: List<TagModel>,
         isCompact: Boolean = true,
-        onClickListener: ((String, String) -> Unit)? = null
+        onClickListener: ((String, String) -> Unit)? = null,
+        onLinkClicked: ((String) -> Unit)? = null
     ) {
         avatar.load("https://lobste.rs/${story.avatarShortUrl}") {
             crossfade(true)
@@ -105,8 +107,11 @@ class StoryViewHolder private constructor(private val root: View) : RecyclerView
             description.text = HtmlCompat.fromHtml(
                 story.description,
                 HtmlCompat.FROM_HTML_MODE_LEGACY
-            ).trimEnd()
-            description.movementMethod = LinkMovementMethod.getInstance()
+            ).replaceUrlSpans().trimEnd()
+            description.movementMethod = PressableLinkMovementMethod {
+                if (it != null)
+                    onLinkClicked?.invoke(it)
+            }
         }
     }
 
