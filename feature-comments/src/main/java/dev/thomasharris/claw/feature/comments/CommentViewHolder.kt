@@ -66,9 +66,16 @@ class CommentViewHolder private constructor(
         }
 
         val t = Date(min(comment.createdAt.time, comment.updatedAt.time)).postedAgo()
-        val action = if (comment.createdAt != comment.updatedAt) "edited" else ""
+        val action = if (comment.createdAt != comment.updatedAt) "edited " else ""
+        val scoreText = comment.score.let { s ->
+             when {
+                s < -2 -> " | -$s"
+                s > 4 -> " | +$s"
+                else -> ""
+            }
+        }
         author.text =
-            SpannableString("${comment.username} $action ${t.toString(root.context)}").apply {
+            SpannableString("${comment.username} $action${t.toString(root.context)}$scoreText").apply {
                 // CAREFUL slightly hardcoded here
                 if (comment.username == comment.storyAuthor)
                     setSpan(
