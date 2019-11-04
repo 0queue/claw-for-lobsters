@@ -70,7 +70,7 @@ data class UserNetworkEntity(
     @field:Json(name = "is_admin") val isAdmin: Boolean,
     val about: String,
     @field:Json(name = "is_moderator") val isModerator: Boolean,
-    val karma: Int,
+    val karma: Int = 0,
     @field:Json(name = "avatar_url") val avatarUrl: String,
     @field:Json(name = "invited_by_user") val invitedByUser: String
 )
