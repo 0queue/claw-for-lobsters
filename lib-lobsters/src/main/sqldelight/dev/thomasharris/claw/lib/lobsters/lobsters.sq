@@ -143,6 +143,9 @@ SELECT * FROM storyModel WHERE shortId = :shortId;
 getStory:
 SELECT * FROM story WHERE shortId = :shortId;
 
+getPageSize:
+SELECT count(shortId) FROM storyModel WHERE pageIndex = :pageIndex;
+
 
 -- user methods
 insertUser:
