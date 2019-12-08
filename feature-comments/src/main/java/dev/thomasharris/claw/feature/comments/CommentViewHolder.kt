@@ -69,7 +69,7 @@ class CommentViewHolder private constructor(
         val action = if (comment.createdAt != comment.updatedAt) "edited " else ""
         val scoreText = comment.score.let { s ->
              when {
-                s < -2 -> " | -$s"
+                s < -2 -> " | $s"
                 s > 4 -> " | +$s"
                 else -> ""
             }
