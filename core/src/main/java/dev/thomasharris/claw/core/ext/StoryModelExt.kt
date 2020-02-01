@@ -4,7 +4,7 @@ import android.content.Context
 import dev.thomasharris.claw.core.R
 import dev.thomasharris.claw.lib.lobsters.StoryModel
 import java.net.URI
-import java.util.*
+import java.util.Date
 import java.util.concurrent.TimeUnit
 import kotlin.math.abs
 
@@ -28,4 +28,4 @@ fun Pair<Long, TimeUnit>.toString(context: Context): String {
     }
 }
 
-fun StoryModel.shortUrl() = URI(url).host?.removePrefix("www.")
+fun StoryModel.shortUrl() = URI(url.trim()).host?.removePrefix("www.")
