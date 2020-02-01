@@ -127,7 +127,7 @@ class CommentsController constructor(args: Bundle) : LifecycleController(args) {
         }
 
         // warm up custom tabs a little
-        CustomTabsClient.connectAndInitialize(activity, "com.android.chrome")
+        CustomTabsClient.connectAndInitialize(root.context, "com.android.chrome")
         return root
     }
 

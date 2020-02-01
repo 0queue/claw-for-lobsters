@@ -57,8 +57,8 @@ internal fun Project.configureAndroid() {
         defaultConfig {
             minSdkVersion(23)
             targetSdkVersion(29)
-            versionCode = 5
-            versionName = "5"
+            versionCode = 6
+            versionName = "6"
             testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         }
 
@@ -109,10 +109,10 @@ internal fun Project.configureAndroid() {
  */
 internal fun Project.configureDependencies() {
     dependencies.run {
-        add("implementation", "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.3.50")
-        add("implementation", "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.2")
-        add("implementation", "com.google.dagger:dagger:2.25.2")
-        add("kapt", "com.google.dagger:dagger-compiler:2.25.2")
+        add("implementation", "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.3.61")
+        add("implementation", "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.3")
+        add("implementation", "com.google.dagger:dagger:2.26")
+        add("kapt", "com.google.dagger:dagger-compiler:2.26")
     }
 }
 
@@ -139,10 +139,10 @@ fun DependencyHandler.conductor() {
 fun DependencyHandler.material() {
     add("implementation", "androidx.appcompat:appcompat:1.1.0")
     add("implementation", "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0-alpha03")
-    add("implementation", "com.google.android.material:material:1.1.0-beta01")
+    add("implementation", "com.google.android.material:material:1.1.0-rc02")
     add("implementation", "androidx.constraintlayout:constraintlayout:1.1.3")
 }
 
 fun DependencyHandler.coil() {
-    add("implementation", "io.coil-kt:coil:0.8.0")
+    add("implementation", "io.coil-kt:coil:0.9.2")
 }

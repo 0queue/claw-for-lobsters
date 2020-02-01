@@ -15,7 +15,7 @@ dependencies {
     material()
     coil()
 
-    implementation("org.jetbrains.kotlin:kotlin-reflect:1.3.50")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:1.3.61")
 
     api(project(":lib-lobsters"))
     api(project(":lib-navigator"))

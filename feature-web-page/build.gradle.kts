@@ -12,5 +12,5 @@ dependencies {
     material()
 
     implementation(project(":lib-navigator"))
-    implementation("androidx.browser:browser:1.0.0")
+    implementation("androidx.browser:browser:1.2.0")
 }
