@@ -60,9 +60,9 @@ class StoryRepository @Inject constructor(
             lobstersQueries.insertUser(np.submitter.toDB(now))
         }
 
-        // cascade if too many stories on this page (meaning a story dropped to a lower page)
+        // if a story dropped off this page, trim remaining stories
         if (lobstersQueries.getPageSize(index).executeAsOne() > 25)
-            getFrontPageSync(index + 1)
+            lobstersQueries.trimExcess(index, 25)
 
         if (index == 0) statusChannel.offer(Event(LoadingStatus.DONE))
 

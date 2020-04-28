@@ -146,6 +146,9 @@ SELECT * FROM story WHERE shortId = :shortId;
 getPageSize:
 SELECT count(shortId) FROM storyModel WHERE pageIndex = :pageIndex;
 
+trimExcess:
+DELETE FROM story WHERE (pageIndex = :pageIndex AND pageSubIndex >= :pageSubIndex) OR pageIndex > :pageIndex;
+
 
 -- user methods
 insertUser:
