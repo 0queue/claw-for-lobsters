@@ -63,7 +63,7 @@ class CommentsTouchListener(context: Context, private val onThreshold: () -> Uni
         MotionEvent.ACTION_MOVE -> {
             val angle = atan2(startY - ev.rawY, ev.rawX - startX) * (180f / PI)
             val res = (ev.rawX > startX && abs(angle) < MAX_SWIPE_ANGLE)
-            res
+            startTranslationX > 0 || res
         }
         else -> false
     }
