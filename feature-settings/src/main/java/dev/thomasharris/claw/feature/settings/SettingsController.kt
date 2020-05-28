@@ -3,6 +3,7 @@ package dev.thomasharris.claw.feature.settings
 
 import android.annotation.SuppressLint
 import android.os.Build
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -37,7 +38,11 @@ class SettingsController : LifecycleController() {
     private lateinit var themeDescription: TextView
 
     @SuppressLint("ClickableViewAccessibility")
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup,
+        savedViewState: Bundle?
+    ): View {
         val root = inflater.inflate(R.layout.settings, container, false) as CoordinatorLayout
         val bottomSheet = root.findViewById<ConstraintLayout>(R.id.settings_bottom_sheet)
         themeToggleGroup = root.findViewById(R.id.settings_theme_toggle_group)

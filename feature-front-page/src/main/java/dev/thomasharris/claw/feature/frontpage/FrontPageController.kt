@@ -1,5 +1,6 @@
 package dev.thomasharris.claw.feature.frontpage
 
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -70,7 +71,11 @@ class FrontPageController : LifecycleController() {
         setHasOptionsMenu(true)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup,
+        savedStateBundle: Bundle?
+    ): View {
         val root = inflater.inflate(R.layout.front_page, container, false)
         // viewBinding please
         toolbar = root.findViewById(R.id.front_page_toolbar)

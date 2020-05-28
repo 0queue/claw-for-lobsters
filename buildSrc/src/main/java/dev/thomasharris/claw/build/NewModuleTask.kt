@@ -19,7 +19,8 @@ open class NewModuleTask : DefaultTask() {
     var moduleName: String = ""
 
     @Input
-    @set:Option(option = "android", description = "Enable the android library pluging")
+    @set:Option(option = "android", description = "Enable the android library plugin")
+    @get:JvmName("getIsAndroid")
     var isAndroid: Boolean = false
 
     @Input

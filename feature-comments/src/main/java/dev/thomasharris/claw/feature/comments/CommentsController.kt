@@ -53,7 +53,11 @@ class CommentsController constructor(args: Bundle) : LifecycleController(args) {
 
     @FlowPreview
     @ExperimentalCoroutinesApi
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup,
+        savedStateBundle: Bundle?
+    ): View {
         val root = inflater.inflate(
             R.layout.comments,
             container,

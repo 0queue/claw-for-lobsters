@@ -20,8 +20,11 @@ private const val REQUEST_CODE = 102019
 
 @Suppress("unused")
 class WebPageController(args: Bundle) : Controller(args) {
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View =
-        inflater.inflate(R.layout.web_page, container, false)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup,
+        savedStateBundle: Bundle?
+    ): View = inflater.inflate(R.layout.web_page, container, false)
 
     override fun onAttach(view: View) {
         super.onAttach(view)
