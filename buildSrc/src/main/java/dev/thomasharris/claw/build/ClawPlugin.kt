@@ -82,6 +82,10 @@ internal fun Project.configureAndroid() {
             }
         }
 
+        // for some reason this is still marked incubating...
+        // so it is overridden in gradle.properties
+        // buildFeatures.viewBinding = true
+
         compileOptions {
             sourceCompatibility = JavaVersion.VERSION_1_8
             targetCompatibility = JavaVersion.VERSION_1_8
@@ -132,7 +136,7 @@ fun DependencyHandler.androidTesting() {
 }
 
 fun DependencyHandler.conductor() {
-    add("implementation", "com.bluelinelabs:conductor:3.0.0-rc1")
+    add("implementation", "com.bluelinelabs:conductor:3.0.0-rc6")
     add("implementation", "com.bluelinelabs:conductor-archlifecycle:3.0.0-rc6")
 }
 
