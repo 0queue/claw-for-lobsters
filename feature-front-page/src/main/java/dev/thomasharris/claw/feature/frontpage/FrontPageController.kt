@@ -8,12 +8,12 @@ import androidx.lifecycle.lifecycleScope
 import androidx.paging.PagedList
 import androidx.paging.toLiveData
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.bluelinelabs.conductor.archlifecycle.LifecycleController
 import com.google.android.material.snackbar.Snackbar
 import dev.thomasharris.claw.core.HasBinding
 import dev.thomasharris.claw.core.ext.fade
 import dev.thomasharris.claw.core.ext.getComponent
 import dev.thomasharris.claw.core.ext.observe
+import dev.thomasharris.claw.core.ui.ViewLifecycleController
 import dev.thomasharris.claw.feature.frontpage.di.DaggerFrontPageComponent
 import dev.thomasharris.claw.feature.frontpage.di.FrontPageComponent
 import dev.thomasharris.claw.feature.frontpage.di.FrontPageModule
@@ -22,14 +22,11 @@ import dev.thomasharris.claw.frontpage.feature.frontpage.databinding.FrontPageBi
 import dev.thomasharris.claw.lib.lobsters.LoadingStatus
 import dev.thomasharris.claw.lib.navigator.Destination
 import dev.thomasharris.claw.lib.navigator.goto
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 @Suppress("unused")
-class FrontPageController : LifecycleController(), HasBinding<FrontPageBinding> {
+class FrontPageController : ViewLifecycleController(), HasBinding<FrontPageBinding> {
 
     private val component by getComponent<FrontPageComponent> {
         DaggerFrontPageComponent.builder()
@@ -44,7 +41,10 @@ class FrontPageController : LifecycleController(), HasBinding<FrontPageBinding> 
             // to mitigate stopping while flinging, although a larger story card will help too
             .setPrefetchDistance(50)
             .build()
-        component.storyDataSourceFactoryFactory().create(lifecycleScope).toLiveData(config)
+
+        // TODO creates once, so the lifecycleowner never changes...
+        component.storyDataSourceFactoryFactory().create(viewLifecycleOwner.lifecycleScope)
+            .toLiveData(config)
     }
 
     private val listAdapter = FrontPageAdapter { shortId, _ ->
@@ -52,8 +52,6 @@ class FrontPageController : LifecycleController(), HasBinding<FrontPageBinding> 
     }
 
     override var binding: FrontPageBinding? = null
-
-    private var job: Job? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -71,7 +69,6 @@ class FrontPageController : LifecycleController(), HasBinding<FrontPageBinding> 
                     override fun onViewDetachedFromWindow(v: View?) {
                         // listAdapter outlives recycler, so make sure to detach it
                         frontPageRecycler.adapter = null
-                        setOnScrollChangeListener { _, _, _, _, _ -> }
                     }
 
                     override fun onViewAttachedToWindow(v: View?) = Unit
@@ -88,7 +85,9 @@ class FrontPageController : LifecycleController(), HasBinding<FrontPageBinding> 
                 }
             }
 
-            job = lifecycleScope.launch {
+            /*job = */
+            viewLifecycleOwner.lifecycleScope.launch {
+
                 component.storyRepositoryStatus().collect { status ->
                     frontPageSwipeRefresh.isRefreshing = status.peek() == LoadingStatus.LOADING
                     status.consume {
@@ -102,7 +101,7 @@ class FrontPageController : LifecycleController(), HasBinding<FrontPageBinding> 
                 }
             }
 
-            liveStories.observe(this@FrontPageController) {
+            liveStories.observe(viewLifecycleOwner) {
                 frontPageErrorView.fade(it.isEmpty())
                 frontPageRecycler.fade(it.isNotEmpty())
                 listAdapter.submitList(it)
@@ -123,16 +122,5 @@ class FrontPageController : LifecycleController(), HasBinding<FrontPageBinding> 
         }
 
         return requireBinding().root
-    }
-
-    override fun onDestroyView(view: View) {
-        super.onDestroyView(view)
-
-        // TODO implement a view lifecycle owner to prevent this sadness
-        liveStories.removeObservers(this)
-        binding = null
-        runBlocking {
-            job?.cancelAndJoin()
-        }
     }
 }
