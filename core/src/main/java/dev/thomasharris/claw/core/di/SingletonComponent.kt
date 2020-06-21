@@ -10,8 +10,6 @@ import dev.thomasharris.claw.lib.lobsters.AsyncStoryRepository
 import dev.thomasharris.claw.lib.lobsters.AsyncTagRepository
 import dev.thomasharris.claw.lib.lobsters.CommentRepository
 import dev.thomasharris.claw.lib.lobsters.Database
-import dev.thomasharris.claw.lib.lobsters.StoryRepository
-import dev.thomasharris.claw.lib.lobsters.TagRepository
 import dev.thomasharris.claw.lib.lobsters.di.LobstersModule
 import javax.inject.Singleton
 
@@ -20,11 +18,7 @@ import javax.inject.Singleton
 interface SingletonComponent {
     fun database(): Database
 
-    fun storyRepository(): StoryRepository
-
     val asyncStoryRepository: AsyncStoryRepository
-
-    fun tagRepository(): TagRepository
 
     val asyncTagRepository: AsyncTagRepository
 

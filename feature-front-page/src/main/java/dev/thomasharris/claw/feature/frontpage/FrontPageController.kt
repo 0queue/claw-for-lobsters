@@ -1,7 +1,6 @@
 package dev.thomasharris.claw.feature.frontpage
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -33,21 +32,9 @@ class FrontPageController : ViewLifecycleController(), HasBinding<FrontPageBindi
     private val component by getComponent<FrontPageComponent> {
         DaggerFrontPageComponent.builder()
             .singletonComponent(it)
-//            .frontPageModule(FrontPageModule())
             .build()
     }
 
-    //    private val liveStories by lazy {
-//        val config = PagedList.Config.Builder()
-//            .setPageSize(25)
-//            // to mitigate stopping while flinging, although a larger story card will help too
-//            .setPrefetchDistance(50)
-//            .build()
-//
-//        // TODO creates once, so the lifecycleowner never changes...
-//        component.storyDataSourceFactoryFactory().create(viewLifecycleOwner.lifecycleScope)
-//            .toLiveData(config)
-//    }
     private val stories by lazy {
         Pager(
             PagingConfig(
@@ -56,31 +43,25 @@ class FrontPageController : ViewLifecycleController(), HasBinding<FrontPageBindi
                 enablePlaceholders = false
             ),
             pagingSourceFactory = component::frontPagePagingSource
-        ).flow
-            .map { pagingData ->
-                @Suppress("RemoveExplicitTypeArguments")
-                pagingData
-                    .map(FrontPageItem::Story)
-                    .insertSeparators<FrontPageItem.Story, FrontPageItem> { before, after ->
-                        before?.let { b ->
-                            after?.let { a ->
-                                if (b.story.pageIndex == a.story.pageIndex - 1)
-                                    FrontPageItem.Divider(a.story.pageIndex + 1)
-                                else
-                                    null
-                            }
+        ).flow.map { pagingData ->
+            @Suppress("RemoveExplicitTypeArguments")
+            pagingData
+                .map(FrontPageItem::Story)
+                .insertSeparators<FrontPageItem.Story, FrontPageItem> { before, after ->
+                    before?.let { b ->
+                        after?.let { a ->
+                            if (b.story.pageIndex == a.story.pageIndex - 1)
+                                FrontPageItem.Divider(a.story.pageIndex + 1)
+                            else
+                                null
                         }
                     }
+                }
 
-            }
-            .cachedIn(lifecycleScope) // fine to cache in controller lifecycle
+        }.cachedIn(lifecycleScope) // fine to cache in controller lifecycle
     }
 
-//    private val listAdapter = FrontPageAdapter { shortId, _ ->
-//        goto(Destination.Comments(shortId))
-//    }
-
-    private val listAdapter2 = FrontPageAdapter2 { shortId, _ ->
+    private val adapter = FrontPageAdapter2 { shortId, _ ->
         goto(Destination.Comments(shortId))
     }
 
@@ -93,7 +74,7 @@ class FrontPageController : ViewLifecycleController(), HasBinding<FrontPageBindi
     ): View {
         binding = FrontPageBinding.inflate(inflater, container, false).apply {
             frontPageRecycler.apply {
-                adapter = listAdapter2
+                adapter = this@FrontPageController.adapter
                 layoutManager = LinearLayoutManager(root.context)
                 setOnScrollChangeListener { v, _, _, _, _ ->
                     frontPageAppBarLayout.isSelected = v.canScrollVertically(-1)
@@ -118,56 +99,21 @@ class FrontPageController : ViewLifecycleController(), HasBinding<FrontPageBindi
                 }
             }
 
-//            viewLifecycleOwner.lifecycleScope.launch {
-//
-//                component.storyRepositoryStatus().collect { status ->
-//                    frontPageSwipeRefresh.isRefreshing = status.peek() == LoadingStatus.LOADING
-//                    status.consume {
-//                        if (it == LoadingStatus.ERROR)
-//                            Snackbar.make(
-//                                frontPageCoordinator,
-//                                "Couldn't reach lobste.rs",
-//                                Snackbar.LENGTH_SHORT
-//                            ).show()
-//                    }
-//                }
-//            }
-
             viewLifecycleOwner.lifecycleScope.launch {
-                Log.i("FrontPageController", "Starting collection")
-
                 stories.collectLatest { pagingData ->
-                    pagingData.map {
-                        Log.i("FrontPageController", "--> Item $it")
-                    }
-                    Log.i("FrontPageController", "Collected $pagingData")
-                    listAdapter2.submitData(pagingData)
+                    adapter.submitData(pagingData)
                 }
-
-                Log.i("FrontPageController", "Done collecting")
             }
 
             viewLifecycleOwner.lifecycleScope.launch {
-                listAdapter2.loadStateFlow.collect {
+                adapter.loadStateFlow.collect {
                     frontPageSwipeRefresh.isRefreshing = it.refresh is LoadState.Loading
                 }
             }
 
-//            liveStories.observe(viewLifecycleOwner) {
-//                frontPageErrorView.fade(it.isEmpty())
-//                frontPageRecycler.fade(it.isNotEmpty())
-//                listAdapter.submitList(it)
-//            }
-
             frontPageSwipeRefresh.setOnRefreshListener {
-//                liveStories.value?.dataSource?.invalidate()
-//                component.frontPagePagingSource.invalidate()
-                listAdapter2.refresh()
+                adapter.refresh()
             }
-
-//            frontPageErrorViewReload.setOnClickListener {
-//                liveStories.value?.dataSource?.invalidate()
-//            }
 
             root.setOnApplyWindowInsetsListener { v, insets ->
                 v.onApplyWindowInsets(insets)

@@ -9,9 +9,11 @@ import androidx.recyclerview.widget.RecyclerView
 import dev.thomasharris.claw.core.ui.StoryViewHolder
 import dev.thomasharris.claw.feature.frontpage.DividerViewHolder
 import dev.thomasharris.claw.feature.frontpage.FrontPageItem
-import dev.thomasharris.claw.feature.frontpage.VIEW_TYPE_DIVIDER
-import dev.thomasharris.claw.feature.frontpage.VIEW_TYPE_STORY
 import dev.thomasharris.claw.frontpage.feature.frontpage.R
+
+
+const val VIEW_TYPE_STORY = 1
+const val VIEW_TYPE_DIVIDER = 2
 
 class FrontPageAdapter2(
     private val onClick: (String, String) -> Unit
@@ -43,7 +45,7 @@ class FrontPageAdapter2(
             }
             is FrontPageItem.Divider -> (holder as DividerViewHolder).bind(getItem(position) as FrontPageItem.Divider)
             null -> {
-                // TODO
+                // TODO?
                 Log.i("FrontPageAdapter2", "Does not support null yet...")
             }
         }

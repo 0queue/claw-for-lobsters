@@ -9,5 +9,3 @@ sealed class FrontPageItem {
 
     data class Divider(val n: Int) : FrontPageItem()
 }
-
-//fun StoryModel.toItem(tags: List<TagModel>) = FrontPageItem.Story(this, tags)

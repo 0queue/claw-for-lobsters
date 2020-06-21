@@ -67,3 +67,34 @@ class AsyncStoryRepository @Inject constructor(
     private suspend fun List<StoryModel>.withTags() = map { it x tagRepository.getFrontPageTags() }
 }
 
+
+fun StoryNetworkEntity.toDB(pageIndex: Int, subIndex: Int, now: Date = Date()) =
+    Story.Impl(
+        shortId,
+        title,
+        createdAt,
+        url,
+        score,
+        upvotes,
+        downvotes,
+        commentCount,
+        description,
+        submitter.username,
+        tags,
+        pageIndex,
+        subIndex,
+        now
+    )
+
+fun UserNetworkEntity.toDB(now: Date = Date()) =
+    User.Impl(
+        username,
+        createdAt,
+        isAdmin,
+        about,
+        isModerator,
+        karma,
+        avatarUrl,
+        invitedByUser,
+        now
+    )
