@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.lifecycleScope
+import androidx.paging.LoadState
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
@@ -131,6 +132,12 @@ class FrontPageController : ViewLifecycleController(), HasBinding<FrontPageBindi
                 Log.i("FrontPageController", "Done collecting")
             }
 
+            viewLifecycleOwner.lifecycleScope.launch {
+                listAdapter2.loadStateFlow.collect {
+                    frontPageSwipeRefresh.isRefreshing = it.refresh is LoadState.Loading
+                }
+            }
+
 //            liveStories.observe(viewLifecycleOwner) {
 //                frontPageErrorView.fade(it.isEmpty())
 //                frontPageRecycler.fade(it.isNotEmpty())
@@ -139,7 +146,8 @@ class FrontPageController : ViewLifecycleController(), HasBinding<FrontPageBindi
 
             frontPageSwipeRefresh.setOnRefreshListener {
 //                liveStories.value?.dataSource?.invalidate()
-                component.frontPagePagingSource.invalidate()
+//                component.frontPagePagingSource.invalidate()
+                listAdapter2.refresh()
             }
 
 //            frontPageErrorViewReload.setOnClickListener {

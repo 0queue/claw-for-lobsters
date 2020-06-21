@@ -54,8 +54,5 @@ class AsyncStoryRepository @Inject constructor(
                 }
         }
 
-    fun refresh() {
-        lobstersQueries.clear()
-    }
 }
 

@@ -18,13 +18,6 @@ class FrontPagePagingSource @Inject constructor(
     private val tagRepository: AsyncTagRepository
 ) : PagingSource<Int, FrontPageItem>() {
 
-    init {
-        registerInvalidatedCallback {
-            Log.i("FrontPagePagingSource", "Invalidated!")
-            storyRepository.refresh()
-        }
-    }
-
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, FrontPageItem> {
 
         Log.i("FrontPagePagingSource", "Load params: ${params.key} $params")
