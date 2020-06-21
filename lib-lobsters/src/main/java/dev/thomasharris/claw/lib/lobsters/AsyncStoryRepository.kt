@@ -60,6 +60,10 @@ class AsyncStoryRepository @Inject constructor(
                 }
         }
 
+    suspend fun getStory(storyId: String): StoryWithTagsModel? = withContext(Dispatchers.IO) {
+        lobstersQueries.getStoryModel(storyId).oneOrNull()?.x(tagRepository.getFrontPageTags())
+    }
+
     private suspend fun List<StoryModel>.withTags() = map { it x tagRepository.getFrontPageTags() }
 }
 

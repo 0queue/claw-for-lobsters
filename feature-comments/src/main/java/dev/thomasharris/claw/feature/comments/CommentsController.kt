@@ -96,8 +96,8 @@ class CommentsController constructor(args: Bundle) : LifecycleController(args) {
 
         jobs += lifecycleScope.launch {
             component.commentRepository().liveVisibleComments(shortId)
-                .collect { (story, tags, comments) ->
-                    val head = story?.let { CommentsItem.Header(it, tags) }
+                .collect { (story, comments) ->
+                    val head = story?.let(CommentsItem::Header)
                     val tail = comments.map { CommentsItem.Comment(it) }
                     listAdapter.submitList(listOfNotNull(head) + tail + CommentsItem.Spacer(tail.isEmpty()))
                 }

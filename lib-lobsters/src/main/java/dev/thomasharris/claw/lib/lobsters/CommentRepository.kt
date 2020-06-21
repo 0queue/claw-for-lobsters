@@ -2,7 +2,6 @@ package dev.thomasharris.claw.lib.lobsters
 
 import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
-import com.squareup.sqldelight.runtime.coroutines.mapToOneOrNull
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.BroadcastChannel
@@ -10,6 +9,7 @@ import kotlinx.coroutines.channels.Channel.Factory.CONFLATED
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flow
 import java.util.Date
 import java.util.concurrent.Executor
 import java.util.concurrent.TimeUnit
@@ -20,6 +20,7 @@ import javax.inject.Singleton
 class CommentRepository @Inject constructor(
     private val lobstersService: LobstersService,
     private val lobstersQueries: LobstersQueries,
+    private val storyRepository: AsyncStoryRepository,
     private val background: Executor
 ) {
 
@@ -31,15 +32,12 @@ class CommentRepository @Inject constructor(
     fun liveStatus() = statusChannel.asFlow()
 
     @ExperimentalCoroutinesApi
-    fun liveVisibleComments(storyId: String): Flow<Triple<StoryModel?, List<TagModel>, List<CommentModel>>> {
-        val story = lobstersQueries.getStoryModel(storyId).asFlow().mapToOneOrNull()
-        val tags = lobstersQueries.getTagModels().asFlow().mapToList()
+    fun liveVisibleComments(storyId: String): Flow<Pair<StoryWithTagsModel?, List<CommentModel>>> {
+        val story = flow {  emit(storyRepository.getStory(storyId)) }
         val comments = lobstersQueries.getVisibleCommentModels(storyId).asFlow().mapToList()
 
-        return story.combine(tags) { s, ts ->
-            s to s?.tags.orEmpty().mapNotNull { tag -> ts.find { it.tag == tag } }
-        }.combine(comments) { (s, t), c ->
-            Triple(s, t, c)
+        return story.combine(comments) { s, c ->
+            s to c
         }
     }
 

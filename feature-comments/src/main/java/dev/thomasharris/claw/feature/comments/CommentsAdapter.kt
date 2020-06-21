@@ -8,16 +8,14 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import dev.thomasharris.claw.core.ui.StoryViewHolder
 import dev.thomasharris.claw.lib.lobsters.CommentModel
-import dev.thomasharris.claw.lib.lobsters.StoryModel
-import dev.thomasharris.claw.lib.lobsters.TagModel
-import dev.thomasharris.claw.lib.lobsters.x
+import dev.thomasharris.claw.lib.lobsters.StoryWithTagsModel
 
 const val VIEW_TYPE_HEADER = 1
 const val VIEW_TYPE_COMMENT = 2
 const val VIEW_TYPE_SPACER = 3
 
 sealed class CommentsItem {
-    data class Header(val story: StoryModel, val tags: List<TagModel>) : CommentsItem()
+    data class Header(val story: StoryWithTagsModel) : CommentsItem()
     data class Comment(val commentView: CommentModel) : CommentsItem()
     data class Spacer(val isEmpty: Boolean) : CommentsItem()
 }
@@ -43,12 +41,10 @@ class CommentsAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder.itemViewType) {
             VIEW_TYPE_HEADER -> {
-                val (story, tags) = getItem(position) as CommentsItem.Header
-                val listener = if (story.url.isNotBlank()) onHeaderClick else null
+                val header = getItem(position) as CommentsItem.Header
+                val listener = if (header.story.url.isNotBlank()) onHeaderClick else null
                 (holder as StoryViewHolder).bind(
-//                    story,
-//                    tags,
-                    story x tags, // TODO quickfix
+                    header.story,
                     isCompact = false,
                     onClickListener = listener,
                     onLinkClicked = onLinkClick
