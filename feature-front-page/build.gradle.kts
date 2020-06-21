@@ -15,6 +15,6 @@ dependencies {
 
     implementation(project(":core"))
 
-    implementation("androidx.paging:paging-runtime-ktx:2.1.2")
+    implementation("androidx.paging:paging-runtime:3.0.0-alpha01")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.2.0")
 }

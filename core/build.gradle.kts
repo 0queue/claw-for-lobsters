@@ -17,6 +17,8 @@ dependencies {
 
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.3.72")
 
+    api("com.michael-bull.kotlin-result:kotlin-result:1.1.6")
+
     api(project(":lib-lobsters"))
     api(project(":lib-navigator"))
 }
