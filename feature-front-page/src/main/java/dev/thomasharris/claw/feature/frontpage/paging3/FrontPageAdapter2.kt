@@ -39,7 +39,7 @@ class FrontPageAdapter2(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (val item = getItem(position)) {
             is FrontPageItem.Story -> {
-                (holder as StoryViewHolder).bind(item.frontPageStory, item.tags, onClickListener = onClick)
+                (holder as StoryViewHolder).bind(item.story, onClickListener = onClick)
             }
             is FrontPageItem.Divider -> (holder as DividerViewHolder).bind(getItem(position) as FrontPageItem.Divider)
             null -> {
@@ -69,7 +69,7 @@ class FrontPageAdapter2(
         override fun areItemsTheSame(oldItem: FrontPageItem, newItem: FrontPageItem): Boolean {
             (oldItem as? FrontPageItem.Story)?.let { old ->
                 (newItem as? FrontPageItem.Story)?.let { new ->
-                    return old.frontPageStory.shortId == new.frontPageStory.shortId
+                    return old.story.shortId == new.story.shortId
                 }
             }
 

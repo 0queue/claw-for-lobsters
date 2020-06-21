@@ -19,12 +19,11 @@ import coil.api.load
 import coil.transform.CircleCropTransformation
 import dev.thomasharris.claw.core.R
 import dev.thomasharris.claw.core.ext.postedAgo
-import dev.thomasharris.claw.core.ext.shortUrl
 import dev.thomasharris.claw.core.ext.toString
 import dev.thomasharris.claw.core.ui.betterlinks.PressableLinkMovementMethod
 import dev.thomasharris.claw.core.ui.betterlinks.replaceUrlSpans
-import dev.thomasharris.claw.lib.lobsters.StoryModel
-import dev.thomasharris.claw.lib.lobsters.TagModel
+import dev.thomasharris.claw.lib.lobsters.StoryWithTagsModel
+import dev.thomasharris.claw.lib.lobsters.shortUrl
 
 class StoryViewHolder private constructor(private val root: View) : RecyclerView.ViewHolder(root) {
     private val context: Context = root.context
@@ -34,8 +33,7 @@ class StoryViewHolder private constructor(private val root: View) : RecyclerView
     private val description: TextView = root.findViewById(R.id.story_view_description)
 
     fun bind(
-        story: StoryModel,
-        tags: List<TagModel>,
+        story: StoryWithTagsModel,
         isCompact: Boolean = true,
         onClickListener: ((String, String) -> Unit)? = null,
         onLinkClicked: ((String) -> Unit)? = null
@@ -48,7 +46,7 @@ class StoryViewHolder private constructor(private val root: View) : RecyclerView
 
         title.text = SpannableStringBuilder().apply {
             append(story.title)
-            tags.forEach {
+            story.tags.forEach {
                 append(" ")
                 append(SpannableString(it.tag).apply {
                     val span = TagSpan(

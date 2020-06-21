@@ -5,22 +5,18 @@ import dagger.Module
 import dagger.Provides
 import dev.thomasharris.claw.core.di.FeatureScope
 import dev.thomasharris.claw.core.di.SingletonComponent
-import dev.thomasharris.claw.feature.frontpage.StoryDataSourceFactoryFactory
 import dev.thomasharris.claw.feature.frontpage.paging3.FrontPagePagingSource
 import dev.thomasharris.claw.lib.lobsters.AsyncTagRepository
-import dev.thomasharris.claw.lib.lobsters.Event
-import dev.thomasharris.claw.lib.lobsters.LoadingStatus
 import dev.thomasharris.claw.lib.lobsters.StoryRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.Flow
 
-@Component(dependencies = [SingletonComponent::class], modules = [FrontPageModule::class])
+@Component(dependencies = [SingletonComponent::class])
 @FeatureScope
 interface FrontPageComponent {
-    fun storyDataSourceFactoryFactory(): StoryDataSourceFactoryFactory
+//    fun storyDataSourceFactoryFactory(): StoryDataSourceFactoryFactory
 
-    fun storyRepositoryStatus(): Flow<Event<LoadingStatus>>
+//    fun storyRepositoryStatus(): Flow<Event<LoadingStatus>>
 
     val frontPagePagingSource: FrontPagePagingSource
 

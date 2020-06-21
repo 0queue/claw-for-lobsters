@@ -10,6 +10,7 @@ import dev.thomasharris.claw.core.ui.StoryViewHolder
 import dev.thomasharris.claw.lib.lobsters.CommentModel
 import dev.thomasharris.claw.lib.lobsters.StoryModel
 import dev.thomasharris.claw.lib.lobsters.TagModel
+import dev.thomasharris.claw.lib.lobsters.x
 
 const val VIEW_TYPE_HEADER = 1
 const val VIEW_TYPE_COMMENT = 2
@@ -45,8 +46,9 @@ class CommentsAdapter(
                 val (story, tags) = getItem(position) as CommentsItem.Header
                 val listener = if (story.url.isNotBlank()) onHeaderClick else null
                 (holder as StoryViewHolder).bind(
-                    story,
-                    tags,
+//                    story,
+//                    tags,
+                    story x tags, // TODO quickfix
                     isCompact = false,
                     onClickListener = listener,
                     onLinkClicked = onLinkClick

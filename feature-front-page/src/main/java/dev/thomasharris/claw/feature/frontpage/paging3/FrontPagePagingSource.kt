@@ -9,15 +9,15 @@ import androidx.paging.RemoteMediator
 import com.github.michaelbull.result.mapBoth
 import dev.thomasharris.claw.feature.frontpage.FrontPageItem
 import dev.thomasharris.claw.lib.lobsters.AsyncStoryRepository
-import dev.thomasharris.claw.lib.lobsters.StoryModel
+import dev.thomasharris.claw.lib.lobsters.StoryWithTagsModel
 import javax.inject.Inject
 
 class FrontPagePagingSource @Inject constructor(
     private val storyRepository: AsyncStoryRepository
 //    private val tagRepository: AsyncTagRepository
-) : PagingSource<Int, StoryModel>() {
+) : PagingSource<Int, StoryWithTagsModel>() {
 
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, StoryModel> {
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, StoryWithTagsModel> {
 
         Log.i("FrontPagePagingSource", "Load params: ${params.key} $params")
 
@@ -25,7 +25,7 @@ class FrontPagePagingSource @Inject constructor(
 
 //        val tagMap = tagRepository.getFrontPageTags()
 
-        return storyRepository.getFrontPage(index).mapBoth(
+        return storyRepository.getFrontPage(index, params is LoadParams.Refresh).mapBoth(
             success = { p ->
 //                val items = p.map { it x tagMap } // + FrontPageItem.Divider(index + 2)
                 LoadResult.Page(p, params.key?.minus(1), index + 1)

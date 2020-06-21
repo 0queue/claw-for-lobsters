@@ -12,18 +12,14 @@ import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
 import androidx.paging.insertSeparators
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.snackbar.Snackbar
 import dev.thomasharris.claw.core.HasBinding
 import dev.thomasharris.claw.core.ext.getComponent
 import dev.thomasharris.claw.core.ui.ViewLifecycleController
 import dev.thomasharris.claw.feature.frontpage.di.DaggerFrontPageComponent
 import dev.thomasharris.claw.feature.frontpage.di.FrontPageComponent
-import dev.thomasharris.claw.feature.frontpage.di.FrontPageModule
 import dev.thomasharris.claw.feature.frontpage.paging3.FrontPageAdapter2
 import dev.thomasharris.claw.frontpage.feature.frontpage.R
 import dev.thomasharris.claw.frontpage.feature.frontpage.databinding.FrontPageBinding
-import dev.thomasharris.claw.lib.lobsters.LoadingStatus
-import dev.thomasharris.claw.lib.lobsters.TagModel
 import dev.thomasharris.claw.lib.navigator.Destination
 import dev.thomasharris.claw.lib.navigator.goto
 import kotlinx.coroutines.flow.collect
@@ -37,11 +33,11 @@ class FrontPageController : ViewLifecycleController(), HasBinding<FrontPageBindi
     private val component by getComponent<FrontPageComponent> {
         DaggerFrontPageComponent.builder()
             .singletonComponent(it)
-            .frontPageModule(FrontPageModule())
+//            .frontPageModule(FrontPageModule())
             .build()
     }
 
-//    private val liveStories by lazy {
+    //    private val liveStories by lazy {
 //        val config = PagedList.Config.Builder()
 //            .setPageSize(25)
 //            // to mitigate stopping while flinging, although a larger story card will help too
@@ -52,9 +48,6 @@ class FrontPageController : ViewLifecycleController(), HasBinding<FrontPageBindi
 //        component.storyDataSourceFactoryFactory().create(viewLifecycleOwner.lifecycleScope)
 //            .toLiveData(config)
 //    }
-
-    private lateinit var tagMap: Map<String, TagModel>
-
     private val stories by lazy {
         Pager(
             PagingConfig(
@@ -65,27 +58,19 @@ class FrontPageController : ViewLifecycleController(), HasBinding<FrontPageBindi
             pagingSourceFactory = component::frontPagePagingSource
         ).flow
             .map { pagingData ->
-                if (!this::tagMap.isInitialized)
-                    tagMap = component.tagRepository.getFrontPageTags()
-
                 @Suppress("RemoveExplicitTypeArguments")
-                pagingData.map { story ->
-                    story x tagMap
-                }.insertSeparators<FrontPageItem.Story, FrontPageItem> { before, after ->
-                    before?.let { b ->
-                        after?.let { a ->
-                            if (b.frontPageStory.pageIndex == after.frontPageStory.pageIndex - 1 &&
-                                b.frontPageStory.pageSubIndex == 24 &&
-                                a.frontPageStory.pageSubIndex == 0
-                            ) {
-                                FrontPageItem.Divider(after.frontPageStory.pageIndex + 1)
-//                                null
-                            } else {
-                                null
+                pagingData
+                    .map(FrontPageItem::Story)
+                    .insertSeparators<FrontPageItem.Story, FrontPageItem> { before, after ->
+                        before?.let { b ->
+                            after?.let { a ->
+                                if (b.story.pageIndex == a.story.pageIndex - 1)
+                                    FrontPageItem.Divider(a.story.pageIndex + 1)
+                                else
+                                    null
                             }
                         }
                     }
-                }
 
             }
             .cachedIn(lifecycleScope) // fine to cache in controller lifecycle
@@ -133,20 +118,20 @@ class FrontPageController : ViewLifecycleController(), HasBinding<FrontPageBindi
                 }
             }
 
-            viewLifecycleOwner.lifecycleScope.launch {
-
-                component.storyRepositoryStatus().collect { status ->
-                    frontPageSwipeRefresh.isRefreshing = status.peek() == LoadingStatus.LOADING
-                    status.consume {
-                        if (it == LoadingStatus.ERROR)
-                            Snackbar.make(
-                                frontPageCoordinator,
-                                "Couldn't reach lobste.rs",
-                                Snackbar.LENGTH_SHORT
-                            ).show()
-                    }
-                }
-            }
+//            viewLifecycleOwner.lifecycleScope.launch {
+//
+//                component.storyRepositoryStatus().collect { status ->
+//                    frontPageSwipeRefresh.isRefreshing = status.peek() == LoadingStatus.LOADING
+//                    status.consume {
+//                        if (it == LoadingStatus.ERROR)
+//                            Snackbar.make(
+//                                frontPageCoordinator,
+//                                "Couldn't reach lobste.rs",
+//                                Snackbar.LENGTH_SHORT
+//                            ).show()
+//                    }
+//                }
+//            }
 
             viewLifecycleOwner.lifecycleScope.launch {
                 Log.i("FrontPageController", "Starting collection")
