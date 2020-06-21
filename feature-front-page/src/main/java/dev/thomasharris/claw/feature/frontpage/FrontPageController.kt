@@ -12,6 +12,7 @@ import androidx.paging.cachedIn
 import androidx.paging.insertSeparators
 import androidx.recyclerview.widget.LinearLayoutManager
 import dev.thomasharris.claw.core.HasBinding
+import dev.thomasharris.claw.core.ext.fade
 import dev.thomasharris.claw.core.ext.getComponent
 import dev.thomasharris.claw.core.ui.ViewLifecycleController
 import dev.thomasharris.claw.feature.frontpage.di.DaggerFrontPageComponent
@@ -106,9 +107,22 @@ class FrontPageController : ViewLifecycleController(), HasBinding<FrontPageBindi
             }
 
             viewLifecycleOwner.lifecycleScope.launch {
-                adapter.loadStateFlow.collect {
-                    frontPageSwipeRefresh.isRefreshing = it.refresh is LoadState.Loading
+                adapter.loadStateFlow.collect { loadStates ->
+                    frontPageSwipeRefresh.isRefreshing = loadStates.refresh is LoadState.Loading
+
+                    // little ugly but I want to catch all errors
+                    var isError = false
+                    loadStates.forEach { _, _, loadState ->
+                        isError = isError || loadState is LoadState.Error
+                    }
+
+                    frontPageErrorView.fade(isError)
+                    frontPageRecycler.fade(!isError)
                 }
+            }
+
+            frontPageErrorViewReload.setOnClickListener {
+                adapter.refresh()
             }
 
             frontPageSwipeRefresh.setOnRefreshListener {
