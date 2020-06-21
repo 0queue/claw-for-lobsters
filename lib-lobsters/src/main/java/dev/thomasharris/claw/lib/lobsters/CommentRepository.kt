@@ -72,10 +72,12 @@ class CommentRepository @Inject constructor(
             // if story db is null here, we jumped here from an intent
             val pageIndex = storyDb?.pageIndex ?: -1
             val subIndex = storyDb?.pageSubIndex ?: -1
-            lobstersQueries.insertStory(newStory.toDB(pageIndex, subIndex, now))
-            newStory.comments?.forEachIndexed { i, c ->
-                lobstersQueries.insertUser(c.commentingUser.toDB(now))
-                lobstersQueries.insertComment(c.toDB(storyId, i, now))
+            lobstersQueries.transaction {
+                lobstersQueries.insertStory(newStory.toDB(pageIndex, subIndex, now))
+                newStory.comments?.forEachIndexed { i, c ->
+                    lobstersQueries.insertUser(c.commentingUser.toDB(now))
+                    lobstersQueries.insertComment(c.toDB(storyId, i, now))
+                }
             }
 
             statusChannel.offer(Event(LoadingStatus.DONE))
