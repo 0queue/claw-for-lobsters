@@ -43,6 +43,9 @@ class AsyncStoryRepository @Inject constructor(
                 .onSuccess { newPage ->
                     val now = Date()
                     lobstersQueries.transaction {
+                        if (shouldRefresh)
+                            lobstersQueries.clear()
+
                         newPage.forEachIndexed { i, np ->
                             lobstersQueries.insertStory(np.toDB(index, i, now))
                             lobstersQueries.insertUser(np.submitter.toDB(now))

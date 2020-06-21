@@ -22,7 +22,6 @@ import dev.thomasharris.claw.frontpage.feature.frontpage.R
 import dev.thomasharris.claw.frontpage.feature.frontpage.databinding.FrontPageBinding
 import dev.thomasharris.claw.lib.navigator.Destination
 import dev.thomasharris.claw.lib.navigator.goto
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -107,7 +106,7 @@ class FrontPageController : ViewLifecycleController(), HasBinding<FrontPageBindi
             }
 
             viewLifecycleOwner.lifecycleScope.launch {
-                adapter.loadStateFlow.collect { loadStates ->
+                adapter.loadStateFlow.collectLatest { loadStates ->
                     frontPageSwipeRefresh.isRefreshing = loadStates.refresh is LoadState.Loading
 
                     // little ugly but I want to catch all errors
