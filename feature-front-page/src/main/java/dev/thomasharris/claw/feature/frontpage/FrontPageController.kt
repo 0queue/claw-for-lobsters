@@ -10,6 +10,7 @@ import androidx.paging.LoadState
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
+import androidx.paging.insertSeparators
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import dev.thomasharris.claw.core.HasBinding
@@ -22,10 +23,12 @@ import dev.thomasharris.claw.feature.frontpage.paging3.FrontPageAdapter2
 import dev.thomasharris.claw.frontpage.feature.frontpage.R
 import dev.thomasharris.claw.frontpage.feature.frontpage.databinding.FrontPageBinding
 import dev.thomasharris.claw.lib.lobsters.LoadingStatus
+import dev.thomasharris.claw.lib.lobsters.TagModel
 import dev.thomasharris.claw.lib.navigator.Destination
 import dev.thomasharris.claw.lib.navigator.goto
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 @Suppress("unused")
@@ -50,6 +53,8 @@ class FrontPageController : ViewLifecycleController(), HasBinding<FrontPageBindi
 //            .toLiveData(config)
 //    }
 
+    private lateinit var tagMap: Map<String, TagModel>
+
     private val stories by lazy {
         Pager(
             PagingConfig(
@@ -58,7 +63,32 @@ class FrontPageController : ViewLifecycleController(), HasBinding<FrontPageBindi
                 enablePlaceholders = false
             ),
             pagingSourceFactory = component::frontPagePagingSource
-        ).flow.cachedIn(lifecycleScope) // fine to cache in controller lifecycle
+        ).flow
+            .map { pagingData ->
+                if (!this::tagMap.isInitialized)
+                    tagMap = component.tagRepository.getFrontPageTags()
+
+                @Suppress("RemoveExplicitTypeArguments")
+                pagingData.map { story ->
+                    story x tagMap
+                }.insertSeparators<FrontPageItem.Story, FrontPageItem> { before, after ->
+                    before?.let { b ->
+                        after?.let { a ->
+                            if (b.frontPageStory.pageIndex == after.frontPageStory.pageIndex - 1 &&
+                                b.frontPageStory.pageSubIndex == 24 &&
+                                a.frontPageStory.pageSubIndex == 0
+                            ) {
+                                FrontPageItem.Divider(after.frontPageStory.pageIndex + 1)
+//                                null
+                            } else {
+                                null
+                            }
+                        }
+                    }
+                }
+
+            }
+            .cachedIn(lifecycleScope) // fine to cache in controller lifecycle
     }
 
 //    private val listAdapter = FrontPageAdapter { shortId, _ ->
