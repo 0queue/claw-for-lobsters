@@ -10,10 +10,10 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.bluelinelabs.conductor.archlifecycle.LifecycleController
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.snackbar.Snackbar
 import dev.thomasharris.claw.core.ext.getComponent
+import dev.thomasharris.claw.core.ui.ViewLifecycleController
 import dev.thomasharris.claw.feature.comments.di.CommentsComponent
 import dev.thomasharris.claw.feature.comments.di.DaggerCommentsComponent
 import dev.thomasharris.claw.lib.lobsters.LoadingStatus
@@ -21,12 +21,11 @@ import dev.thomasharris.claw.lib.navigator.Destination
 import dev.thomasharris.claw.lib.navigator.goto
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 @Suppress("unused")
-class CommentsController constructor(args: Bundle) : LifecycleController(args) {
+class CommentsController constructor(args: Bundle) : ViewLifecycleController(args) {
 
     private val component by getComponent<CommentsComponent> {
         DaggerCommentsComponent.builder()
@@ -40,8 +39,6 @@ class CommentsController constructor(args: Bundle) : LifecycleController(args) {
     private lateinit var recycler: RecyclerView
     private lateinit var appBarLayout: AppBarLayout
     private lateinit var toolbar: Toolbar
-
-    private val jobs = mutableListOf<Job>()
 
     private val listAdapter =
         CommentsAdapter(this::launchUrl, this::launchUrl) { shortId, isCollapsePredecessors ->
@@ -94,7 +91,7 @@ class CommentsController constructor(args: Bundle) : LifecycleController(args) {
             router.popCurrentController()
         }
 
-        jobs += lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             component.commentRepository.visibleComments(shortId)
                 .collect { (story, comments) ->
                     val head = story?.let(CommentsItem::Header)
@@ -103,7 +100,7 @@ class CommentsController constructor(args: Bundle) : LifecycleController(args) {
                 }
         }
 
-        jobs += lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             component.commentRepository.status.collect { status ->
                 swipeRefreshLayout.isRefreshing = status.peek() == LoadingStatus.LOADING
                 status.consume {
@@ -137,12 +134,6 @@ class CommentsController constructor(args: Bundle) : LifecycleController(args) {
         // warm up custom tabs a little
         CustomTabsClient.connectAndInitialize(root.context, "com.android.chrome")
         return root
-    }
-
-    override fun onDestroyView(view: View) {
-        super.onDestroyView(view)
-        jobs.forEach { it.cancel() }
-        jobs.clear()
     }
 
     private fun launchUrl(@Suppress("UNUSED_PARAMETER") _x: Any, url: String) = launchUrl(url)
