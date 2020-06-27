@@ -37,3 +37,37 @@ only solution is a good PR against lobste.rs itself
 
 Lastly, I kind of wish SQLDelight was fully suspend, but it has so many
 other advantages over Room I'm willing to deal with my extension functions
+
+## Comment text styling
+
+### Finally replacing Html.fromHtml
+
+I wanted some customization over the results of the normal Android technique
+to display HTML in a text view, because certain things looked very bad, for
+example, the default quote spans, and anything related to <code/>.  I put it
+off for a long time because that's what I do, and also was not looking forward
+to parsing and traversing HTML.  But I got fed up with the bad comment rendering,
+so I added jsoup, looped over the body children, matched on tags, recursed, and 
+then applied a span to the concatenated result.  Rather surprisingly, this is 90% 
+of the work. Then all I need to do is handle all the tags that may arise, which
+is a rather large possible sets of tags in theory, but after some analysis I found
+out that these tags were in use across six pages of stories:
+
+| tag        | count |
+|------------|------:|
+| p          |  1753 |
+| code       |   242 |
+| em         |   241 |
+| a          |   212 |
+| blockquote |   179 |
+| li         |   163 |
+| ul         |    31 |
+| ol         |    16 |
+| strong     |    12 |
+| br         |     7 |
+| pre        |     4 |
+| hr         |     2 |
+| del        |     1 |
+
+So, development will involve creating/finding some specific examples, and creating
+a branch in the element visitor

@@ -141,6 +141,7 @@ class MyQuoteSpan : LeadingMarginSpan, ParcelableSpan {
     }
 
     override fun getLeadingMargin(first: Boolean): Int {
+        // TODO leading gapWidth
         return stripeWidth + gapWidth
     }
 
