@@ -46,9 +46,9 @@ class CommentsController constructor(args: Bundle) : LifecycleController(args) {
     private val listAdapter =
         CommentsAdapter(this::launchUrl, this::launchUrl) { shortId, isCollapsePredecessors ->
             if (isCollapsePredecessors)
-                component.commentRepository().collapsePredecessors(shortId)
+                component.commentRepository.collapsePredecessors(shortId)
             else
-                component.commentRepository().toggleCollapseComment(shortId)
+                component.commentRepository.toggleCollapseComment(shortId)
         }
 
     @FlowPreview
@@ -95,7 +95,7 @@ class CommentsController constructor(args: Bundle) : LifecycleController(args) {
         }
 
         jobs += lifecycleScope.launch {
-            component.commentRepository().liveVisibleComments(shortId)
+            component.commentRepository.visibleComments(shortId)
                 .collect { (story, comments) ->
                     val head = story?.let(CommentsItem::Header)
                     val tail = comments.map { CommentsItem.Comment(it) }
@@ -104,7 +104,7 @@ class CommentsController constructor(args: Bundle) : LifecycleController(args) {
         }
 
         jobs += lifecycleScope.launch {
-            component.commentRepository().liveStatus().collect { status ->
+            component.commentRepository.status.collect { status ->
                 swipeRefreshLayout.isRefreshing = status.peek() == LoadingStatus.LOADING
                 status.consume {
                     if (it == LoadingStatus.ERROR)
@@ -118,12 +118,16 @@ class CommentsController constructor(args: Bundle) : LifecycleController(args) {
         }
 
         swipeRefreshLayout.setOnRefreshListener {
-            component.commentRepository().refresh(shortId, true)
+            lifecycleScope.launch {
+                component.commentRepository.refresh(shortId, true)
+            }
         }
 
         // hmm refreshing should maybe always be forced for a story?
         // or just add another condition for comment mismatches?
-        component.commentRepository().refresh(shortId)
+        lifecycleScope.launch {
+            component.commentRepository.refresh(shortId)
+        }
 
         root.setOnApplyWindowInsetsListener { v, insets ->
             v.onApplyWindowInsets(insets)

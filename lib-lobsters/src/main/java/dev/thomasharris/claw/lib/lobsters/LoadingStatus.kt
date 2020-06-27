@@ -5,7 +5,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 enum class LoadingStatus {
     LOADING,
     ERROR,
-    DONE
+    NOT_LOADING
 }
 
 class Event<T>(private val value: T) {
@@ -25,3 +25,5 @@ class Event<T>(private val value: T) {
         return "Event(value = $value, hasBeenHandled = ${hasBeenHandled.get()})"
     }
 }
+
+fun <T> T.event(): Event<T> = Event(this)

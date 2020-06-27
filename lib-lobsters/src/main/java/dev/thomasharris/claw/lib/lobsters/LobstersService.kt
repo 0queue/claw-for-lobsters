@@ -23,6 +23,9 @@ interface LobstersService {
     @GET("s/{short_id}.json")
     fun getStorySync(@Path("short_id") shortId: String): Call<StoryNetworkEntity>
 
+    @GET("s/{short_id}.json")
+    suspend fun getStory(@Path("short_id") shortId: String): StoryNetworkEntity
+
     @GET("tags.json")
     fun getTagsSync(): Call<List<TagNetworkEntity>>
 
