@@ -33,7 +33,7 @@ class AsyncTagRepository @Inject constructor(
             lobstersService.runCatching { getTags() }.onSuccess { newTags ->
                 newTags.forEach {
                     lobstersQueries.insertTag(
-                        Tag.Impl(
+                        Tag(
                             it.tag,
                             it.id,
                             it.description,

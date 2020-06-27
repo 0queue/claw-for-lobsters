@@ -14,5 +14,5 @@ dependencies {
     implementation(project(":feature-settings"))
     implementation(project(":feature-web-page"))
 
-    debugImplementation("com.squareup.leakcanary:leakcanary-android:2.3")
+    debugImplementation("com.squareup.leakcanary:leakcanary-android:2.4")
 }

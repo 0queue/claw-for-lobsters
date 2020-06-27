@@ -72,7 +72,7 @@ class AsyncStoryRepository @Inject constructor(
 
 
 fun StoryNetworkEntity.toDB(pageIndex: Int, subIndex: Int, now: Date = Date()) =
-    Story.Impl(
+    Story(
         shortId,
         title,
         createdAt,
@@ -90,7 +90,7 @@ fun StoryNetworkEntity.toDB(pageIndex: Int, subIndex: Int, now: Date = Date()) =
     )
 
 fun UserNetworkEntity.toDB(now: Date = Date()) =
-    User.Impl(
+    User(
         username,
         createdAt,
         isAdmin,

@@ -21,7 +21,7 @@ data class StoryWithTagsModel(
 fun StoryWithTagsModel.shortUrl() = URI(url.trim()).host?.removePrefix("www.")
 
 infix fun StoryModel.x(tagMap: Map<String, TagModel>) =
-    this x tags.map { tagMap[it] ?: TagModel.Impl(it, false) }
+    this x tags.map { tagMap[it] ?: TagModel(it, false) }
 
 infix fun StoryModel.x(tags: List<TagModel>) =
     StoryWithTagsModel(

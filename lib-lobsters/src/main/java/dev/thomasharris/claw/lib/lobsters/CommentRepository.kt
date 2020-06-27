@@ -138,7 +138,7 @@ fun CommentNetworkEntity.toDB(
     storyId: String,
     index: Int,
     insertedAt: Date
-) = Comment.Impl(
+) = Comment(
     shortId,
     storyId,
     index,
