@@ -16,4 +16,6 @@ dependencies {
     implementation("androidx.browser:browser:1.2.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.2.0")
     implementation(project(":core"))
+
+    implementation("org.jsoup:jsoup:1.13.1")
 }

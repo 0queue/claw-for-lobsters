@@ -12,7 +12,6 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
-import androidx.core.text.HtmlCompat
 import androidx.recyclerview.widget.RecyclerView
 import coil.api.load
 import coil.transform.CircleCropTransformation
@@ -20,7 +19,7 @@ import dev.thomasharris.claw.core.ext.dipToPx
 import dev.thomasharris.claw.core.ext.postedAgo
 import dev.thomasharris.claw.core.ext.toString
 import dev.thomasharris.claw.core.ui.betterlinks.PressableLinkMovementMethod
-import dev.thomasharris.claw.core.ui.betterlinks.replaceUrlSpans
+import dev.thomasharris.claw.feature.comments.betterhtml.parseHtml
 import dev.thomasharris.claw.lib.lobsters.CommentModel
 import dev.thomasharris.claw.lib.lobsters.CommentStatus
 import java.util.Date
@@ -88,8 +87,8 @@ class CommentViewHolder private constructor(
                     )
             }
 
-        body.text = HtmlCompat.fromHtml(comment.comment, HtmlCompat.FROM_HTML_MODE_LEGACY)
-            .replaceUrlSpans()
+        body.text = comment.comment
+            .parseHtml()
             .trimEnd()
         body.movementMethod = PressableLinkMovementMethod {
             if (it != null)
