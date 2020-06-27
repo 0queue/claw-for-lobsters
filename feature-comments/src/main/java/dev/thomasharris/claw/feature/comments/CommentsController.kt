@@ -4,28 +4,27 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.widget.Toolbar
 import androidx.browser.customtabs.CustomTabsClient
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.snackbar.Snackbar
+import dev.thomasharris.claw.core.HasBinding
 import dev.thomasharris.claw.core.ext.getComponent
 import dev.thomasharris.claw.core.ui.ViewLifecycleController
+import dev.thomasharris.claw.core.withBinding
+import dev.thomasharris.claw.feature.comments.databinding.ControllerCommentsBinding
 import dev.thomasharris.claw.feature.comments.di.CommentsComponent
 import dev.thomasharris.claw.feature.comments.di.DaggerCommentsComponent
 import dev.thomasharris.claw.lib.lobsters.LoadingStatus
 import dev.thomasharris.claw.lib.navigator.Destination
 import dev.thomasharris.claw.lib.navigator.goto
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 @Suppress("unused")
-class CommentsController constructor(args: Bundle) : ViewLifecycleController(args) {
+class CommentsController constructor(
+    args: Bundle
+) : ViewLifecycleController(args), HasBinding<ControllerCommentsBinding> {
 
     private val component by getComponent<CommentsComponent> {
         DaggerCommentsComponent.builder()
@@ -33,12 +32,9 @@ class CommentsController constructor(args: Bundle) : ViewLifecycleController(arg
             .build()
     }
 
-    private val shortId: String = getArgs().getString("shortId")!!
+    override var binding: ControllerCommentsBinding? = null
 
-    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
-    private lateinit var recycler: RecyclerView
-    private lateinit var appBarLayout: AppBarLayout
-    private lateinit var toolbar: Toolbar
+    private val shortId: String = getArgs().getString("shortId")!!
 
     private val listAdapter =
         CommentsAdapter(this::launchUrl, this::launchUrl) { shortId, isCollapsePredecessors ->
@@ -48,47 +44,48 @@ class CommentsController constructor(args: Bundle) : ViewLifecycleController(arg
                 component.commentRepository.toggleCollapseComment(shortId)
         }
 
-    @FlowPreview
-    @ExperimentalCoroutinesApi
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup,
         savedStateBundle: Bundle?
     ): View {
-        val root = inflater.inflate(
-            R.layout.comments,
-            container,
-            false
-        ) as TouchInterceptingCoordinatorLayout
+        binding = ControllerCommentsBinding.inflate(inflater, container, false)
 
-        swipeRefreshLayout = root.findViewById(R.id.comments_swipe_refresh)
-        recycler = root.findViewById(R.id.comments_recycler)
-        appBarLayout = root.findViewById(R.id.comments_app_bar_layout)
-        toolbar = root.findViewById<Toolbar>(R.id.comments_toolbar).apply {
-            setNavigationOnClickListener {
+        withBinding {
+            with(commentsToolbar) {
+                setNavigationOnClickListener { router.popCurrentController() }
+                title = "Comments"
+            }
+
+            with(commentsRecycler) {
+                adapter = listAdapter
+                layoutManager = LinearLayoutManager(context)
+                setOnScrollChangeListener { v, _, _, _, _ ->
+                    commentsAppBarLayout.isSelected = v.canScrollVertically(-1)
+                }
+                addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
+                    override fun onViewDetachedFromWindow(v: View?) {
+                        adapter = null
+                    }
+
+                    override fun onViewAttachedToWindow(v: View?) = Unit
+                })
+            }
+
+            root.listener = CommentsTouchListener(root.context) {
                 router.popCurrentController()
             }
 
-            title = "Comments"
-        }
-
-        recycler.apply {
-            adapter = listAdapter
-            layoutManager = LinearLayoutManager(root.context)
-            setOnScrollChangeListener { v, _, _, _, _ ->
-                appBarLayout.isSelected = v.canScrollVertically(-1)
-            }
-            addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
-                override fun onViewDetachedFromWindow(v: View?) {
-                    recycler.adapter = null
+            commentsSwipeRefresh.setOnRefreshListener {
+                lifecycleScope.launch {
+                    component.commentRepository.refresh(shortId, true)
                 }
+            }
 
-                override fun onViewAttachedToWindow(v: View?) = Unit
-            })
-        }
-
-        root.listener = CommentsTouchListener(root.context) {
-            router.popCurrentController()
+            root.setOnApplyWindowInsetsListener { v, insets ->
+                v.onApplyWindowInsets(insets)
+                insets
+            }
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
@@ -102,11 +99,12 @@ class CommentsController constructor(args: Bundle) : ViewLifecycleController(arg
 
         viewLifecycleOwner.lifecycleScope.launch {
             component.commentRepository.status.collect { status ->
-                swipeRefreshLayout.isRefreshing = status.peek() == LoadingStatus.LOADING
+                requireBinding().commentsSwipeRefresh.isRefreshing =
+                    status.peek() == LoadingStatus.LOADING
                 status.consume {
                     if (it == LoadingStatus.ERROR)
                         Snackbar.make(
-                            root,
+                            requireBinding().root,
                             "Couldn't reach lobste.rs",
                             Snackbar.LENGTH_SHORT
                         ).show()
@@ -114,11 +112,6 @@ class CommentsController constructor(args: Bundle) : ViewLifecycleController(arg
             }
         }
 
-        swipeRefreshLayout.setOnRefreshListener {
-            lifecycleScope.launch {
-                component.commentRepository.refresh(shortId, true)
-            }
-        }
 
         // hmm refreshing should maybe always be forced for a story?
         // or just add another condition for comment mismatches?
@@ -126,14 +119,9 @@ class CommentsController constructor(args: Bundle) : ViewLifecycleController(arg
             component.commentRepository.refresh(shortId)
         }
 
-        root.setOnApplyWindowInsetsListener { v, insets ->
-            v.onApplyWindowInsets(insets)
-            insets
-        }
-
         // warm up custom tabs a little
-        CustomTabsClient.connectAndInitialize(root.context, "com.android.chrome")
-        return root
+        CustomTabsClient.connectAndInitialize(container.context, "com.android.chrome")
+        return requireBinding().root
     }
 
     private fun launchUrl(@Suppress("UNUSED_PARAMETER") _x: Any, url: String) = launchUrl(url)
