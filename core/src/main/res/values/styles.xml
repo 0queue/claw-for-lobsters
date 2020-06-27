@@ -13,12 +13,14 @@
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">@bool/lightStatusBar</item>
 
-        <item name="colorTagBorderShowAsk">@color/colorTagBorderShowAsk</item>
+        <item name="colorTagBorderShowAskAnnounceInterview">@color/colorTagBorderShowAskAnnounceInterview</item>
         <item name="colorTagBorderMedia">@color/colorTagBorderMedia</item>
+        <item name="colorTagBorderMeta">@color/colorTagBorderMeta</item>
         <item name="colorTagBorder">@color/colorTagBorder</item>
 
-        <item name="colorTagBackgroundShowAsk">@color/colorTagBackgroundShowAsk</item>
+        <item name="colorTagBackgroundShowAskAnnounceInterview">@color/colorTagBackgroundShowAskAnnounceInterview</item>
         <item name="colorTagBackgroundMedia">@color/colorTagBackgroundMedia</item>
+        <item name="colorTagBackgroundMeta">@color/colorTagBackgroundMeta</item>
         <item name="colorTagBackground">@color/colorTagBackground</item>
     </style>
 

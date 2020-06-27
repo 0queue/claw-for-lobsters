@@ -7,7 +7,6 @@ import android.text.SpannableString
 import android.text.SpannableStringBuilder
 import android.text.TextUtils
 import android.text.style.StyleSpan
-import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,8 +21,8 @@ import dev.thomasharris.claw.core.ext.postedAgo
 import dev.thomasharris.claw.core.ext.toString
 import dev.thomasharris.claw.core.ui.betterlinks.PressableLinkMovementMethod
 import dev.thomasharris.claw.core.ui.betterlinks.replaceUrlSpans
-import dev.thomasharris.claw.lib.lobsters.StoryWithTagsModel
-import dev.thomasharris.claw.lib.lobsters.shortUrl
+import dev.thomasharris.claw.lib.lobsters.StoryModel
+import java.net.URI
 
 class StoryViewHolder private constructor(private val root: View) : RecyclerView.ViewHolder(root) {
     private val context: Context = root.context
@@ -33,7 +32,7 @@ class StoryViewHolder private constructor(private val root: View) : RecyclerView
     private val description: TextView = root.findViewById(R.id.story_view_description)
 
     fun bind(
-        story: StoryWithTagsModel,
+        story: StoryModel,
         isCompact: Boolean = true,
         onClickListener: ((String, String) -> Unit)? = null,
         onLinkClicked: ((String) -> Unit)? = null
@@ -46,14 +45,14 @@ class StoryViewHolder private constructor(private val root: View) : RecyclerView
 
         title.text = SpannableStringBuilder().apply {
             append(story.title)
-            story.tags.forEach {
+            story.tags.forEach { tag ->
                 append(" ")
-                append(SpannableString(it.tag).apply {
+                append(SpannableString(tag).apply {
                     val span = TagSpan(
-                        backgroundColor = context.tagBackgroundColor(it.tag, it.isMedia),
-                        borderColor = context.tagBorderColor(it.tag, it.isMedia)
+                        backgroundColor = context.tagBackground(tag),
+                        borderColor = context.tagBorder(tag)
                     )
-                    setSpan(span, 0, it.tag.length, Spannable.SPAN_INCLUSIVE_EXCLUSIVE)
+                    setSpan(span, 0, tag.length, Spannable.SPAN_INCLUSIVE_EXCLUSIVE)
                 })
             }
             if (story.description.isNotBlank()) append(" ☶")
@@ -124,23 +123,4 @@ class StoryViewHolder private constructor(private val root: View) : RecyclerView
     }
 }
 
-private fun Context.resolveColor(attr: () -> Int) = TypedValue().run {
-    theme.resolveAttribute(attr(), this, true)
-    data
-}
-
-private fun Context.tagBorderColor(tag: String, isMedia: Boolean) = resolveColor {
-    when {
-        (tag == "show") || (tag == "ask") -> R.attr.colorTagBorderShowAsk
-        isMedia -> R.attr.colorTagBorderMedia
-        else -> R.attr.colorTagBorder
-    }
-}
-
-private fun Context.tagBackgroundColor(tag: String, isMedia: Boolean) = resolveColor {
-    when {
-        (tag == "show") || (tag == "ask") -> R.attr.colorTagBackgroundShowAsk
-        isMedia -> R.attr.colorTagBackgroundMedia
-        else -> R.attr.colorTagBackground
-    }
-}
+fun StoryModel.shortUrl() = URI(url.trim()).host?.removePrefix("www.")

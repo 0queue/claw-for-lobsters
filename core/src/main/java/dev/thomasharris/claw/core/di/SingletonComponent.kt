@@ -7,7 +7,6 @@ import dagger.Module
 import dagger.Provides
 import dev.thomasharris.claw.core.PreferencesRepository
 import dev.thomasharris.claw.lib.lobsters.AsyncStoryRepository
-import dev.thomasharris.claw.lib.lobsters.AsyncTagRepository
 import dev.thomasharris.claw.lib.lobsters.CommentRepository
 import dev.thomasharris.claw.lib.lobsters.Database
 import dev.thomasharris.claw.lib.lobsters.di.LobstersModule
@@ -19,8 +18,6 @@ interface SingletonComponent {
     fun database(): Database
 
     val asyncStoryRepository: AsyncStoryRepository
-
-    val asyncTagRepository: AsyncTagRepository
 
     fun commentRepository(): CommentRepository
 

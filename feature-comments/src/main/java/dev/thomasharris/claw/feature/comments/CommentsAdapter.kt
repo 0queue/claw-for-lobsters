@@ -8,14 +8,14 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import dev.thomasharris.claw.core.ui.StoryViewHolder
 import dev.thomasharris.claw.lib.lobsters.CommentModel
-import dev.thomasharris.claw.lib.lobsters.StoryWithTagsModel
+import dev.thomasharris.claw.lib.lobsters.StoryModel
 
 const val VIEW_TYPE_HEADER = 1
 const val VIEW_TYPE_COMMENT = 2
 const val VIEW_TYPE_SPACER = 3
 
 sealed class CommentsItem {
-    data class Header(val story: StoryWithTagsModel) : CommentsItem()
+    data class Header(val story: StoryModel) : CommentsItem()
     data class Comment(val commentView: CommentModel) : CommentsItem()
     data class Spacer(val isEmpty: Boolean) : CommentsItem()
 }

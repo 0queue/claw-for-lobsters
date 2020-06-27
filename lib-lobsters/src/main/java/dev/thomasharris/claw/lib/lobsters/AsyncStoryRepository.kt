@@ -15,14 +15,13 @@ import javax.inject.Singleton
 @Singleton
 class AsyncStoryRepository @Inject constructor(
     private val lobstersService: LobstersService,
-    private val lobstersQueries: LobstersQueries,
-    private val tagRepository: AsyncTagRepository
+    private val lobstersQueries: LobstersQueries
 ) {
 
     /**
      * @param index 0 based index of page to fetch
      */
-    suspend fun getFrontPage(index: Int, isRefresh: Boolean): Result<List<StoryWithTagsModel>, Throwable> =
+    suspend fun getFrontPage(index: Int, isRefresh: Boolean): Result<List<StoryModel>, Throwable> =
         withContext(Dispatchers.IO) {
 
             val shouldRefresh = isRefresh && index == 0
@@ -36,7 +35,7 @@ class AsyncStoryRepository @Inject constructor(
             } ?: true
 
             if (isOld == false && !shouldRefresh) {
-                return@withContext Ok(lobstersQueries.getPage(index).list().withTags())
+                return@withContext Ok(lobstersQueries.getPage(index).list())
             }
 
             lobstersService.runCatching { getPage(index + 1) }
@@ -59,15 +58,13 @@ class AsyncStoryRepository @Inject constructor(
                 }
                 .map {
                     // refetch
-                    lobstersQueries.getPage(index).list().withTags()
+                    lobstersQueries.getPage(index).list()
                 }
         }
 
-    suspend fun getStory(storyId: String): StoryWithTagsModel? = withContext(Dispatchers.IO) {
-        lobstersQueries.getStoryModel(storyId).oneOrNull()?.x(tagRepository.getFrontPageTags())
+    suspend fun getStory(storyId: String): StoryModel? = withContext(Dispatchers.IO) {
+        lobstersQueries.getStoryModel(storyId).oneOrNull()
     }
-
-    private suspend fun List<StoryModel>.withTags() = map { it x tagRepository.getFrontPageTags() }
 }
 
 

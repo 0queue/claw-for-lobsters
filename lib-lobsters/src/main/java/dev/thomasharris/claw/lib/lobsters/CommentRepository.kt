@@ -32,7 +32,7 @@ class CommentRepository @Inject constructor(
     fun liveStatus() = statusChannel.asFlow()
 
     @ExperimentalCoroutinesApi
-    fun liveVisibleComments(storyId: String): Flow<Pair<StoryWithTagsModel?, List<CommentModel>>> {
+    fun liveVisibleComments(storyId: String): Flow<Pair<StoryModel?, List<CommentModel>>> {
         val story = flow {  emit(storyRepository.getStory(storyId)) }
         val comments = lobstersQueries.getVisibleCommentModels(storyId).asFlow().mapToList()
 
