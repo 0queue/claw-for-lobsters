@@ -5,7 +5,6 @@ import android.graphics.Typeface
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.TextUtils
-import android.text.style.BulletSpan
 import android.text.style.ForegroundColorSpan
 import android.text.style.StrikethroughSpan
 import android.text.style.StyleSpan
@@ -22,13 +21,13 @@ import org.jsoup.nodes.TextNode
  * also good: https://lobste.rs/s/m24zv1/xi_editor_retrospective
  * (andyc going ham with the formatting)
  */
-fun String.parseHtml(): CharSequence {
+fun String.parseHtml(dipToPx: (Float) -> Float = { it }): CharSequence {
     val parsed = Jsoup.parse(this.replace(Regex("\\\\n"), "\n"))
 
     val body = parsed.body()
 
     return body.children().map {
-        val res = it.render()
+        val res = it.render(dipToPx)
 
         // generally, elements should care for themselves whether they are paragraphs
         // or not, this is important when, for example, nesting lists.  But the top
@@ -41,10 +40,10 @@ fun String.parseHtml(): CharSequence {
     }.concat()
 }
 
-fun Element.render(): CharSequence {
+fun Element.render(dipToPx: (Float) -> Float, indentation: Int = 0): CharSequence {
     return when (tagName()) {
         "p" -> {
-            textuals(::identity) { it.render() }.concat().trim().paragraph()
+            textuals(::identity) { it.render(dipToPx, indentation) }.concat().trim().paragraph()
 //                .span(BackgroundColorSpan(Color.LTGRAY))
         }
         "a" -> {
@@ -54,13 +53,13 @@ fun Element.render(): CharSequence {
         }
         "blockquote" -> {
             text().trim().span {
-                span(MyQuoteSpan(Color.MAGENTA, 4, 16))
+                span(MyQuoteSpan(dipToPx(2f).toInt()))
                 span(StyleSpan(Typeface.ITALIC))
             }.paragraph()
         }
         "pre" -> {
-            textuals(::identity) { it.render() }.concat().span {
-                span(MyQuoteSpan(Color.TRANSPARENT, 4, 16))
+            textuals(::identity) { it.render(dipToPx, indentation) }.concat().span {
+                span(MyQuoteSpan(dipToPx(2f).toInt(), Color.TRANSPARENT))
                 span(TypefaceSpan("monospace"))
             }.paragraph()
         }
@@ -78,16 +77,16 @@ fun Element.render(): CharSequence {
         }
         "ul" -> {
             children().map {
-                it.render().span(BulletSpan(32))
+                it.render(dipToPx, indentation).span(MyBulletSpan(indentation))
             }.concat().trim().paragraph()
         }
         "li" -> {
             textuals(::identity) {
-                it.render()
+                it.render(dipToPx, indentation + 1)
             }.concat().trim() + "\n"
         }
         "hr" -> {
-            "-".span(HrSpan()).paragraph()
+            "-".span(HrSpan(dipToPx(2f).toInt())).paragraph()
         }
         else -> {
             text().span(ForegroundColorSpan(Color.CYAN))

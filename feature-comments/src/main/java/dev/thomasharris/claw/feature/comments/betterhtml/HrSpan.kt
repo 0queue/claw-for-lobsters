@@ -28,10 +28,18 @@ class HrSpan(private val lineWidth: Int = 8) : ReplacementSpan() {
         bottom: Int,
         paint: Paint
     ) {
+
+        val style = paint.style
+        val alpha = paint.alpha
+
         paint.style = Paint.Style.FILL
+        paint.alpha = (255f * .7f).toInt()
         val middle = ((top + bottom) / 2).toFloat()
         val rect = RectF(0f, middle - (lineWidth / 2), canvas.width.toFloat(), middle + (lineWidth / 2))
         canvas.drawRoundRect(rect, lineWidth.toFloat(), lineWidth.toFloat(), paint)
+
+        paint.style = style
+        paint.alpha = alpha
     }
 
 }

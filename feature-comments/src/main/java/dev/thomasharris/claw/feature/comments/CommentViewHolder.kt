@@ -67,7 +67,7 @@ class CommentViewHolder private constructor(
         val t = Date(min(comment.createdAt.time, comment.updatedAt.time)).postedAgo()
         val action = if (comment.createdAt != comment.updatedAt) "edited " else ""
         val scoreText = comment.score.let { s ->
-             when {
+            when {
                 s < -2 -> " | $s"
                 s > 4 -> " | +$s"
                 else -> ""
@@ -88,7 +88,7 @@ class CommentViewHolder private constructor(
             }
 
         body.text = comment.comment
-            .parseHtml()
+            .parseHtml(dipToPx = { it.dipToPx(root.context) })
             .trim()
         body.movementMethod = PressableLinkMovementMethod {
             if (it != null)

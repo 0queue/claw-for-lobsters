@@ -2,13 +2,9 @@ package dev.thomasharris.claw.feature.comments.betterhtml
 
 import android.graphics.Canvas
 import android.graphics.Paint
-import android.os.Parcel
 import android.text.Layout
-import android.text.ParcelableSpan
 import android.text.style.LeadingMarginSpan
-import android.text.style.QuoteSpan
 import androidx.annotation.ColorInt
-import androidx.annotation.Px
 
 /*
 * Copyright (C) 2006 The Android Open Source Project
@@ -61,88 +57,16 @@ import androidx.annotation.Px
  * <figcaption>Customized `QuoteSpan`.</figcaption>
  */
 // adapted from the android source, because the customization was only available on recent android versions
-class MyQuoteSpan : LeadingMarginSpan, ParcelableSpan {
-    /**
-     * Get the color of the quote stripe.
-     *
-     * @return the color of the quote stripe.
-     */
-    @get:ColorInt
+class MyQuoteSpan(
+    private val stripeWidth: Int,
     @ColorInt
-    val color: Int
+    private val color: Int? = null
+) : LeadingMarginSpan {
 
-    /**
-     * Get the width of the quote stripe.
-     *
-     * @return the width of the quote stripe.
-     */
-    @Px
-    val stripeWidth: Int
-
-    /**
-     * Get the width of the gap between the stripe and the text.
-     *
-     * @return the width of the gap between the stripe and the text.
-     */
-    @Px
-    val gapWidth: Int
-    /**
-     * Creates a [QuoteSpan] based on a color, a stripe width and the width of the gap
-     * between the stripe and the text.
-     *
-     * @param color       the color of the quote stripe.
-     * @param stripeWidth the width of the stripe.
-     * @param gapWidth    the width of the gap between the stripe and the text.
-     */
-    /**
-     * Creates a [QuoteSpan] with the default values.
-     */
-    /**
-     * Creates a [QuoteSpan] based on a color.
-     *
-     * @param color the color of the quote stripe.
-     */
-    @JvmOverloads
-    constructor(
-        @ColorInt color: Int = STANDARD_COLOR,
-        @androidx.annotation.IntRange(from = 0) stripeWidth: Int = STANDARD_STRIPE_WIDTH_PX,
-        @androidx.annotation.IntRange(from = 0) gapWidth: Int = STANDARD_GAP_WIDTH_PX
-    ) {
-        this.color = color
-        this.stripeWidth = stripeWidth
-        this.gapWidth = gapWidth
-    }
-
-    /**
-     * Create a [QuoteSpan] from a parcel.
-     */
-    constructor(src: Parcel) {
-        color = src.readInt()
-        stripeWidth = src.readInt()
-        gapWidth = src.readInt()
-    }
-
-    override fun getSpanTypeId(): Int {
-        return 100 // original is 9
-    }
-
-    override fun describeContents(): Int {
-        return 0
-    }
-
-    override fun writeToParcel(dest: Parcel, flags: Int) {
-        writeToParcelInternal(dest, flags)
-    }
-
-    private fun writeToParcelInternal(dest: Parcel, flags: Int) {
-        dest.writeInt(color)
-        dest.writeInt(stripeWidth)
-        dest.writeInt(gapWidth)
-    }
+    private val gapWidth = 16
 
     override fun getLeadingMargin(first: Boolean): Int {
-        // TODO leading gapWidth
-        return stripeWidth + gapWidth
+        return gapWidth + stripeWidth + gapWidth
     }
 
     override fun drawLeadingMargin(
@@ -153,28 +77,24 @@ class MyQuoteSpan : LeadingMarginSpan, ParcelableSpan {
     ) {
         val style = p.style
         val color = p.color
+        val alpha = p.alpha
+
         p.style = Paint.Style.FILL
-        p.color = this.color
-        c.drawRect(x.toFloat(), top.toFloat(), x + dir * stripeWidth.toFloat(), bottom.toFloat(), p)
+        if (this.color != null)
+            p.color = this.color
+
+        p.alpha = (255f * .7f).toInt()
+
+        val xPosition = (getLeadingMargin(first) / 2) - (stripeWidth / 2)
+        c.drawRect(
+            xPosition.toFloat(),
+            top.toFloat(),
+            ((xPosition + stripeWidth).toFloat()),
+            bottom.toFloat(),
+            p
+        )
         p.style = style
         p.color = color
-    }
-
-    companion object {
-        /**
-         * Default stripe width in pixels.
-         */
-        const val STANDARD_STRIPE_WIDTH_PX = 2
-
-        /**
-         * Default gap width in pixels.
-         */
-        const val STANDARD_GAP_WIDTH_PX = 2
-
-        /**
-         * Default color for the quote stripe.
-         */
-        @ColorInt
-        val STANDARD_COLOR = -0xffff01
+        p.alpha = alpha
     }
 }
