@@ -89,7 +89,7 @@ class CommentViewHolder private constructor(
 
         body.text = comment.comment
             .parseHtml()
-            .trimEnd()
+            .trim()
         body.movementMethod = PressableLinkMovementMethod {
             if (it != null)
                 onLinkClicked(it)
