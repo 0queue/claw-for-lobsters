@@ -94,6 +94,13 @@ fun Element.render(dipToPx: (Float) -> Float, indentation: Int = 0): CharSequenc
                 it.render(dipToPx, indentation).span(MyBulletSpan(indentation))
             }.concat().trim().paragraph()
         }
+        "ol" -> {
+            val startAt = attr("start").ifEmpty { "1" }.toInt()
+            children().map { el ->
+                el.render(dipToPx, indentation)
+                    .span(MyNumberedBulletSpan(indentation, el.elementSiblingIndex() + startAt))
+            }.concat().trim().paragraph()
+        }
         "li" -> {
             textuals(::identity) {
                 it.render(dipToPx, indentation + 1)
