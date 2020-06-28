@@ -12,15 +12,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.text.HtmlCompat
 import androidx.recyclerview.widget.RecyclerView
 import coil.api.load
 import coil.transform.CircleCropTransformation
 import dev.thomasharris.claw.core.R
+import dev.thomasharris.claw.core.ext.dipToPx
 import dev.thomasharris.claw.core.ext.postedAgo
 import dev.thomasharris.claw.core.ext.toString
+import dev.thomasharris.claw.core.ui.betterhtml.fromHtml
 import dev.thomasharris.claw.core.ui.betterlinks.PressableLinkMovementMethod
-import dev.thomasharris.claw.core.ui.betterlinks.replaceUrlSpans
 import dev.thomasharris.claw.lib.lobsters.StoryModel
 import java.net.URI
 
@@ -101,10 +101,9 @@ class StoryViewHolder private constructor(private val root: View) : RecyclerView
         val shouldShowDescription = !isCompact && story.description.isNotBlank()
         description.visibility = if (shouldShowDescription) View.VISIBLE else View.GONE
         if (shouldShowDescription) {
-            description.text = HtmlCompat.fromHtml(
-                story.description,
-                HtmlCompat.FROM_HTML_MODE_LEGACY
-            ).replaceUrlSpans().trimEnd()
+            description.text = story.description
+                .fromHtml(dipToPx = { it.dipToPx(root.context) })
+                .trim()
             description.movementMethod = PressableLinkMovementMethod {
                 if (it != null)
                     onLinkClicked?.invoke(it)

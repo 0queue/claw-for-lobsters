@@ -1,4 +1,4 @@
-package dev.thomasharris.claw.feature.comments.betterhtml
+package dev.thomasharris.claw.core.ui.betterhtml
 
 import android.graphics.Color
 import android.graphics.Typeface
@@ -21,7 +21,7 @@ import org.jsoup.nodes.TextNode
  * also good: https://lobste.rs/s/m24zv1/xi_editor_retrospective
  * (andyc going ham with the formatting)
  */
-fun String.parseHtml(dipToPx: (Float) -> Float = { it }): CharSequence {
+fun String.fromHtml(dipToPx: (Float) -> Float = { it }): CharSequence {
     val parsed = Jsoup.parse(this.replace(Regex("\\\\n"), "\n"))
 
     val body = parsed.body()
@@ -52,14 +52,25 @@ fun Element.render(dipToPx: (Float) -> Float, indentation: Int = 0): CharSequenc
             text().span(PressableSpan(url))
         }
         "blockquote" -> {
-            textuals(::identity) { it.render(dipToPx, indentation) } .concat().trim().span {
-                span(MyQuoteSpan(dipToPx(2f).toInt()))
+            textuals(::identity) { it.render(dipToPx, indentation + 1) }.concat().trim().span {
+                span(
+                    MyQuoteSpan(
+                        stripeWidth = dipToPx(2f).toInt(),
+                        indentation = indentation
+                    )
+                )
                 span(StyleSpan(Typeface.ITALIC))
             }.paragraph()
         }
         "pre" -> {
             textuals(::identity) { it.render(dipToPx, indentation) }.concat().span {
-                span(MyQuoteSpan(dipToPx(2f).toInt(), Color.TRANSPARENT))
+                span(
+                    MyQuoteSpan(
+                        stripeWidth = dipToPx(2f).toInt(),
+                        indentation = indentation,
+                        color = Color.TRANSPARENT
+                    )
+                )
                 span(TypefaceSpan("monospace"))
             }.paragraph()
         }

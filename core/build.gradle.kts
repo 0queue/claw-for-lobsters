@@ -21,4 +21,6 @@ dependencies {
 
     api(project(":lib-lobsters"))
     api(project(":lib-navigator"))
+
+    implementation("org.jsoup:jsoup:1.13.1")
 }

@@ -1,4 +1,4 @@
-package dev.thomasharris.claw.feature.comments.betterhtml
+package dev.thomasharris.claw.core.ui.betterhtml
 
 import android.graphics.Canvas
 import android.graphics.Paint
@@ -59,6 +59,7 @@ import androidx.annotation.ColorInt
 // adapted from the android source, because the customization was only available on recent android versions
 class MyQuoteSpan(
     private val stripeWidth: Int,
+    private val indentation: Int,
     @ColorInt
     private val color: Int? = null
 ) : LeadingMarginSpan {
@@ -82,10 +83,11 @@ class MyQuoteSpan(
         p.style = Paint.Style.FILL
         if (this.color != null)
             p.color = this.color
+        else
+            p.alpha = (255f * .7f).toInt()
 
-        p.alpha = (255f * .7f).toInt()
-
-        val xPosition = (getLeadingMargin(first) / 2) - (stripeWidth / 2)
+        val xPosition =
+            (getLeadingMargin(first) * indentation) + ((getLeadingMargin(first) / 2) - (stripeWidth / 2))
         c.drawRect(
             xPosition.toFloat(),
             top.toFloat(),

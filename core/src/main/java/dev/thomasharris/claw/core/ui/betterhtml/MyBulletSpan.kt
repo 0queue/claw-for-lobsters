@@ -1,4 +1,4 @@
-package dev.thomasharris.claw.feature.comments.betterhtml
+package dev.thomasharris.claw.core.ui.betterhtml
 
 
 import android.graphics.Canvas
