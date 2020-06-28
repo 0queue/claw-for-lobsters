@@ -52,7 +52,7 @@ fun Element.render(dipToPx: (Float) -> Float, indentation: Int = 0): CharSequenc
             text().span(PressableSpan(url))
         }
         "blockquote" -> {
-            text().trim().span {
+            textuals(::identity) { it.render(dipToPx, indentation) } .concat().trim().span {
                 span(MyQuoteSpan(dipToPx(2f).toInt()))
                 span(StyleSpan(Typeface.ITALIC))
             }.paragraph()
