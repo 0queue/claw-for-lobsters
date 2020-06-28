@@ -1,13 +1,13 @@
-package dev.thomasharris.claw.core.ui.betterlinks
+package dev.thomasharris.claw.core.ui.betterhtml
 
 import android.annotation.SuppressLint
 import android.content.Context
 import android.text.Spannable
 import android.util.AttributeSet
 import android.view.MotionEvent
-import android.widget.TextView
+import androidx.appcompat.widget.AppCompatTextView
 
-class LinkTextView : TextView {
+class LinkTextView : AppCompatTextView {
 
     // gotta be careful when extending TextView, gotta call everything manually
     constructor(context: Context)

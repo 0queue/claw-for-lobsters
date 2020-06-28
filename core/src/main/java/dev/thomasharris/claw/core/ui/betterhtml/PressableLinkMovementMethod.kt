@@ -1,4 +1,4 @@
-package dev.thomasharris.claw.core.ui.betterlinks
+package dev.thomasharris.claw.core.ui.betterhtml
 
 import android.text.Selection
 import android.text.Spannable

@@ -9,7 +9,6 @@ import android.text.style.ForegroundColorSpan
 import android.text.style.StrikethroughSpan
 import android.text.style.StyleSpan
 import android.text.style.TypefaceSpan
-import dev.thomasharris.claw.core.ui.betterlinks.PressableSpan
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 import org.jsoup.nodes.Node
@@ -49,7 +48,11 @@ fun Element.render(dipToPx: (Float) -> Float, indentation: Int = 0): CharSequenc
         "a" -> {
             val url = this.attr("abs:href") // may be empty
 
-            text().span(PressableSpan(url))
+            text().span(
+                PressableSpan(
+                    url
+                )
+            )
         }
         "blockquote" -> {
             textuals(::identity) { it.render(dipToPx, indentation + 1) }.concat().trim().span {

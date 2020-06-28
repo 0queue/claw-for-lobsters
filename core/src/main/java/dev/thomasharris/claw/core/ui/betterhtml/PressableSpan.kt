@@ -1,4 +1,4 @@
-package dev.thomasharris.claw.core.ui.betterlinks
+package dev.thomasharris.claw.core.ui.betterhtml
 
 import android.graphics.Color
 import android.text.SpannableString
@@ -19,6 +19,7 @@ class PressableSpan(val url: String) : ClickableSpan() {
     // for sale, onClick method, never called
     override fun onClick(widget: View) = Unit
 
+    // not sure that this is ever called either tbh
     override fun updateDrawState(ds: TextPaint) {
         super.updateDrawState(ds)
         ds.bgColor = if (isPressed) with(ds.linkColor) {

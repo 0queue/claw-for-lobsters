@@ -19,8 +19,8 @@ import dev.thomasharris.claw.core.R
 import dev.thomasharris.claw.core.ext.dipToPx
 import dev.thomasharris.claw.core.ext.postedAgo
 import dev.thomasharris.claw.core.ext.toString
+import dev.thomasharris.claw.core.ui.betterhtml.PressableLinkMovementMethod
 import dev.thomasharris.claw.core.ui.betterhtml.fromHtml
-import dev.thomasharris.claw.core.ui.betterlinks.PressableLinkMovementMethod
 import dev.thomasharris.claw.lib.lobsters.StoryModel
 import java.net.URI
 
@@ -104,10 +104,11 @@ class StoryViewHolder private constructor(private val root: View) : RecyclerView
             description.text = story.description
                 .fromHtml(dipToPx = { it.dipToPx(root.context) })
                 .trim()
-            description.movementMethod = PressableLinkMovementMethod {
-                if (it != null)
-                    onLinkClicked?.invoke(it)
-            }
+            description.movementMethod =
+                PressableLinkMovementMethod {
+                    if (it != null)
+                        onLinkClicked?.invoke(it)
+                }
         }
     }
 

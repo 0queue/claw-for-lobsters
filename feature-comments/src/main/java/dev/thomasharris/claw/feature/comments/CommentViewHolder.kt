@@ -18,8 +18,8 @@ import coil.transform.CircleCropTransformation
 import dev.thomasharris.claw.core.ext.dipToPx
 import dev.thomasharris.claw.core.ext.postedAgo
 import dev.thomasharris.claw.core.ext.toString
+import dev.thomasharris.claw.core.ui.betterhtml.PressableLinkMovementMethod
 import dev.thomasharris.claw.core.ui.betterhtml.fromHtml
-import dev.thomasharris.claw.core.ui.betterlinks.PressableLinkMovementMethod
 import dev.thomasharris.claw.lib.lobsters.CommentModel
 import dev.thomasharris.claw.lib.lobsters.CommentStatus
 import java.util.Date
@@ -90,10 +90,11 @@ class CommentViewHolder private constructor(
         body.text = comment.comment
             .fromHtml(dipToPx = { it.dipToPx(root.context) })
             .trim()
-        body.movementMethod = PressableLinkMovementMethod {
-            if (it != null)
-                onLinkClicked(it)
-        }
+        body.movementMethod =
+            PressableLinkMovementMethod {
+                if (it != null)
+                    onLinkClicked(it)
+            }
 
         val isCollapsed = comment.status == CommentStatus.COLLAPSED
 
