@@ -9,14 +9,17 @@ import android.text.style.LeadingMarginSpan
 
 class MyNumberedBulletSpan(
     private val indentation: Int,
-    private val number: Int
+    private val number: Int,
+    max: Int
 ) : LeadingMarginSpan {
 
-    private val numberOffset = 8
-    private val gapWidth = 32
+    private val isLong = max >= 10
 
+    private val numberOffset = if (isLong) 4 else 8
+
+    // makes short lists and long lists look nice
     override fun getLeadingMargin(first: Boolean): Int {
-        return (numberOffset * 2) + gapWidth
+        return if (isLong) LEADING_MARGIN * 2 else LEADING_MARGIN
     }
 
     override fun drawLeadingMargin(
@@ -33,10 +36,9 @@ class MyNumberedBulletSpan(
             paint.style = Paint.Style.FILL
             paint.textAlign = Paint.Align.RIGHT
 
-            // TODO handle different types of nested leading margins?
-            //   eg. an ol in a blockquote
+            // TODO nested ol
             val right =
-                x + (indentation * getLeadingMargin(first)) + (getLeadingMargin(first) - numberOffset)
+                x + (indentation * LEADING_MARGIN) + (getLeadingMargin(first) - numberOffset)
 
             canvas.drawText("$number.", right.toFloat(), baseline.toFloat(), paint)
 

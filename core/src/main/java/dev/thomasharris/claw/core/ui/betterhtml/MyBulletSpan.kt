@@ -12,10 +12,9 @@ class MyBulletSpan(
 ) : LeadingMarginSpan {
 
     private val bulletRadius = 8
-    private val gapWidth = 32
 
     override fun getLeadingMargin(first: Boolean): Int {
-        return 2 * bulletRadius + gapWidth
+        return LEADING_MARGIN
     }
 
     override fun drawLeadingMargin(

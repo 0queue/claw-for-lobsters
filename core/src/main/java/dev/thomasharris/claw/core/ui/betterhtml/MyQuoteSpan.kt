@@ -64,10 +64,8 @@ class MyQuoteSpan(
     private val color: Int? = null
 ) : LeadingMarginSpan {
 
-    private val gapWidth = 16
-
     override fun getLeadingMargin(first: Boolean): Int {
-        return gapWidth + stripeWidth + gapWidth
+        return LEADING_MARGIN
     }
 
     override fun drawLeadingMargin(

@@ -14,6 +14,8 @@ import org.jsoup.nodes.Element
 import org.jsoup.nodes.Node
 import org.jsoup.nodes.TextNode
 
+const val LEADING_MARGIN = 32 + 8
+
 /**
  * good test area: https://lobste.rs/s/xvqqvy/dynamic_linking.json
  *
@@ -43,7 +45,6 @@ fun Element.render(dipToPx: (Float) -> Float, indentation: Int = 0): CharSequenc
     return when (tagName()) {
         "p" -> {
             textuals(::identity) { it.render(dipToPx, indentation) }.concat().trim().paragraph()
-//                .span(BackgroundColorSpan(Color.LTGRAY))
         }
         "a" -> {
             val url = this.attr("abs:href") // may be empty
@@ -96,9 +97,10 @@ fun Element.render(dipToPx: (Float) -> Float, indentation: Int = 0): CharSequenc
         }
         "ol" -> {
             val startAt = attr("start").ifEmpty { "1" }.toInt()
+            val max = children().size
             children().map { el ->
                 el.render(dipToPx, indentation)
-                    .span(MyNumberedBulletSpan(indentation, el.elementSiblingIndex() + startAt))
+                    .span(MyNumberedBulletSpan(indentation, el.elementSiblingIndex() + startAt, max))
             }.concat().trim().paragraph()
         }
         "li" -> {
