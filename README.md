@@ -3,7 +3,7 @@
 A little personal project to play around with different Android libraries
 and what not.  Connects to [Lobste.rs](https://lobste.rs), a news site
 
-![Image of front page on 4. July 2020](img/front_page.png)
+<img src="img/front_page.png" width="25%" height="25%">
 
 ## Structure
 
