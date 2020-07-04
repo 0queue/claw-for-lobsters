@@ -6,12 +6,15 @@ import android.text.Spannable
 import android.text.SpannableString
 import android.text.SpannableStringBuilder
 import android.text.TextUtils
+import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
+import androidx.core.text.buildSpannedString
 import androidx.recyclerview.widget.RecyclerView
 import coil.api.load
 import coil.transform.CircleCropTransformation
@@ -22,7 +25,11 @@ import dev.thomasharris.claw.core.ext.toString
 import dev.thomasharris.claw.core.ui.betterhtml.PressableLinkMovementMethod
 import dev.thomasharris.claw.core.ui.betterhtml.fromHtml
 import dev.thomasharris.claw.lib.lobsters.StoryModel
+import org.threeten.bp.DateTimeUtils
+import org.threeten.bp.Duration
+import org.threeten.bp.Instant
 import java.net.URI
+import java.util.Date
 
 class StoryViewHolder private constructor(private val root: View) : RecyclerView.ViewHolder(root) {
     private val context: Context = root.context
@@ -58,38 +65,67 @@ class StoryViewHolder private constructor(private val root: View) : RecyclerView
             if (story.description.isNotBlank()) append(" ☶")
         }
 
-        author.text = SpannableStringBuilder().apply {
-            val ago = story.createdAt.postedAgo().toString(context)
-            val numComments = context.resources.getQuantityString(
-                R.plurals.numberOfComments,
-                story.commentCount,
-                story.commentCount
+        val ago = story.createdAt.postedAgo().toString(context)
+        val numComments = context.resources.getQuantityString(
+            R.plurals.numberOfComments,
+            story.commentCount,
+            story.commentCount
+        )
+
+        val numVotes = String.format("%+d", story.score)
+        buildSpannedString {
+            append(numVotes)
+            append(" | ")
+            append("by ") // TODO change after getting PR accepted
+            if (story.userCreatedAt.isNewUser()) append(
+                story.username,
+                // probably doesn't have to be an attribute because it doesn't change with theme
+                ForegroundColorSpan(ContextCompat.getColor(root.context, R.color.new_author)),
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
             )
-
-            val numVotes = String.format("%+d", story.score)
-
-            append(
-                context.getString(
-                    R.string.story_view_author,
-                    numVotes,
-                    story.username,
-                    ago,
-                    numComments
-                )
-            )
-
-            story.shortUrl()?.let { url ->
+            else append(story.username)
+            append(" $ago")
+            append(" $numComments")
+            story.shortUrl()?.let {
                 append(" | ")
-                append(SpannableStringBuilder(url).apply {
-                    setSpan(
-                        StyleSpan(Typeface.ITALIC),
-                        0,
-                        url.length,
-                        Spannable.SPAN_INCLUSIVE_EXCLUSIVE
-                    )
-                })
+                append(it, StyleSpan(Typeface.ITALIC), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
             }
+        }.let {
+            author.text = it
         }
+
+//        author.text = SpannableStringBuilder().apply {
+//            val ago = story.createdAt.postedAgo().toString(context)
+//            val numComments = context.resources.getQuantityString(
+//                R.plurals.numberOfComments,
+//                story.commentCount,
+//                story.commentCount
+//            )
+//
+//            val numVotes = String.format("%+d", story.score)
+//
+//            append(
+//                context.getString(
+//                    R.string.story_view_author,
+//                    numVotes,
+//                    story.username,
+//                    ago,
+//                    numComments
+//                )
+//            )
+//
+//            story.shortUrl()?.let { url ->
+//                append(" | ")
+//                append(SpannableStringBuilder(url).apply {
+//                    setSpan(
+//                        StyleSpan(Typeface.ITALIC),
+//                        0,
+//                        url.length,
+//                        Spannable.SPAN_INCLUSIVE_EXCLUSIVE
+//                    )
+//                })
+//            }
+//        }
         author.ellipsize = if (isCompact) TextUtils.TruncateAt.END else null
         author.maxLines = if (isCompact) 1 else Int.MAX_VALUE
 
@@ -124,3 +160,8 @@ class StoryViewHolder private constructor(private val root: View) : RecyclerView
 }
 
 fun StoryModel.shortUrl() = URI(url.trim()).host?.removePrefix("www.")
+
+fun Date.isNewUser(asOf: Instant = Instant.now()): Boolean {
+    return Duration.between(DateTimeUtils.toInstant(this), asOf)
+        .toDays() <= 70 // user.rb#NEW_USER_DAYS
+}

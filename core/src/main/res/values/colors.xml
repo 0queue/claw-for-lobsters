@@ -8,6 +8,8 @@
     <color name="white">#FFFFFF</color>
     <color name="dark">#212121</color>
 
+    <color name="new_author">#008000</color>
+
     <color name="colorTagBorderShowAskAnnounceInterview">#F0B2B8</color>
     <color name="colorTagBorderMedia">#B2CCF0</color>
     <color name="colorTagBorderMeta">#c8c8c8</color>

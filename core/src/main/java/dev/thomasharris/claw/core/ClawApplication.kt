@@ -2,6 +2,7 @@ package dev.thomasharris.claw.core
 
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
+import com.jakewharton.threetenabp.AndroidThreeTen
 import dev.thomasharris.claw.core.di.ComponentStore
 import dev.thomasharris.claw.core.di.DaggerSingletonComponent
 import dev.thomasharris.claw.core.di.PrefsModule
@@ -24,6 +25,8 @@ class ClawApplication : Application(), ComponentStore<SingletonComponent> {
 
         val preference = singletonComponent.preferencesRepository().getTheme()
         AppCompatDelegate.setDefaultNightMode(preference.modeNight)
+
+        AndroidThreeTen.init(this)
     }
 
     override fun <T : Any> get(

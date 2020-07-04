@@ -66,6 +66,7 @@ SELECT
     story.title,
     story.username,
     user.avatarShortUrl,
+    user.createdAt userCreatedAt,
     story.createdAt,
     story.commentCount,
     story.score,
@@ -97,6 +98,7 @@ SELECT
     c.comment,
     c.indentLevel,
     c.username,
+    user.createdAt userCreatedAt,
     user.avatarShortUrl,
     c.status,
     -- haha yes

@@ -20,6 +20,7 @@ import dev.thomasharris.claw.core.ext.postedAgo
 import dev.thomasharris.claw.core.ext.toString
 import dev.thomasharris.claw.core.ui.betterhtml.PressableLinkMovementMethod
 import dev.thomasharris.claw.core.ui.betterhtml.fromHtml
+import dev.thomasharris.claw.core.ui.isNewUser
 import dev.thomasharris.claw.lib.lobsters.CommentModel
 import dev.thomasharris.claw.lib.lobsters.CommentStatus
 import java.util.Date
@@ -73,18 +74,22 @@ class CommentViewHolder private constructor(
                 else -> ""
             }
         }
+
         author.text =
             SpannableString("${comment.username} $action${t.toString(root.context)}$scoreText").apply {
                 // CAREFUL slightly hardcoded here
-                if (comment.username == comment.storyAuthor)
+                when {
+                    comment.username == comment.storyAuthor -> R.color.comment_original_poster
+                    comment.userCreatedAt?.isNewUser() == true -> R.color.new_author
+                    else -> null
+                }?.let { c ->
                     setSpan(
-                        ForegroundColorSpan(
-                            ContextCompat.getColor(
-                                root.context,
-                                R.color.comment_original_poster
-                            )
-                        ), 0, comment.username.length, Spannable.SPAN_INCLUSIVE_EXCLUSIVE
+                        ForegroundColorSpan(ContextCompat.getColor(root.context, c)),
+                        0,
+                        comment.username.length,
+                        Spannable.SPAN_INCLUSIVE_EXCLUSIVE
                     )
+                }
             }
 
         body.text = comment.comment

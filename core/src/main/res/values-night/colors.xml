@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- No rhyme or reason here, just played around in a color picker and check with wcag -->
+    <color name="new_author">#80C080</color>
+</resources>

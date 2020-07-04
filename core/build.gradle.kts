@@ -23,4 +23,7 @@ dependencies {
     api(project(":lib-navigator"))
 
     implementation("org.jsoup:jsoup:1.13.1")
+
+    // not sure when I can remove this, the build still complains about java.time.*
+    api("com.jakewharton.threetenabp:threetenabp:1.2.4")
 }
