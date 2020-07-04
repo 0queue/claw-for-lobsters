@@ -3,6 +3,8 @@
 A little personal project to play around with different Android libraries
 and what not.  Connects to [Lobste.rs](https://lobste.rs), a news site
 
+![Image of front page on 4. July 2020](img/front_page.png)
+
 ## Structure
 
 Played around with a modular architecture, although for now there is a
@@ -49,8 +51,7 @@ Hopefully I remembered them all
 
 - ~~Night mode~~
 - ~~Better comment rendering (HtmlCompat.fromHtml(...) is really inadequate)~~
-  (URLSpan has been replaced)
+  ~~(URLSpan has been replaced)~~ (Custom rendering with jsoup and spans)
 - ~~Settings page~~
 - Github releases, maybe
 - Feature to see profile pages
-- Tag filtering

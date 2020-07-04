@@ -57,8 +57,8 @@ internal fun Project.configureAndroid() {
         defaultConfig {
             minSdkVersion(23)
             targetSdkVersion(29)
-            versionCode = 12
-            versionName = "12"
+            versionCode = 14
+            versionName = "14"
             testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         }
 
