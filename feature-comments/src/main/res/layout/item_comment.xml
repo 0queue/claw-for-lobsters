@@ -38,7 +38,7 @@
                 android:id="@+id/comment_avatar"
                 android:layout_width="16dp"
                 android:layout_height="16dp"
-                android:layout_marginEnd="2dp"
+                android:layout_marginEnd="4dp"
                 android:contentDescription="@string/avatar_content_description"
                 tools:background="#00f" />
 

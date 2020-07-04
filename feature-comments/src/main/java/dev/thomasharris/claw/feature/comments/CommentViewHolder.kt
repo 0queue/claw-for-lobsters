@@ -8,9 +8,6 @@ import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import coil.api.load
@@ -21,6 +18,7 @@ import dev.thomasharris.claw.core.ext.toString
 import dev.thomasharris.claw.core.ui.betterhtml.PressableLinkMovementMethod
 import dev.thomasharris.claw.core.ui.betterhtml.fromHtml
 import dev.thomasharris.claw.core.ui.isNewUser
+import dev.thomasharris.claw.feature.comments.databinding.ItemCommentBinding
 import dev.thomasharris.claw.lib.lobsters.CommentModel
 import dev.thomasharris.claw.lib.lobsters.CommentStatus
 import java.util.Date
@@ -28,17 +26,11 @@ import java.util.Locale
 import kotlin.math.min
 
 class CommentViewHolder private constructor(
-    private val root: View
-) : RecyclerView.ViewHolder(root) {
-    private val marker: View = root.findViewById(R.id.comment_marker)
-    private val avatar: ImageView = root.findViewById(R.id.comment_avatar)
-    private val author: TextView = root.findViewById(R.id.comment_author)
-    private val body: TextView = root.findViewById(R.id.comment_body)
-    private val collapsedIndicator: ImageView = root.findViewById(R.id.comment_collapsed_indicator)
-    private val childCount: TextView = root.findViewById(R.id.comment_child_count)
-    private val contentContainer: LinearLayout = root.findViewById(R.id.comment_content_container)
+    private val binding: ItemCommentBinding
+) : RecyclerView.ViewHolder(binding.root) {
 
-    private val colors = root.context.resources.getIntArray(R.array.indentation_colors).toList()
+    private val colors =
+        binding.root.context.resources.getIntArray(R.array.indentation_colors).toList()
 
     @SuppressLint("SetTextI18n")
     fun bind(
@@ -46,20 +38,21 @@ class CommentViewHolder private constructor(
         position: Int,
         onClick: (String, Boolean) -> Unit,
         onLinkClicked: (String) -> Unit
-    ) {
-        marker.backgroundTintList =
+    ) = with(binding) {
+        commentMarker.backgroundTintList =
             ColorStateList.valueOf(colors[(comment.indentLevel - 1) % colors.size])
 
-        marker.layoutParams = (marker.layoutParams as? ViewGroup.MarginLayoutParams)?.apply {
-            leftMargin = (comment.indentLevel - 1) * 8f.dipToPx(root.context).toInt()
-        } ?: marker.layoutParams
+        commentMarker.layoutParams =
+            (commentMarker.layoutParams as? ViewGroup.MarginLayoutParams)?.apply {
+                leftMargin = (comment.indentLevel - 1) * 8f.dipToPx(root.context).toInt()
+            } ?: commentMarker.layoutParams
 
         root.layoutParams = (root.layoutParams as? ViewGroup.MarginLayoutParams)?.apply {
             topMargin = (if (position != 1 && comment.indentLevel == 1) 12f else 0f)
                 .dipToPx(root.context).toInt()
         } ?: root.layoutParams
 
-        avatar.load("https://lobste.rs/${comment.avatarShortUrl}") {
+        commentAvatar.load("https://lobste.rs/${comment.avatarShortUrl}") {
             crossfade(true)
             placeholder(R.drawable.ic_person_black_24dp)
             transformations(CircleCropTransformation())
@@ -75,7 +68,7 @@ class CommentViewHolder private constructor(
             }
         }
 
-        author.text =
+        commentAuthor.text =
             SpannableString("${comment.username} $action${t.toString(root.context)}$scoreText").apply {
                 // CAREFUL slightly hardcoded here
                 when {
@@ -92,10 +85,10 @@ class CommentViewHolder private constructor(
                 }
             }
 
-        body.text = comment.comment
+        commentBody.text = comment.comment
             .fromHtml(dipToPx = { it.dipToPx(root.context) })
             .trim()
-        body.movementMethod =
+        commentBody.movementMethod =
             PressableLinkMovementMethod {
                 if (it != null)
                     onLinkClicked(it)
@@ -108,25 +101,25 @@ class CommentViewHolder private constructor(
         else
             R.drawable.ic_arrow_drop_up_black_16dp
 
-        collapsedIndicator.setImageDrawable(
+        commentCollapsedIndicator.setImageDrawable(
             ContextCompat.getDrawable(
-                collapsedIndicator.context,
+                commentCollapsedIndicator.context,
                 indicator
             )
         )
-        collapsedIndicator.setOnClickListener {
+        commentCollapsedIndicator.setOnClickListener {
             onClick(comment.shortId, true)
         }
 
-        body.visibility = if (isCollapsed) View.GONE else View.VISIBLE
+        commentBody.visibility = if (isCollapsed) View.GONE else View.VISIBLE
 
-        childCount.visibility =
+        commentChildCount.visibility =
             if (isCollapsed && comment.childCount > 0) View.VISIBLE else View.GONE
-        childCount.text = String.format(Locale.US, "%d", comment.childCount)
+        commentChildCount.text = String.format(Locale.US, "%d", comment.childCount)
 
         val commentAlpha = if (comment.score < -2) .7f else 1f
-        contentContainer.alpha = commentAlpha
-        marker.alpha = commentAlpha
+        commentContentContainer.alpha = commentAlpha
+        commentMarker.alpha = commentAlpha
 
         root.setOnClickListener {
             onClick(comment.shortId, false)
@@ -136,8 +129,8 @@ class CommentViewHolder private constructor(
     companion object {
         fun inflate(parent: ViewGroup) =
             CommentViewHolder(
-                LayoutInflater.from(parent.context).inflate(
-                    R.layout.item_comment,
+                ItemCommentBinding.inflate(
+                    LayoutInflater.from(parent.context),
                     parent,
                     false
                 )

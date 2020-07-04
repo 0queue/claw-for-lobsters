@@ -1,15 +1,15 @@
 package dev.thomasharris.claw.feature.frontpage
 
-import android.view.View
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import dev.thomasharris.claw.frontpage.feature.frontpage.R
+import dev.thomasharris.claw.frontpage.feature.frontpage.databinding.ItemFrontPageDividerBinding
 
-class DividerViewHolder(private val root: View) : RecyclerView.ViewHolder(root) {
-
-    private val label: TextView = root.findViewById(R.id.item_front_page_divider_text)
+class DividerViewHolder(
+    private val binding: ItemFrontPageDividerBinding
+) : RecyclerView.ViewHolder(binding.root) {
 
     fun bind(item: FrontPageItem.Divider) {
-        label.text = root.context.getString(R.string.page_number, item.n)
+        binding.itemFrontPageDividerText.text =
+            binding.root.context.getString(R.string.page_number, item.n)
     }
 }

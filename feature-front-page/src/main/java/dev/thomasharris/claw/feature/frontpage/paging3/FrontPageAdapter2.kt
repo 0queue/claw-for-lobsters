@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import dev.thomasharris.claw.core.ui.StoryViewHolder
 import dev.thomasharris.claw.feature.frontpage.DividerViewHolder
 import dev.thomasharris.claw.feature.frontpage.FrontPageItem
-import dev.thomasharris.claw.frontpage.feature.frontpage.R
+import dev.thomasharris.claw.frontpage.feature.frontpage.databinding.ItemFrontPageDividerBinding
 
 
 const val VIEW_TYPE_STORY = 1
@@ -28,13 +28,7 @@ class FrontPageAdapter2(
         val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
             VIEW_TYPE_STORY -> StoryViewHolder.inflate(parent)
-            else -> DividerViewHolder(
-                inflater.inflate(
-                    R.layout.item_front_page_divider,
-                    parent,
-                    false
-                )
-            )
+            else -> DividerViewHolder(ItemFrontPageDividerBinding.inflate(inflater, parent, false))
         }
     }
 

@@ -11,14 +11,13 @@ import android.text.style.StyleSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.text.buildSpannedString
 import androidx.recyclerview.widget.RecyclerView
 import coil.api.load
 import coil.transform.CircleCropTransformation
 import dev.thomasharris.claw.core.R
+import dev.thomasharris.claw.core.databinding.StoryViewBinding
 import dev.thomasharris.claw.core.ext.dipToPx
 import dev.thomasharris.claw.core.ext.postedAgo
 import dev.thomasharris.claw.core.ext.toString
@@ -31,26 +30,25 @@ import org.threeten.bp.Instant
 import java.net.URI
 import java.util.Date
 
-class StoryViewHolder private constructor(private val root: View) : RecyclerView.ViewHolder(root) {
-    private val context: Context = root.context
-    private val title: TextView = root.findViewById(R.id.story_view_title)
-    private val author: TextView = root.findViewById(R.id.story_view_author)
-    private val avatar: ImageView = root.findViewById(R.id.story_view_avatar)
-    private val description: TextView = root.findViewById(R.id.story_view_description)
+class StoryViewHolder private constructor(
+    private val binding: StoryViewBinding
+) : RecyclerView.ViewHolder(binding.root) {
+
+    private val context: Context = binding.root.context
 
     fun bind(
         story: StoryModel,
         isCompact: Boolean = true,
         onClickListener: ((String, String) -> Unit)? = null,
         onLinkClicked: ((String) -> Unit)? = null
-    ) {
-        avatar.load("https://lobste.rs/${story.avatarShortUrl}") {
+    ) = with(binding) {
+        storyViewAvatar.load("https://lobste.rs/${story.avatarShortUrl}") {
             crossfade(true)
             placeholder(R.drawable.ic_person_black_24dp)
             transformations(CircleCropTransformation())
         }
 
-        title.text = SpannableStringBuilder().apply {
+        storyViewTitle.text = SpannableStringBuilder().apply {
             append(story.title)
             story.tags.forEach { tag ->
                 append(" ")
@@ -91,43 +89,11 @@ class StoryViewHolder private constructor(private val root: View) : RecyclerView
                 append(it, StyleSpan(Typeface.ITALIC), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
             }
         }.let {
-            author.text = it
+            storyViewAuthor.text = it
         }
 
-//        author.text = SpannableStringBuilder().apply {
-//            val ago = story.createdAt.postedAgo().toString(context)
-//            val numComments = context.resources.getQuantityString(
-//                R.plurals.numberOfComments,
-//                story.commentCount,
-//                story.commentCount
-//            )
-//
-//            val numVotes = String.format("%+d", story.score)
-//
-//            append(
-//                context.getString(
-//                    R.string.story_view_author,
-//                    numVotes,
-//                    story.username,
-//                    ago,
-//                    numComments
-//                )
-//            )
-//
-//            story.shortUrl()?.let { url ->
-//                append(" | ")
-//                append(SpannableStringBuilder(url).apply {
-//                    setSpan(
-//                        StyleSpan(Typeface.ITALIC),
-//                        0,
-//                        url.length,
-//                        Spannable.SPAN_INCLUSIVE_EXCLUSIVE
-//                    )
-//                })
-//            }
-//        }
-        author.ellipsize = if (isCompact) TextUtils.TruncateAt.END else null
-        author.maxLines = if (isCompact) 1 else Int.MAX_VALUE
+        storyViewAuthor.ellipsize = if (isCompact) TextUtils.TruncateAt.END else null
+        storyViewAuthor.maxLines = if (isCompact) 1 else Int.MAX_VALUE
 
         if (onClickListener != null)
             root.setOnClickListener {
@@ -135,12 +101,12 @@ class StoryViewHolder private constructor(private val root: View) : RecyclerView
             }
 
         val shouldShowDescription = !isCompact && story.description.isNotBlank()
-        description.visibility = if (shouldShowDescription) View.VISIBLE else View.GONE
+        storyViewDescription.visibility = if (shouldShowDescription) View.VISIBLE else View.GONE
         if (shouldShowDescription) {
-            description.text = story.description
+            storyViewDescription.text = story.description
                 .fromHtml(dipToPx = { it.dipToPx(root.context) })
                 .trim()
-            description.movementMethod =
+            storyViewDescription.movementMethod =
                 PressableLinkMovementMethod {
                     if (it != null)
                         onLinkClicked?.invoke(it)
@@ -150,8 +116,8 @@ class StoryViewHolder private constructor(private val root: View) : RecyclerView
 
     companion object {
         fun inflate(parent: ViewGroup) = StoryViewHolder(
-            LayoutInflater.from(parent.context).inflate(
-                R.layout.story_view,
+            StoryViewBinding.inflate(
+                LayoutInflater.from(parent.context),
                 parent,
                 false
             )
