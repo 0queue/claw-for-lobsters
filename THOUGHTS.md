@@ -81,3 +81,34 @@ Replaced some framework spans such as Quote/Bullet in order to nest correctly,
 since apparently the indentation is bugged in some versions of Android.  I
 think it is in a good place now, it looks good and behaves well.  More edge
 cases will have to be discovered by dogfooding, however
+
+## Local lobste.rs development
+
+In order to make a pull request or two, and eventually to play around with
+posting from the app, I decided to get started with local lobste.rs development
+by following the install instructions.  As someone who is very much not into
+ruby, it was a bit painful.
+
+`rvm` installation was normal, following the lobsters readme led to an hour or
+so of failing to install ruby 2.3 before I realized it's actually using 2.7,
+and that went much more smoothly.  Although due to a recent big openssl upgrade
+on Solus, I had to instal `openssl-11-devel` manually, while `rvm` installed
+`openssl-devel`, the legacy package.  That's quite understandable though.
+
+I already had node for some reason, so that was fine.
+
+Running `bundle` also failed a few times, until I realized I needed the
+mysql devel files.  I didn't find anything immediately in the repo, so I went
+with `mariadb-devel` instead, and `bundle` worked great after that.
+
+Wasn't sure how, or if I wanted to, have a local db, so I installed docker and
+ran `mariadb` with it, which was easy.  Just had to specify `host: 127.0.0.1`
+in the `config/database.yml` instead of the socket.
+
+Trying to initialize the database is painful, even if the `rails` command
+succeeds, there are a ton of warnings I'm not used to seeing, so I don't
+know if they are important or not. `rails fake_data` failed on username
+generation, so I hacked it to use `"username" + i.to_s` instead of the Faker
+thing and it worked (spitting out tons of warnings from the cops of course).
+
+At least after all that `rails server` worked like a charm, so that's nice.
