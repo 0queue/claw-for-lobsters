@@ -75,8 +75,6 @@ fun StoryNetworkEntity.toDB(pageIndex: Int, subIndex: Int, now: Date = Date()) =
         createdAt,
         url,
         score,
-        upvotes,
-        downvotes,
         commentCount,
         description,
         submitter.username,

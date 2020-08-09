@@ -136,8 +136,6 @@ fun CommentNetworkEntity.toDB(
     isDeleted,
     isModerated,
     score,
-    upvotes,
-    downvotes,
     comment,
     indentLevel,
     commentingUser.username,

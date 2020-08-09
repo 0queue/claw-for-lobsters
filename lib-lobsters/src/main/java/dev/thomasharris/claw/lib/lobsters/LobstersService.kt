@@ -43,8 +43,6 @@ data class StoryNetworkEntity(
     val title: String,
     val url: String,
     val score: Int,
-    val upvotes: Int,
-    val downvotes: Int,
     @field:Json(name = "comment_count") val commentCount: Int,
     val description: String,
     @field:Json(name = "submitter_user") val submitter: UserNetworkEntity,
@@ -61,8 +59,6 @@ data class CommentNetworkEntity(
     @field:Json(name = "is_deleted") val isDeleted: Boolean,
     @field:Json(name = "is_moderated") val isModerated: Boolean,
     val score: Int,
-    val upvotes: Int,
-    val downvotes: Int,
     val comment: String,
     val url: String,
     @field:Json(name = "indent_level") val indentLevel: Int, // starts at 1
