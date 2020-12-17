@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.AttrRes
+import androidx.browser.customtabs.CustomTabColorSchemeParams
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.content.ContextCompat
 import com.bluelinelabs.conductor.Controller
@@ -43,7 +44,9 @@ class WebPageController(args: Bundle) : Controller(args) {
                 setStartAnimations(it, R.anim.slide_in_from_right, R.anim.nothing)
                 setExitAnimations(it, R.anim.nothing, R.anim.slide_out_to_right)
                 // closest thing to turning on dark mode as far as I can tell
-                setToolbarColor(it.getColorAttr(R.attr.colorSurface))
+                setDefaultColorSchemeParams(CustomTabColorSchemeParams.Builder().apply {
+                    setToolbarColor(it.getColorAttr(R.attr.colorSurface))
+                }.build())
             }
         }.build().apply {
             intent.data = Uri.parse(url)

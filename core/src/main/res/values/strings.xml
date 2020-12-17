@@ -7,7 +7,7 @@
 
     <!-- example: -->
     <!-- by thomas 16 hours ago | 3 comments -->
-    <string name="story_view_author">%s | by %s %s | %s</string>
+    <string name="story_view_author">%1$s | by %2$s %3$s | %4$s</string>
     <plurals name="numberOfMinutes">
         <item quantity="one">%d minute ago</item>
         <item quantity="other">%d minutes ago</item>

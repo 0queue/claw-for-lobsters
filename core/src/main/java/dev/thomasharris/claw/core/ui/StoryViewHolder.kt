@@ -14,7 +14,7 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.text.buildSpannedString
 import androidx.recyclerview.widget.RecyclerView
-import coil.api.load
+import coil.load
 import coil.transform.CircleCropTransformation
 import dev.thomasharris.claw.core.R
 import dev.thomasharris.claw.core.databinding.StoryViewBinding

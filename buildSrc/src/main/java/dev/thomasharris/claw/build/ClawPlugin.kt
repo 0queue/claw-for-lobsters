@@ -37,7 +37,6 @@ open class ClawAndroidPlugin : Plugin<Project> {
                 plugin("com.android.library")
 
             plugin("kotlin-android")
-            plugin("kotlin-android-extensions")
 
             plugin("kotlin-kapt")
         }
@@ -82,16 +81,14 @@ internal fun Project.configureAndroid() {
             }
         }
 
-        // for some reason this is still marked incubating...
-        // so it is overridden in gradle.properties
-        // buildFeatures.viewBinding = true
+        buildFeatures.viewBinding = true
 
         compileOptions {
             sourceCompatibility = JavaVersion.VERSION_1_8
             targetCompatibility = JavaVersion.VERSION_1_8
         }
 
-        dependencies.add("implementation", "androidx.core:core-ktx:1.3.0")
+        dependencies.add("implementation", "androidx.core:core-ktx:1.3.2")
     }
 
     extensions.findByType<LibraryExtension>()?.run {
@@ -113,10 +110,10 @@ internal fun Project.configureAndroid() {
  */
 internal fun Project.configureDependencies() {
     dependencies.run {
-        add("implementation", "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.3.72")
-        add("implementation", "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.7")
-        add("implementation", "com.google.dagger:dagger:2.28.1")
-        add("kapt", "com.google.dagger:dagger-compiler:2.28.1")
+        add("implementation", "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.4.21")
+        add("implementation", "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.2")
+        add("implementation", "com.google.dagger:dagger:2.30.1")
+        add("kapt", "com.google.dagger:dagger-compiler:2.30.1")
     }
 }
 
@@ -141,12 +138,12 @@ fun DependencyHandler.conductor() {
 }
 
 fun DependencyHandler.material() {
-    add("implementation", "androidx.appcompat:appcompat:1.1.0")
-    add("implementation", "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0-rc01")
-    add("implementation", "com.google.android.material:material:1.3.0-alpha01")
-    add("implementation", "androidx.constraintlayout:constraintlayout:1.1.3")
+    add("implementation", "androidx.appcompat:appcompat:1.2.0")
+    add("implementation", "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
+    add("implementation", "com.google.android.material:material:1.3.0-beta01")
+    add("implementation", "androidx.constraintlayout:constraintlayout:2.0.4")
 }
 
 fun DependencyHandler.coil() {
-    add("implementation", "io.coil-kt:coil:0.11.0")
+    add("implementation", "io.coil-kt:coil:1.1.0")
 }

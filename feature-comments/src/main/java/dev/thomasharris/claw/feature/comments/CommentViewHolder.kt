@@ -10,7 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
-import coil.api.load
+import coil.load
 import coil.transform.CircleCropTransformation
 import dev.thomasharris.claw.core.ext.dipToPx
 import dev.thomasharris.claw.core.ext.postedAgo
@@ -22,7 +22,6 @@ import dev.thomasharris.claw.feature.comments.databinding.ItemCommentBinding
 import dev.thomasharris.claw.lib.lobsters.CommentModel
 import dev.thomasharris.claw.lib.lobsters.CommentStatus
 import java.util.Date
-import java.util.Locale
 import kotlin.math.min
 
 class CommentViewHolder private constructor(
@@ -115,7 +114,7 @@ class CommentViewHolder private constructor(
 
         commentChildCount.visibility =
             if (isCollapsed && comment.childCount > 0) View.VISIBLE else View.GONE
-        commentChildCount.text = String.format(Locale.US, "%d", comment.childCount)
+        commentChildCount.text = comment.childCount.toString(10)
 
         val commentAlpha = if (comment.score < -2) .7f else 1f
         commentContentContainer.alpha = commentAlpha

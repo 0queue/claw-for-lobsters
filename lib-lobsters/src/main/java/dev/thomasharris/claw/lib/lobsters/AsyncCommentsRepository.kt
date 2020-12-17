@@ -1,6 +1,6 @@
 package dev.thomasharris.claw.lib.lobsters
 
-import com.github.michaelbull.result.getOr
+import com.github.michaelbull.result.getOrElse
 import com.github.michaelbull.result.runCatching
 import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
@@ -54,7 +54,7 @@ class AsyncCommentsRepository @Inject constructor(
 
         val newStory = lobstersService.runCatching {
             getStory(storyId)
-        }.getOr {
+        }.getOrElse {
             _status.value = LoadingStatus.ERROR.event()
             return@withContext
         }

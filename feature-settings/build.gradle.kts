@@ -6,6 +6,10 @@ plugins {
     id("dev.thomasharris.claw.android")
 }
 
+android.buildTypes.all {
+    buildConfigField("int", "VERSION_CODE", android.defaultConfig.versionCode.toString())
+}
+
 dependencies {
     testing()
     material()

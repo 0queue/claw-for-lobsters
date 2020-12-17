@@ -10,6 +10,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
 import androidx.paging.insertSeparators
+import androidx.paging.map
 import androidx.recyclerview.widget.LinearLayoutManager
 import dev.thomasharris.claw.core.HasBinding
 import dev.thomasharris.claw.core.ext.fade
@@ -46,7 +47,7 @@ class FrontPageController : ViewLifecycleController(), HasBinding<FrontPageBindi
         ).flow.map { pagingData ->
             @Suppress("RemoveExplicitTypeArguments")
             pagingData
-                .map(FrontPageItem::Story)
+                .map { FrontPageItem.Story(it) }
                 .insertSeparators<FrontPageItem.Story, FrontPageItem> { before, after ->
                     before?.let { b ->
                         after?.let { a ->
@@ -111,7 +112,12 @@ class FrontPageController : ViewLifecycleController(), HasBinding<FrontPageBindi
 
                     // little ugly but I want to catch all errors
                     var isError = false
-                    loadStates.forEach { _, _, loadState ->
+                    // this is what the internal forEach does
+                    loadStates.source.forEach { _, loadState ->
+                        isError = isError || loadState is LoadState.Error
+                    }
+
+                    loadStates.mediator?.forEach { _, loadState ->
                         isError = isError || loadState is LoadState.Error
                     }
 
