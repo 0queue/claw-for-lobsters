@@ -1,20 +1,36 @@
-import dev.thomasharris.claw.build.coil
-import dev.thomasharris.claw.build.conductor
-import dev.thomasharris.claw.build.material
-import dev.thomasharris.claw.build.testing
+import dev.thomasharris.claw.build.Deps
 
 plugins {
     id("dev.thomasharris.claw.android")
 }
 
 dependencies {
-    testing()
-    conductor()
-    material()
-    coil()
-
+    implementation(Deps.Kotlin.stdlib)
     implementation(project(":core"))
 
-    implementation("androidx.paging:paging-runtime:3.0.0-alpha11")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.2.0")
+    // dagger
+    implementation(Deps.Dagger.dagger)
+    kapt(Deps.Dagger.compiler)
+
+    // util
+    implementation(Deps.Android.X.coreKtx)
+    implementation(Deps.Kotlin.X.coroutinesAndroid)
+
+    // conductor
+    implementation(Deps.Conductor.conductor)
+    implementation(Deps.Conductor.lifecycle)
+
+    // material
+    implementation(Deps.Android.X.appCompat)
+    implementation(Deps.Android.X.swipeRefreshLayout)
+    implementation(Deps.Android.X.constraintLayout)
+    implementation(Deps.material)
+
+    // other
+    implementation(Deps.coil)
+    implementation(Deps.Android.X.pagingRuntime)
+    implementation(Deps.Android.X.lifecycleRuntime)
+
+    // testing
+    testImplementation(Deps.junit)
 }

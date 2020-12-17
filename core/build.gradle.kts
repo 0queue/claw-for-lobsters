@@ -1,29 +1,46 @@
-import dev.thomasharris.claw.build.androidTesting
-import dev.thomasharris.claw.build.coil
-import dev.thomasharris.claw.build.conductor
-import dev.thomasharris.claw.build.material
-import dev.thomasharris.claw.build.testing
+import dev.thomasharris.claw.build.Deps
 
 plugins {
     id("dev.thomasharris.claw.android")
 }
 
 dependencies {
-    testing()
-    androidTesting()
-    conductor()
-    material()
-    coil()
+    implementation(Deps.Kotlin.stdlib)
 
-    implementation("org.jetbrains.kotlin:kotlin-reflect:1.4.21")
+    // not sure when I can remove this, the build still complains about java.time.*
+    api(Deps.threetenAbp)
 
-    api("com.michael-bull.kotlin-result:kotlin-result:1.1.9")
-
+    // api
+    api(Deps.Kotlin.result)
     api(project(":lib-lobsters"))
     api(project(":lib-navigator"))
 
-    implementation("org.jsoup:jsoup:1.13.1")
+    // util
+    implementation(Deps.Kotlin.X.coroutinesAndroid)
+    implementation(Deps.Android.X.coreKtx)
 
-    // not sure when I can remove this, the build still complains about java.time.*
-    api("com.jakewharton.threetenabp:threetenabp:1.3.0")
+    // dagger
+    implementation(Deps.Dagger.dagger)
+    kapt(Deps.Dagger.compiler)
+
+    // conductor
+    implementation(Deps.Conductor.conductor)
+    implementation(Deps.Conductor.lifecycle)
+
+    // material
+    implementation(Deps.Android.X.appCompat)
+    implementation(Deps.Android.X.swipeRefreshLayout)
+    implementation(Deps.material)
+    implementation(Deps.Android.X.constraintLayout)
+
+    // other
+    implementation(Deps.coil)
+    implementation(Deps.Kotlin.reflect)
+    implementation(Deps.jsoup)
+
+
+    // testing
+    testImplementation(Deps.junit)
+    androidTestImplementation(Deps.Android.Testing.runner)
+    androidTestImplementation(Deps.Android.Testing.espresso)
 }

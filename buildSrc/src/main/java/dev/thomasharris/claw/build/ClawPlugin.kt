@@ -7,7 +7,6 @@ import com.android.build.gradle.api.AndroidBasePlugin
 import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.artifacts.dsl.DependencyHandler
 import org.gradle.kotlin.dsl.findByType
 import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.withType
@@ -16,9 +15,11 @@ import java.util.Properties
 
 /**
  * Technique borrowed from https://quickbirdstudios.com/blog/gradle-kotlin-buildsrc-plugin-android/
+ *
+ * Seems to only like being the last plugin specified
  */
 open class ClawPlugin : Plugin<Project> {
-    override fun apply(target: Project) = target.run {
+    override fun apply(target: Project): Unit = target.run {
         apply {
             plugin("java-library")
             plugin("kotlin")
@@ -26,7 +27,6 @@ open class ClawPlugin : Plugin<Project> {
         }
 
         configureKotlin()
-        configureDependencies()
     }
 }
 
@@ -43,7 +43,6 @@ open class ClawAndroidPlugin : Plugin<Project> {
 
         configureKotlin()
         configureAndroid()
-        configureDependencies()
     }
 
 }
@@ -87,8 +86,6 @@ internal fun Project.configureAndroid() {
             sourceCompatibility = JavaVersion.VERSION_1_8
             targetCompatibility = JavaVersion.VERSION_1_8
         }
-
-        dependencies.add("implementation", "androidx.core:core-ktx:1.3.2")
     }
 
     extensions.findByType<LibraryExtension>()?.run {
@@ -105,45 +102,8 @@ internal fun Project.configureAndroid() {
     }
 }
 
-/**
- * Dependencies that everyone has, guaranteed (kotlin, dagger)
- */
-internal fun Project.configureDependencies() {
-    dependencies.run {
-        add("implementation", "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.4.21")
-        add("implementation", "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.2")
-        add("implementation", "com.google.dagger:dagger:2.30.1")
-        add("kapt", "com.google.dagger:dagger-compiler:2.30.1")
-    }
-}
-
 internal fun Project.configureKotlin() = tasks.withType<KotlinCompile> {
     kotlinOptions {
         jvmTarget = "1.8"
     }
-}
-
-fun DependencyHandler.testing() {
-    add("testImplementation", "junit:junit:4.13")
-}
-
-fun DependencyHandler.androidTesting() {
-    add("androidTestImplementation", "androidx.test:runner:1.2.0")
-    add("androidTestImplementation", "androidx.test.espresso:espresso-core:3.2.0")
-}
-
-fun DependencyHandler.conductor() {
-    add("implementation", "com.bluelinelabs:conductor:3.0.0-rc6")
-    add("implementation", "com.bluelinelabs:conductor-archlifecycle:3.0.0-rc6")
-}
-
-fun DependencyHandler.material() {
-    add("implementation", "androidx.appcompat:appcompat:1.2.0")
-    add("implementation", "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
-    add("implementation", "com.google.android.material:material:1.3.0-beta01")
-    add("implementation", "androidx.constraintlayout:constraintlayout:2.0.4")
-}
-
-fun DependencyHandler.coil() {
-    add("implementation", "io.coil-kt:coil:1.1.0")
 }
