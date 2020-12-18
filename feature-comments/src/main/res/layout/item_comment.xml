@@ -66,7 +66,7 @@
                 android:src="@drawable/ic_arrow_drop_up_black_16dp" />
         </LinearLayout>
 
-        <dev.thomasharris.claw.core.ui.betterhtml.LinkTextView
+        <dev.thomasharris.betterhtml.LinkTextView
             android:id="@+id/comment_body"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

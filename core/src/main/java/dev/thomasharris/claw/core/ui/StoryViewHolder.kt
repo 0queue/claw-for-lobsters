@@ -16,13 +16,13 @@ import androidx.core.text.buildSpannedString
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import coil.transform.CircleCropTransformation
+import dev.thomasharris.betterhtml.PressableLinkMovementMethod
+import dev.thomasharris.betterhtml.fromHtml
 import dev.thomasharris.claw.core.R
 import dev.thomasharris.claw.core.databinding.StoryViewBinding
 import dev.thomasharris.claw.core.ext.dipToPx
 import dev.thomasharris.claw.core.ext.postedAgo
 import dev.thomasharris.claw.core.ext.toString
-import dev.thomasharris.claw.core.ui.betterhtml.PressableLinkMovementMethod
-import dev.thomasharris.claw.core.ui.betterhtml.fromHtml
 import dev.thomasharris.claw.lib.lobsters.StoryModel
 import org.threeten.bp.DateTimeUtils
 import org.threeten.bp.Duration

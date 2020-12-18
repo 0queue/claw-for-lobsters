@@ -75,7 +75,7 @@ open class NewModuleTask : DefaultTask() {
                             packageStructure.split(".").dropLast(1).joinToString(
                                 separator = "."
                             )
-                        }\" />"
+                        }\" />\n"
             )
         }
 
@@ -94,8 +94,9 @@ open class NewModuleTask : DefaultTask() {
                     implementation(Deps.Dagger.dagger)
                     kapt(Deps.Dagger.compiler)
                     
-                    implementation(Deps.junit)
+                    testImplementation(Deps.junit)
                 }
+                
             """.trimIndent().let { appendText(it) }
         }
 

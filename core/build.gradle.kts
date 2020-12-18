@@ -14,6 +14,7 @@ dependencies {
     api(Deps.Kotlin.result)
     api(project(":lib-lobsters"))
     api(project(":lib-navigator"))
+    api(project(":lib-better-html"))
 
     // util
     implementation(Deps.Kotlin.X.coroutinesAndroid)
@@ -36,7 +37,6 @@ dependencies {
     // other
     implementation(Deps.coil)
     implementation(Deps.Kotlin.reflect)
-    implementation(Deps.jsoup)
 
     // testing
     testImplementation(Deps.junit)

@@ -12,11 +12,10 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import coil.transform.CircleCropTransformation
+import dev.thomasharris.betterhtml.fromHtml
 import dev.thomasharris.claw.core.ext.dipToPx
 import dev.thomasharris.claw.core.ext.postedAgo
 import dev.thomasharris.claw.core.ext.toString
-import dev.thomasharris.claw.core.ui.betterhtml.PressableLinkMovementMethod
-import dev.thomasharris.claw.core.ui.betterhtml.fromHtml
 import dev.thomasharris.claw.core.ui.isNewUser
 import dev.thomasharris.claw.feature.comments.databinding.ItemCommentBinding
 import dev.thomasharris.claw.lib.lobsters.CommentModel
@@ -88,7 +87,7 @@ class CommentViewHolder private constructor(
             .fromHtml(dipToPx = { it.dipToPx(root.context) })
             .trim()
         commentBody.movementMethod =
-            PressableLinkMovementMethod {
+            dev.thomasharris.betterhtml.PressableLinkMovementMethod {
                 if (it != null)
                     onLinkClicked(it)
             }

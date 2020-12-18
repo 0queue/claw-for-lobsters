@@ -1,4 +1,4 @@
-package dev.thomasharris.claw.core.ui.betterhtml
+package dev.thomasharris.betterhtml
 
 import android.graphics.Canvas
 import android.graphics.Paint

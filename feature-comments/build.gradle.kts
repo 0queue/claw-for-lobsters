@@ -7,6 +7,7 @@ plugins {
 dependencies {
     implementation(Deps.Kotlin.stdlib)
     implementation(project(":core"))
+    implementation(project(":lib-better-html"))
 
     // util
     implementation(Deps.Kotlin.X.coroutinesAndroid)

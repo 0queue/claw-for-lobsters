@@ -1,4 +1,4 @@
-package dev.thomasharris.claw.core.ui.betterhtml
+package dev.thomasharris.betterhtml
 
 import android.graphics.Color
 import android.graphics.Typeface
@@ -41,7 +41,7 @@ fun String.fromHtml(dipToPx: (Float) -> Float = { it }): CharSequence {
     }.concat()
 }
 
-fun Element.render(dipToPx: (Float) -> Float, indentation: Int = 0): CharSequence {
+private fun Element.render(dipToPx: (Float) -> Float, indentation: Int = 0): CharSequence {
     return when (tagName()) {
         "p" -> {
             textuals(::identity) { it.render(dipToPx, indentation) }.concat().trim().paragraph()
@@ -92,7 +92,11 @@ fun Element.render(dipToPx: (Float) -> Float, indentation: Int = 0): CharSequenc
         }
         "ul" -> {
             children().map {
-                it.render(dipToPx, indentation).span(MyBulletSpan(indentation))
+                it.render(dipToPx, indentation).span(
+                    MyBulletSpan(
+                        indentation
+                    )
+                )
             }.concat().trim().paragraph()
         }
         "ol" -> {
@@ -100,7 +104,13 @@ fun Element.render(dipToPx: (Float) -> Float, indentation: Int = 0): CharSequenc
             val max = children().size
             children().map { el ->
                 el.render(dipToPx, indentation)
-                    .span(MyNumberedBulletSpan(indentation, el.elementSiblingIndex() + startAt, max))
+                    .span(
+                        MyNumberedBulletSpan(
+                            indentation,
+                            el.elementSiblingIndex() + startAt,
+                            max
+                        )
+                    )
             }.concat().trim().paragraph()
         }
         "li" -> {
@@ -117,10 +127,11 @@ fun Element.render(dipToPx: (Float) -> Float, indentation: Int = 0): CharSequenc
     }
 }
 
-fun List<CharSequence>.concat(): CharSequence = TextUtils.concat(*this.toTypedArray())
-operator fun CharSequence.plus(that: CharSequence): CharSequence = TextUtils.concat(this, that)
+private fun List<CharSequence>.concat(): CharSequence = TextUtils.concat(*this.toTypedArray())
+private operator fun CharSequence.plus(that: CharSequence): CharSequence =
+    TextUtils.concat(this, that)
 
-fun Node.textuals(
+private fun Node.textuals(
     textBlock: (String) -> CharSequence,
     elementBlock: (Element) -> CharSequence
 ): List<CharSequence> = childNodes().mapNotNull {
@@ -131,13 +142,15 @@ fun Node.textuals(
     }
 }
 
-fun CharSequence.span(block: SpannableString.() -> Unit) =
+private fun CharSequence.span(block: SpannableString.() -> Unit) =
     SpannableString(this).apply(block)
 
-fun CharSequence.span(span: Any): SpannableString = SpannableString(this).apply { span(span) }
+private fun CharSequence.span(span: Any): SpannableString =
+    SpannableString(this).apply { span(span) }
 
-fun SpannableString.span(span: Any) = setSpan(span, 0, length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+private fun SpannableString.span(span: Any) =
+    setSpan(span, 0, length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
 
-fun CharSequence.paragraph(): CharSequence = listOf("\n", this, "\n").concat()
+private fun CharSequence.paragraph(): CharSequence = listOf("\n", this, "\n").concat()
 
-fun identity(s: String): CharSequence = s
+private fun identity(s: String): CharSequence = s
