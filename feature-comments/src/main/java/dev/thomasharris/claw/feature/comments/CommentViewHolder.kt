@@ -43,8 +43,8 @@ class CommentViewHolder private constructor(
 
         commentMarker.layoutParams =
             (commentMarker.layoutParams as? ViewGroup.MarginLayoutParams)?.apply {
-                leftMargin = (comment.indentLevel - 1) * 8f.dipToPx(root.context).toInt()
-            } ?: commentMarker.layoutParams
+            leftMargin = (comment.indentLevel - 1) * 8f.dipToPx(root.context).toInt()
+        } ?: commentMarker.layoutParams
 
         root.layoutParams = (root.layoutParams as? ViewGroup.MarginLayoutParams)?.apply {
             topMargin = (if (position != 1 && comment.indentLevel == 1) 12f else 0f)

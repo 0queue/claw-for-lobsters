@@ -11,7 +11,6 @@ import kotlin.math.abs
 import kotlin.math.atan2
 import kotlin.math.max
 
-
 private const val TRANSLATION_SCALAR = 1.50f
 private const val THRESHOLD_PERCENT = .30f
 private const val MAX_SWIPE_ANGLE = 15f // degrees
@@ -27,28 +26,29 @@ class CommentsTouchListener(context: Context, private val onThreshold: () -> Uni
     private var movingRight = false
 
     private val gestureDetector =
-        GestureDetector(context, object : GestureDetector.SimpleOnGestureListener() {
-            override fun onFling(
-                e1: MotionEvent?,
-                e2: MotionEvent?,
-                velocityX: Float,
-                velocityY: Float
-            ): Boolean {
+        GestureDetector(
+            context,
+            object : GestureDetector.SimpleOnGestureListener() {
+                override fun onFling(
+                    e1: MotionEvent?,
+                    e2: MotionEvent?,
+                    velocityX: Float,
+                    velocityY: Float
+                ): Boolean {
 
+                    if (e1 == null || e2 == null)
+                        return false
 
-                if (e1 == null || e2 == null)
+                    val angle = atan2(e1.rawY - e2.rawY, e2.rawX - e1.rawX) * (180f / PI)
+                    if (abs(angle) < MAX_SWIPE_ANGLE && velocityX > 1000) {
+                        onThreshold()
+                        return true
+                    }
+
                     return false
-
-                val angle = atan2(e1.rawY - e2.rawY, e2.rawX - e1.rawX) * (180f / PI)
-                if (abs(angle) < MAX_SWIPE_ANGLE && velocityX > 1000) {
-                    onThreshold()
-                    return true
                 }
-
-                return false
             }
-        })
-
+        )
 
     override fun onInterceptTouchEvent(view: View, ev: MotionEvent) = when (ev.action) {
         MotionEvent.ACTION_DOWN -> {
@@ -106,5 +106,4 @@ class CommentsTouchListener(context: Context, private val onThreshold: () -> Uni
             else -> return false
         }
     }
-
 }

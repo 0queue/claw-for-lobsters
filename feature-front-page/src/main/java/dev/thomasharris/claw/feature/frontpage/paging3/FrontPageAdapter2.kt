@@ -11,7 +11,6 @@ import dev.thomasharris.claw.feature.frontpage.DividerViewHolder
 import dev.thomasharris.claw.feature.frontpage.FrontPageItem
 import dev.thomasharris.claw.frontpage.feature.frontpage.databinding.ItemFrontPageDividerBinding
 
-
 const val VIEW_TYPE_STORY = 1
 const val VIEW_TYPE_DIVIDER = 2
 

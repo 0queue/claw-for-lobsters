@@ -1,6 +1,5 @@
 package dev.thomasharris.claw.feature.settings
 
-
 import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
@@ -43,14 +42,16 @@ class SettingsController : LifecycleController(), HasBinding<SettingsBinding> {
     ): View {
         binding = SettingsBinding.inflate(inflater, container, false).apply {
             bottomSheetBehavior = BottomSheetBehavior.from(settingsBottomSheet).apply {
-                addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
-                    override fun onSlide(bottomSheet: View, slideOffset: Float) = Unit
+                addBottomSheetCallback(
+                    object : BottomSheetBehavior.BottomSheetCallback() {
+                        override fun onSlide(bottomSheet: View, slideOffset: Float) = Unit
 
-                    override fun onStateChanged(bottomSheet: View, newState: Int) {
-                        if (newState == BottomSheetBehavior.STATE_HIDDEN)
-                            back()
+                        override fun onStateChanged(bottomSheet: View, newState: Int) {
+                            if (newState == BottomSheetBehavior.STATE_HIDDEN)
+                                back()
+                        }
                     }
-                })
+                )
 
                 state = BottomSheetBehavior.STATE_HIDDEN
             }
@@ -82,9 +83,12 @@ class SettingsController : LifecycleController(), HasBinding<SettingsBinding> {
                 if (isChecked) {
                     settingsThemeDescription.updateThemeDescription(themeMode)
                     component.preferencesRepository().setTheme(themeMode)
-                    v.postDelayed({
-                        AppCompatDelegate.setDefaultNightMode(themeMode.modeNight)
-                    }, 150) // little hack to stop button flickering
+                    v.postDelayed(
+                        {
+                            AppCompatDelegate.setDefaultNightMode(themeMode.modeNight)
+                        },
+                        150
+                    ) // little hack to stop button flickering
                 }
             }
 
@@ -102,7 +106,6 @@ class SettingsController : LifecycleController(), HasBinding<SettingsBinding> {
                     BuildConfig.VERSION_CODE,
                     debug
                 )
-
         }
 
         return requireBinding().root
@@ -127,10 +130,11 @@ class SettingsController : LifecycleController(), HasBinding<SettingsBinding> {
         text = when (themeMode) {
             PreferencesRepository.ThemeMode.DAY -> "Day mode"
             PreferencesRepository.ThemeMode.NIGHT -> "Night mode"
-            PreferencesRepository.ThemeMode.SYSTEM -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
-                "Follow system"
-            else
-                "Follow battery saver"
+            PreferencesRepository.ThemeMode.SYSTEM ->
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+                    "Follow system"
+                else
+                    "Follow battery saver"
         }
     }
 }

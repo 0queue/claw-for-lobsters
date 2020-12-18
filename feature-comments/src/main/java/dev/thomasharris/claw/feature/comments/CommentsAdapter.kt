@@ -20,7 +20,6 @@ sealed class CommentsItem {
     data class Spacer(val isEmpty: Boolean) : CommentsItem()
 }
 
-
 class CommentsAdapter(
     private val onHeaderClick: (String, String) -> Unit,
     private val onLinkClick: (String) -> Unit,
@@ -60,7 +59,6 @@ class CommentsAdapter(
             }
         }
     }
-
 }
 
 object DIFF : DiffUtil.ItemCallback<CommentsItem>() {

@@ -10,7 +10,6 @@ interface Navigator {
     fun goto(routerTransaction: RouterTransaction)
 }
 
-
 sealed class Destination {
     abstract fun routerTransaction(): RouterTransaction
 

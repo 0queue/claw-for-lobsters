@@ -25,7 +25,6 @@ dependencies {
     implementation(Deps.Android.X.swipeRefreshLayout)
     implementation(Deps.Android.X.constraintLayout)
 
-
     // other
     implementation(project(":lib-navigator"))
     implementation(Deps.Android.X.browser)

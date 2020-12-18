@@ -44,9 +44,11 @@ class WebPageController(args: Bundle) : Controller(args) {
                 setStartAnimations(it, R.anim.slide_in_from_right, R.anim.nothing)
                 setExitAnimations(it, R.anim.nothing, R.anim.slide_out_to_right)
                 // closest thing to turning on dark mode as far as I can tell
-                setDefaultColorSchemeParams(CustomTabColorSchemeParams.Builder().apply {
-                    setToolbarColor(it.getColorAttr(R.attr.colorSurface))
-                }.build())
+                setDefaultColorSchemeParams(
+                    CustomTabColorSchemeParams.Builder().apply {
+                        setToolbarColor(it.getColorAttr(R.attr.colorSurface))
+                    }.build()
+                )
             }
         }.build().apply {
             intent.data = Uri.parse(url)

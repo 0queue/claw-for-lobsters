@@ -58,7 +58,6 @@ class FrontPageController : ViewLifecycleController(), HasBinding<FrontPageBindi
                         }
                     }
                 }
-
         }.cachedIn(lifecycleScope) // fine to cache in controller lifecycle
     }
 
@@ -80,14 +79,16 @@ class FrontPageController : ViewLifecycleController(), HasBinding<FrontPageBindi
                 setOnScrollChangeListener { v, _, _, _, _ ->
                     frontPageAppBarLayout.isSelected = v.canScrollVertically(-1)
                 }
-                addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
-                    override fun onViewDetachedFromWindow(v: View?) {
-                        // listAdapter outlives recycler, so make sure to detach it
-                        frontPageRecycler.adapter = null
-                    }
+                addOnAttachStateChangeListener(
+                    object : View.OnAttachStateChangeListener {
+                        override fun onViewDetachedFromWindow(v: View?) {
+// listAdapter outlives recycler, so make sure to detach it
+                            frontPageRecycler.adapter = null
+                        }
 
-                    override fun onViewAttachedToWindow(v: View?) = Unit
-                })
+                        override fun onViewAttachedToWindow(v: View?) = Unit
+                    }
+                )
             }
 
             frontPageToolbar.setOnMenuItemClickListener { item ->

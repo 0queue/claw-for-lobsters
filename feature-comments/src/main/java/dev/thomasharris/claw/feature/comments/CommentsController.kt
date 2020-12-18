@@ -66,13 +66,15 @@ class CommentsController constructor(
                 setOnScrollChangeListener { v, _, _, _, _ ->
                     commentsAppBarLayout.isSelected = v.canScrollVertically(-1)
                 }
-                addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
-                    override fun onViewDetachedFromWindow(v: View?) {
-                        adapter = null
-                    }
+                addOnAttachStateChangeListener(
+                    object : View.OnAttachStateChangeListener {
+                        override fun onViewDetachedFromWindow(v: View?) {
+                            adapter = null
+                        }
 
-                    override fun onViewAttachedToWindow(v: View?) = Unit
-                })
+                        override fun onViewAttachedToWindow(v: View?) = Unit
+                    }
+                )
             }
 
             root.listener = CommentsTouchListener(root.context) {
@@ -115,7 +117,6 @@ class CommentsController constructor(
                 lastStatus = status
             }
         }
-
 
         // hmm refreshing should maybe always be forced for a story?
         // or just add another condition for comment mismatches?

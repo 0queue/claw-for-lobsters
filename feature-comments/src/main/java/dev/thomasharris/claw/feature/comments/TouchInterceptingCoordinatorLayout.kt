@@ -1,11 +1,13 @@
 package dev.thomasharris.claw.feature.comments
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 
+@SuppressLint("ClickableViewAccessibility")
 class TouchInterceptingCoordinatorLayout @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -21,7 +23,8 @@ class TouchInterceptingCoordinatorLayout @JvmOverloads constructor(
     }
 
     override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
-        return (listener?.onInterceptTouchEvent(this, ev) ?: false) || super.onInterceptTouchEvent(ev)
+        return (listener?.onInterceptTouchEvent(this, ev) ?: false) ||
+            super.onInterceptTouchEvent(ev)
     }
 
     interface Listener {
