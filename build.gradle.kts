@@ -2,6 +2,7 @@ import dev.thomasharris.claw.build.NewModuleTask
 
 plugins {
     id("com.github.ben-manes.versions") version "0.36.0"
+    id("org.jlleitschuh.gradle.ktlint") version "9.4.1"
 }
 
 buildscript {
@@ -23,6 +24,10 @@ allprojects {
         google()
         jcenter()
     }
+}
+
+subprojects {
+    apply(plugin = "org.jlleitschuh.gradle.ktlint")
 }
 
 tasks.register("clean", Delete::class.java) {

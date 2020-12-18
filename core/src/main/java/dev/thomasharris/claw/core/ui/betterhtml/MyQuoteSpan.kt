@@ -69,10 +69,18 @@ class MyQuoteSpan(
     }
 
     override fun drawLeadingMargin(
-        c: Canvas, p: Paint, x: Int, dir: Int,
-        top: Int, baseline: Int, bottom: Int,
-        text: CharSequence, start: Int, end: Int,
-        first: Boolean, layout: Layout
+        c: Canvas,
+        p: Paint,
+        x: Int,
+        dir: Int,
+        top: Int,
+        baseline: Int,
+        bottom: Int,
+        text: CharSequence,
+        start: Int,
+        end: Int,
+        first: Boolean,
+        layout: Layout
     ) {
         val style = p.style
         val color = p.color

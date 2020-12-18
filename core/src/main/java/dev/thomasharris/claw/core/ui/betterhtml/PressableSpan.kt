@@ -34,7 +34,9 @@ fun Spanned.replaceUrlSpans(): SpannableString = SpannableString(this).apply {
         val end = getSpanEnd(it)
         removeSpan(it)
         setSpan(
-            PressableSpan(it.url), start, end,
+            PressableSpan(it.url),
+            start,
+            end,
             Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
         )
     }

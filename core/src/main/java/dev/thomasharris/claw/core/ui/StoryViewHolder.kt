@@ -52,13 +52,15 @@ class StoryViewHolder private constructor(
             append(story.title)
             story.tags.forEach { tag ->
                 append(" ")
-                append(SpannableString(tag).apply {
-                    val span = TagSpan(
-                        backgroundColor = context.tagBackground(tag),
-                        borderColor = context.tagBorder(tag)
-                    )
-                    setSpan(span, 0, tag.length, Spannable.SPAN_INCLUSIVE_EXCLUSIVE)
-                })
+                append(
+                    SpannableString(tag).apply {
+                        val span = TagSpan(
+                            backgroundColor = context.tagBackground(tag),
+                            borderColor = context.tagBorder(tag)
+                        )
+                        setSpan(span, 0, tag.length, Spannable.SPAN_INCLUSIVE_EXCLUSIVE)
+                    }
+                )
             }
             if (story.description.isNotBlank()) append(" ☶")
         }

@@ -38,7 +38,6 @@ dependencies {
     implementation(Deps.Kotlin.reflect)
     implementation(Deps.jsoup)
 
-
     // testing
     testImplementation(Deps.junit)
     androidTestImplementation(Deps.Android.Testing.runner)

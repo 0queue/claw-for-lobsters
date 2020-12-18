@@ -41,5 +41,4 @@ class HrSpan(private val lineWidth: Int = 8) : ReplacementSpan() {
         paint.style = style
         paint.alpha = alpha
     }
-
 }

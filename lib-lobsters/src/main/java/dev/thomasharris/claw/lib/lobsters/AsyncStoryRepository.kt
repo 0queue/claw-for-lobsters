@@ -30,11 +30,11 @@ class AsyncStoryRepository @Inject constructor(
 
             val oldestDate = lobstersQueries.getOldestStory(index).oneOrNull()
 
-            val isOld: Boolean? = oldestDate?.min?.let {
+            val isOld: Boolean = oldestDate?.min?.let {
                 Date(it).isOld()
             } ?: true
 
-            if (isOld == false && !shouldRefresh) {
+            if (!isOld && !shouldRefresh) {
                 return@withContext Ok(lobstersQueries.getPage(index).list())
             }
 
@@ -54,7 +54,6 @@ class AsyncStoryRepository @Inject constructor(
                         if (lobstersQueries.getPageSize(index).executeAsOne() > 25)
                             lobstersQueries.trimExcess(index, 25)
                     }
-
                 }
                 .map {
                     // refetch
@@ -66,7 +65,6 @@ class AsyncStoryRepository @Inject constructor(
         lobstersQueries.getStoryModel(storyId).oneOrNull()
     }
 }
-
 
 fun StoryNetworkEntity.toDB(pageIndex: Int, subIndex: Int, now: Date = Date()) =
     Story(

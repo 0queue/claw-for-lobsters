@@ -10,14 +10,14 @@ import androidx.appcompat.widget.AppCompatTextView
 class LinkTextView : AppCompatTextView {
 
     // gotta be careful when extending TextView, gotta call everything manually
-    constructor(context: Context)
-            : super(context)
+    constructor(context: Context) :
+        super(context)
 
-    constructor(context: Context, attrs: AttributeSet?)
-            : super(context, attrs)
+    constructor(context: Context, attrs: AttributeSet?) :
+        super(context, attrs)
 
-    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int)
-            : super(context, attrs, defStyleAttr)
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
+        super(context, attrs, defStyleAttr)
 
     /**
      *  Just trust a given movement method to handle clicks and such

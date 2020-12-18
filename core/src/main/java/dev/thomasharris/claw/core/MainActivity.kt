@@ -21,7 +21,7 @@ class MainActivity : AppCompatActivity(), Navigator {
         setContentView(binding.root)
 
         window.decorView.systemUiVisibility = window.decorView.systemUiVisibility or
-                View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+            View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
 
         router = Conductor.attachRouter(this, binding.conductorContainer, savedInstanceState).apply {
             if (!hasRootController())

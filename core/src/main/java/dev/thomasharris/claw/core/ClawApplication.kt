@@ -38,7 +38,6 @@ class ClawApplication : Application(), ComponentStore<SingletonComponent> {
         if (first != null)
             return first
 
-
         val t = factory(singletonComponent)
         components.add(t)
         return t

@@ -1,6 +1,5 @@
 package dev.thomasharris.claw.core.ui.betterhtml
 
-
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.text.Layout
@@ -18,10 +17,18 @@ class MyBulletSpan(
     }
 
     override fun drawLeadingMargin(
-        canvas: Canvas, paint: Paint, x: Int, dir: Int,
-        top: Int, baseline: Int, bottom: Int,
-        text: CharSequence, start: Int, end: Int,
-        first: Boolean, layout: Layout?
+        canvas: Canvas,
+        paint: Paint,
+        x: Int,
+        dir: Int,
+        top: Int,
+        baseline: Int,
+        bottom: Int,
+        text: CharSequence,
+        start: Int,
+        end: Int,
+        first: Boolean,
+        layout: Layout?
     ) {
         if ((text as Spanned).getSpanStart(this) == start) {
             val style = paint.style

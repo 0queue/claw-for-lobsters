@@ -6,7 +6,6 @@ import android.text.Layout
 import android.text.Spanned
 import android.text.style.LeadingMarginSpan
 
-
 class MyNumberedBulletSpan(
     private val indentation: Int,
     private val number: Int,
@@ -23,10 +22,18 @@ class MyNumberedBulletSpan(
     }
 
     override fun drawLeadingMargin(
-        canvas: Canvas, paint: Paint, x: Int, dir: Int,
-        top: Int, baseline: Int, bottom: Int,
-        text: CharSequence, start: Int, end: Int,
-        first: Boolean, layout: Layout?
+        canvas: Canvas,
+        paint: Paint,
+        x: Int,
+        dir: Int,
+        top: Int,
+        baseline: Int,
+        bottom: Int,
+        text: CharSequence,
+        start: Int,
+        end: Int,
+        first: Boolean,
+        layout: Layout?
     ) {
 
         if ((text as Spanned).getSpanStart(this) == start) {
