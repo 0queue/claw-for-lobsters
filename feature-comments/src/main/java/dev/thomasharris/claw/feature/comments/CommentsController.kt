@@ -44,6 +44,9 @@ class CommentsController constructor(
                 component.commentRepository.toggleCollapseComment(shortId)
         }
 
+    // cache the last status to filter out redelivered ERROR statuses on rotate
+    private var lastStatus: LoadingStatus? = null
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup,
@@ -97,18 +100,19 @@ class CommentsController constructor(
                 }
         }
 
+        // don't forget about the git stash
         viewLifecycleOwner.lifecycleScope.launch {
             component.commentRepository.status.collect { status ->
-                requireBinding().commentsSwipeRefresh.isRefreshing =
-                    status.peek() == LoadingStatus.LOADING
-                status.consume {
-                    if (it == LoadingStatus.ERROR)
-                        Snackbar.make(
-                            requireBinding().root,
-                            "Couldn't reach lobste.rs",
-                            Snackbar.LENGTH_SHORT
-                        ).show()
-                }
+                requireBinding().commentsSwipeRefresh.isRefreshing = status == LoadingStatus.LOADING
+
+                if (status != lastStatus && status == LoadingStatus.ERROR)
+                    Snackbar.make(
+                        requireBinding().root,
+                        "Couldn't reach lobste.rs",
+                        Snackbar.LENGTH_SHORT
+                    ).show()
+
+                lastStatus = status
             }
         }
 

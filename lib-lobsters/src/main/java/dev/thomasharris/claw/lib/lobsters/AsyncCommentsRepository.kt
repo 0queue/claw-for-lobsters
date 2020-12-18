@@ -7,7 +7,6 @@ import com.squareup.sqldelight.runtime.coroutines.mapToList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
@@ -26,8 +25,8 @@ class AsyncCommentsRepository @Inject constructor(
     private val background: Executor
 ) {
 
-    private val _status = MutableStateFlow(LoadingStatus.NOT_LOADING.event())
-    val status: StateFlow<Event<LoadingStatus>>
+    private val _status = MutableStateFlow(LoadingStatus.NOT_LOADING)
+    val status: Flow<LoadingStatus>
         get() = _status
 
     fun visibleComments(storyId: String): Flow<Pair<StoryModel?, List<CommentModel>>> {
@@ -46,16 +45,16 @@ class AsyncCommentsRepository @Inject constructor(
         }
 
         if (!shouldRefresh) {
-            _status.value = LoadingStatus.NOT_LOADING.event()
+            _status.value = LoadingStatus.NOT_LOADING
             return@withContext
         }
 
-        _status.value = LoadingStatus.LOADING.event()
+        _status.value = LoadingStatus.LOADING
 
         val newStory = lobstersService.runCatching {
             getStory(storyId)
         }.getOrElse {
-            _status.value = LoadingStatus.ERROR.event()
+            _status.value = LoadingStatus.ERROR
             return@withContext
         }
 
@@ -73,7 +72,7 @@ class AsyncCommentsRepository @Inject constructor(
             }
         }
 
-        _status.value = LoadingStatus.NOT_LOADING.event()
+        _status.value = LoadingStatus.NOT_LOADING
     }
 
     // not async because a. it's fire and forget and b. it's all a transaction,
@@ -120,6 +119,12 @@ class AsyncCommentsRepository @Inject constructor(
         val next = lobstersQueries.getParent(shortId).executeAsOneOrNull() ?: return progress
         return ancestors(next, progress + next)
     }
+}
+
+enum class LoadingStatus {
+    LOADING,
+    ERROR,
+    NOT_LOADING
 }
 
 fun CommentNetworkEntity.toDB(
