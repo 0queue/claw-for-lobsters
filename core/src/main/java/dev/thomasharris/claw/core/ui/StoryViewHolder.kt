@@ -31,7 +31,7 @@ import java.net.URI
 import java.util.Date
 
 class StoryViewHolder private constructor(
-    private val binding: StoryViewBinding
+    private val binding: StoryViewBinding,
 ) : RecyclerView.ViewHolder(binding.root) {
 
     private val context: Context = binding.root.context
@@ -40,7 +40,8 @@ class StoryViewHolder private constructor(
         story: StoryModel,
         isCompact: Boolean = true,
         onClickListener: ((String, String) -> Unit)? = null,
-        onLinkClicked: ((String) -> Unit)? = null
+        onLongClickListener: ((String) -> Unit)? = null,
+        onLinkClicked: ((String) -> Unit)? = null,
     ) = with(binding) {
         storyViewAvatar.load("https://lobste.rs/${story.avatarShortUrl}") {
             crossfade(true)
@@ -100,6 +101,12 @@ class StoryViewHolder private constructor(
         if (onClickListener != null)
             root.setOnClickListener {
                 onClickListener(story.shortId, story.url)
+            }
+
+        if (onLongClickListener != null)
+            root.setOnLongClickListener {
+                onLongClickListener(story.username)
+                true
             }
 
         val shouldShowDescription = !isCompact && story.description.isNotBlank()

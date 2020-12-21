@@ -105,5 +105,6 @@ internal fun Project.configureAndroid() {
 internal fun Project.configureKotlin() = tasks.withType<KotlinCompile> {
     kotlinOptions {
         jvmTarget = "1.8"
+        languageVersion = "1.4"
     }
 }

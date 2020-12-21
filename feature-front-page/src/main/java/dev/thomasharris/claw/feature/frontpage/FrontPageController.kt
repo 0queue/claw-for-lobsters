@@ -61,16 +61,17 @@ class FrontPageController : ViewLifecycleController(), HasBinding<FrontPageBindi
         }.cachedIn(lifecycleScope) // fine to cache in controller lifecycle
     }
 
-    private val adapter = FrontPageAdapter2 { shortId, _ ->
-        goto(Destination.Comments(shortId))
-    }
+    private val adapter = FrontPageAdapter2(
+        onClick = { shortId, _ -> goto(Destination.Comments(shortId)) },
+        onLongClick = { author -> goto(Destination.StoryModal(author)) }
+    )
 
     override var binding: FrontPageBinding? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup,
-        savedStateBundle: Bundle?
+        savedStateBundle: Bundle?,
     ): View {
         binding = FrontPageBinding.inflate(inflater, container, false).apply {
             frontPageRecycler.apply {
@@ -82,7 +83,7 @@ class FrontPageController : ViewLifecycleController(), HasBinding<FrontPageBindi
                 addOnAttachStateChangeListener(
                     object : View.OnAttachStateChangeListener {
                         override fun onViewDetachedFromWindow(v: View?) {
-// listAdapter outlives recycler, so make sure to detach it
+                            // listAdapter outlives recycler, so make sure to detach it
                             frontPageRecycler.adapter = null
                         }
 
