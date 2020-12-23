@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:background="@android:color/transparent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@android:color/transparent">
 
     <View
         android:id="@+id/scrim"
@@ -11,23 +11,35 @@
         android:layout_height="match_parent"
         android:background="@color/translucent_gray" />
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_gravity="center"
+    <LinearLayout
+        android:id="@+id/dialog"
         android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:layout_margin="16dp"
-        android:padding="16dp"
-        android:elevation="4dp"
         android:background="@drawable/modal_background"
-        android:layout_height="wrap_content">
+        android:elevation="4dp"
+        android:orientation="vertical"
+        android:padding="8dp">
 
         <TextView
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
             android:id="@+id/title"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:padding="8dp"
+            android:text="@string/story_additional_actions_title"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        <TextView
+            android:id="@+id/view_profile_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/background_ripple"
+            android:padding="8dp"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+            tools:text="View profile for lobster" />
+    </LinearLayout>
 
 </FrameLayout>

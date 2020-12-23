@@ -60,7 +60,7 @@ sealed class Destination {
 
     class StoryModal(private val author: String) : Destination() {
         override fun routerTransaction(): RouterTransaction {
-            val clazz = Class.forName("dev.thomasharris.claw.core.ui.StoryModalDialogController")
+            val clazz = Class.forName("dev.thomasharris.claw.core.ui.StoryAdditionalActionsController")
             val controller = clazz.constructors[0].newInstance(bundleOf("author" to author))
 
             return RouterTransaction.with(controller as Controller)

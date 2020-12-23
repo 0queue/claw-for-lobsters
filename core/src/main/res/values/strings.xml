@@ -27,4 +27,7 @@
         <item quantity="one">%d comment</item>
         <item quantity="other">%d comments</item>
     </plurals>
+
+    <string name="story_additional_action_view_profile">View profile for %1$s</string>
+    <string name="story_additional_actions_title">Additional Actions</string>
 </resources>
