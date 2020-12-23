@@ -15,22 +15,13 @@ interface LobstersService {
      * Hey this starts at 1, don't forget it
      */
     @GET("page/{index}.json")
-    fun getPageSync(@Path("index") index: Int): Call<List<StoryNetworkEntity>>
-
-    @GET("page/{index}.json")
     suspend fun getPage(@Path("index") index: Int): List<StoryNetworkEntity>
-
-    @GET("s/{short_id}.json")
-    fun getStorySync(@Path("short_id") shortId: String): Call<StoryNetworkEntity>
 
     @GET("s/{short_id}.json")
     suspend fun getStory(@Path("short_id") shortId: String): StoryNetworkEntity
 
-    @GET("tags.json")
-    fun getTagsSync(): Call<List<TagNetworkEntity>>
-
-    @GET("tags.json")
-    suspend fun getTags(): List<TagNetworkEntity>
+    @GET("u/{username}.json")
+    suspend fun getUser(@Path("username") username: String): UserNetworkEntity
 }
 
 typealias ShortId = String
@@ -65,6 +56,7 @@ data class CommentNetworkEntity(
     @field:Json(name = "commenting_user") val commentingUser: UserNetworkEntity
 )
 
+// TODO other keys such as optional github_url and whatnot
 @JsonClass(generateAdapter = true)
 data class UserNetworkEntity(
     val username: String,

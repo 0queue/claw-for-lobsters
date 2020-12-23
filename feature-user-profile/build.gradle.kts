@@ -9,6 +9,10 @@ dependencies {
     implementation(project(":core"))
     implementation(project(":lib-swipe-back"))
 
+    // coroutines
+    implementation(Deps.Kotlin.X.coroutinesAndroid)
+    implementation(Deps.Android.X.lifecycleRuntime)
+
     // dagger
     implementation(Deps.Dagger.dagger)
     kapt(Deps.Dagger.compiler)
