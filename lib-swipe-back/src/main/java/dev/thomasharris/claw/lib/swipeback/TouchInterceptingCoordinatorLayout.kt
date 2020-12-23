@@ -1,4 +1,4 @@
-package dev.thomasharris.claw.feature.comments
+package dev.thomasharris.claw.lib.swipeback
 
 import android.annotation.SuppressLint
 import android.content.Context

@@ -60,12 +60,25 @@ sealed class Destination {
 
     class StoryModal(private val author: String) : Destination() {
         override fun routerTransaction(): RouterTransaction {
-            val clazz = Class.forName("dev.thomasharris.claw.core.ui.StoryAdditionalActionsController")
+            val clazz =
+                Class.forName("dev.thomasharris.claw.core.ui.StoryAdditionalActionsController")
             val controller = clazz.constructors[0].newInstance(bundleOf("author" to author))
 
             return RouterTransaction.with(controller as Controller)
                 .pushChangeHandler(FadeChangeHandler(100, false))
                 .popChangeHandler(FadeChangeHandler(100))
+        }
+    }
+
+    class UserProfile(private val username: String) : Destination() {
+        override fun routerTransaction(): RouterTransaction {
+            val clazz =
+                Class.forName("dev.thomasharris.claw.feature.userprofile.UserProfileController")
+            val controller = clazz.constructors[0].newInstance(bundleOf("username" to username))
+
+            return RouterTransaction.with(controller as Controller)
+                .popChangeHandler(SlideChangeHandler(200))
+                .pushChangeHandler(SlideChangeHandler(200))
         }
     }
 }

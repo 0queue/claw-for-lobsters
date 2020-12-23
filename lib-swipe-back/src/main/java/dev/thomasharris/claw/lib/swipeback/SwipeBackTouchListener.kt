@@ -1,4 +1,4 @@
-package dev.thomasharris.claw.feature.comments
+package dev.thomasharris.claw.lib.swipeback
 
 import android.animation.ObjectAnimator
 import android.content.Context
@@ -15,7 +15,7 @@ private const val TRANSLATION_SCALAR = 1.50f
 private const val THRESHOLD_PERCENT = .30f
 private const val MAX_SWIPE_ANGLE = 15f // degrees
 
-class CommentsTouchListener(context: Context, private val onThreshold: () -> Unit) :
+class SwipeBackTouchListener(context: Context, private val onThreshold: () -> Unit) :
     TouchInterceptingCoordinatorLayout.Listener {
 
     private var startX = 0f

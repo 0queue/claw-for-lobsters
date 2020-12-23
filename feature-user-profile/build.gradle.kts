@@ -7,12 +7,7 @@ plugins {
 dependencies {
     implementation(Deps.Kotlin.stdlib)
     implementation(project(":core"))
-    implementation(project(":lib-better-html"))
     implementation(project(":lib-swipe-back"))
-
-    // util
-    implementation(Deps.Kotlin.X.coroutinesAndroid)
-    implementation(Deps.Android.X.coreKtx)
 
     // dagger
     implementation(Deps.Dagger.dagger)
@@ -24,15 +19,7 @@ dependencies {
 
     // material
     implementation(Deps.Android.X.appCompat)
-    implementation(Deps.Android.X.swipeRefreshLayout)
     implementation(Deps.Android.X.constraintLayout)
+    implementation(Deps.Android.X.coreKtx)
     implementation(Deps.material)
-
-    // other
-    implementation(Deps.coil)
-    implementation(Deps.Android.X.browser)
-    implementation(Deps.Android.X.lifecycleRuntime)
-
-    // testing
-    testImplementation(Deps.junit)
 }

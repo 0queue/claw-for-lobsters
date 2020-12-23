@@ -18,12 +18,13 @@ import dev.thomasharris.claw.feature.comments.di.DaggerCommentsComponent
 import dev.thomasharris.claw.lib.lobsters.LoadingStatus
 import dev.thomasharris.claw.lib.navigator.Destination
 import dev.thomasharris.claw.lib.navigator.goto
+import dev.thomasharris.claw.lib.swipeback.SwipeBackTouchListener
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 @Suppress("unused")
 class CommentsController constructor(
-    args: Bundle
+    args: Bundle,
 ) : ViewLifecycleController(args), HasBinding<ControllerCommentsBinding> {
 
     private val component by getComponent<CommentsComponent> {
@@ -50,7 +51,7 @@ class CommentsController constructor(
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup,
-        savedStateBundle: Bundle?
+        savedStateBundle: Bundle?,
     ): View {
         binding = ControllerCommentsBinding.inflate(inflater, container, false)
 
@@ -77,7 +78,7 @@ class CommentsController constructor(
                 )
             }
 
-            root.listener = CommentsTouchListener(root.context) {
+            root.listener = SwipeBackTouchListener(root.context) {
                 router.popCurrentController()
             }
 

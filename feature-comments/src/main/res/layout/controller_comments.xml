@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<dev.thomasharris.claw.feature.comments.TouchInterceptingCoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<dev.thomasharris.claw.lib.swipeback.TouchInterceptingCoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/comments_coordinator"
     android:layout_width="match_parent"
@@ -38,4 +38,4 @@
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-</dev.thomasharris.claw.feature.comments.TouchInterceptingCoordinatorLayout>
+</dev.thomasharris.claw.lib.swipeback.TouchInterceptingCoordinatorLayout>

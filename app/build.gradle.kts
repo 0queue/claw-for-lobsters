@@ -8,11 +8,13 @@ android.defaultConfig.applicationId = "dev.thomasharris.claw"
 android.packagingOptions.pickFirst("META-INF/kotlinx-coroutines-core.kotlin_module")
 
 dependencies {
+    // TODO runtime dependencies only?
     implementation(project(":core"))
     implementation(project(":feature-front-page"))
     implementation(project(":feature-comments"))
     implementation(project(":feature-settings"))
     implementation(project(":feature-web-page"))
+    implementation(project(":feature-user-profile"))
 
     debugImplementation("com.squareup.leakcanary:leakcanary-android:2.5")
 }
