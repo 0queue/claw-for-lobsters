@@ -22,7 +22,7 @@ const val LEADING_MARGIN = 32 + 8
  * also good: https://lobste.rs/s/m24zv1/xi_editor_retrospective
  * (andyc going ham with the formatting)
  */
-fun String.fromHtml(dipToPx: (Float) -> Float = { it }): CharSequence {
+fun String.fromHtml(inline: Boolean = false, dipToPx: (Float) -> Float = { it }): CharSequence {
     val parsed = Jsoup.parse(this.replace(Regex("\\\\n"), "\n"))
 
     val body = parsed.body()
@@ -34,7 +34,7 @@ fun String.fromHtml(dipToPx: (Float) -> Float = { it }): CharSequence {
         // or not, this is important when, for example, nesting lists.  But the top
         // level should always be made of paragraphs, so if a top level <strong/>
         // for example sneaks through, make it a paragraph
-        if (!res.startsWith("\n") && !res.endsWith("\n"))
+        if (!inline && !res.startsWith("\n") && !res.endsWith("\n"))
             res.paragraph()
         else
             res

@@ -1,21 +1,28 @@
 package dev.thomasharris.claw.feature.userprofile
 
+import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.lifecycleScope
+import coil.load
+import coil.transform.CircleCropTransformation
+import dev.thomasharris.betterhtml.PressableLinkMovementMethod
 import dev.thomasharris.betterhtml.fromHtml
 import dev.thomasharris.claw.core.HasBinding
+import dev.thomasharris.claw.core.R
 import dev.thomasharris.claw.core.ext.dipToPx
 import dev.thomasharris.claw.core.ext.fade
 import dev.thomasharris.claw.core.ext.getComponent
+import dev.thomasharris.claw.core.ext.postedAgo
 import dev.thomasharris.claw.core.ui.ViewLifecycleController
 import dev.thomasharris.claw.feature.userprofile.databinding.ControllerUserProfileBinding
 import dev.thomasharris.claw.feature.userprofile.di.DaggerUserProfileComponent
 import dev.thomasharris.claw.feature.userprofile.di.UserProfileComponent
+import dev.thomasharris.claw.lib.navigator.Destination
 import dev.thomasharris.claw.lib.navigator.back
+import dev.thomasharris.claw.lib.navigator.goto
 import dev.thomasharris.claw.lib.swipeback.SwipeBackTouchListener
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -49,16 +56,67 @@ class UserProfileController(
                 insets
             }
 
-            lifecycleScope.launch {
+            with(userProfileToolbar) {
+                setNavigationOnClickListener { back() }
+                title = "User Profile"
+            }
+
+            viewLifecycleOwner.lifecycleScope.launch {
                 component.userRepository.refresh(username)
                 component.userRepository.latestUser(username).collect { user ->
                     if (user != null) {
-                        usernameTextView.text = user.about.ifEmpty {
-                            "<em>A mystery...</em>".fromHtml { it.dipToPx(root.context) }
+                        usernameText.text = username
+
+                        // TODO expand postedAgo to handle months, and add invitation info with link
+                        joinedText.text = user.createdAt.postedAgo().toString()
+
+                        // TODO add privileges (isAdmin, isModerator) as chips
+                        //  with label Privileges here
+
+                        karmaText.text = user.karma.toString()
+
+                        val linkMovementMethod = PressableLinkMovementMethod {
+                            if (it != null) goto(Destination.WebPage(it))
+                        }
+
+                        githubTextLabel.visibility =
+                            if (user.githubUsername != null) View.VISIBLE else View.GONE
+                        githubText.visibility =
+                            if (user.githubUsername != null) View.VISIBLE else View.GONE
+
+                        if (user.githubUsername != null) {
+                            githubText.movementMethod = linkMovementMethod
+                            @SuppressLint("SetTextI18n") // it's just a link so it's fine
+                            githubText.text =
+                                """<a href="https://github.com/${user.githubUsername}">https://github.com/${user.githubUsername}</a> """
+                                    .fromHtml(true) { it.dipToPx(root.context) }
+                        }
+
+                        twitterTextLabel.visibility =
+                            if (user.twitterUsername != null) View.VISIBLE else View.GONE
+                        twitterText.visibility =
+                            if (user.twitterUsername != null) View.VISIBLE else View.GONE
+                        if (user.twitterUsername != null) {
+                            twitterText.movementMethod = linkMovementMethod
+                            @SuppressLint("SetTextI18n") // it's just a link so it's fine
+                            twitterText.text =
+                                """<a href="https://twitter.com/${user.twitterUsername}">@${user.twitterUsername}</a> """
+                                    .fromHtml(true) { it.dipToPx(root.context) }
+                        }
+
+                        // TODO the damn about text isn't html, it's still markdown...
+                        aboutText.text = user.about.ifEmpty {
+                            "<em>A mystery...</em>"
+                                .fromHtml(true) { it.dipToPx(root.context) }
+                        }
+
+                        avatar.load("https://lobste.rs/${user.avatarShortUrl}") {
+                            crossfade(true)
+                            placeholder(R.drawable.ic_person_black_24dp)
+                            transformations(CircleCropTransformation())
                         }
                     }
 
-                    Log.i("TEH", "user == null ? $user")
                     constraintLayout.fade(user != null)
                 }
             }

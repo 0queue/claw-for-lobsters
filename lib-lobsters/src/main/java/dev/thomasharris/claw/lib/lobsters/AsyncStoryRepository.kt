@@ -15,7 +15,7 @@ import javax.inject.Singleton
 @Singleton
 class AsyncStoryRepository @Inject constructor(
     private val lobstersService: LobstersService,
-    private val lobstersQueries: LobstersQueries
+    private val lobstersQueries: LobstersQueries,
 ) {
 
     /**
@@ -91,6 +91,8 @@ fun UserNetworkEntity.toDB(now: Date = Date()) =
         isModerator,
         karma,
         avatarUrl,
-        invitedByUser,
-        now
+        invitedByUser = invitedByUser,
+        githubUsername = githubUsername,
+        twitterUsername = twitterUsername,
+        insertedAt = now
     )

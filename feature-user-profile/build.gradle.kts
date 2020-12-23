@@ -26,4 +26,7 @@ dependencies {
     implementation(Deps.Android.X.constraintLayout)
     implementation(Deps.Android.X.coreKtx)
     implementation(Deps.material)
+
+    // other
+    implementation(Deps.coil)
 }

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="joined_text_label">Joined</string>
+    <string name="karma_text_label">Karma</string>
+    <string name="github_text_label">GitHub</string>
+    <string name="about_text_label">About</string>
+    <string name="twitter_text_label">Twitter</string>
+</resources>
