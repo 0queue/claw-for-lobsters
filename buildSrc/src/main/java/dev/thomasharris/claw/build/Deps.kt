@@ -7,6 +7,7 @@ object Deps {
     const val coil = "io.coil-kt:coil:1.1.0"
     const val jsoup = "org.jsoup:jsoup:1.13.1"
     const val threetenAbp = "com.jakewharton.threetenabp:threetenabp:1.3.0"
+    const val commonmark = "com.atlassian.commonmark:commonmark:0.16.1"
 
     object Kotlin {
         const val stdlib = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.4.21"

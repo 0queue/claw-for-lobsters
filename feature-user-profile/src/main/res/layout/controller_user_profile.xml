@@ -37,8 +37,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="16dp"
-            android:layout_marginBottom="16dp"
             android:layout_marginTop="4dp"
+            android:layout_marginBottom="16dp"
             android:alpha="0"
             android:visibility="gone"
             tools:alpha="1"
@@ -201,13 +201,15 @@
 
             <dev.thomasharris.betterhtml.LinkTextView
                 android:id="@+id/about_text"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:gravity="end"
+                android:gravity="start"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+                app:layout_constrainedWidth="true"
                 app:layout_constraintBaseline_toBaselineOf="@id/about_text_label"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toEndOf="@id/text_barrier"
                 tools:text="A mystery..." />
 

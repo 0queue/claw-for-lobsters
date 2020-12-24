@@ -29,4 +29,5 @@ dependencies {
 
     // other
     implementation(Deps.coil)
+    implementation(Deps.commonmark)
 }

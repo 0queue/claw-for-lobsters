@@ -174,11 +174,12 @@ class UserProfileController(
                                     .fromHtml(true) { it.dipToPx(root.context) }
                         }
 
-                        // TODO the damn about text isn't html, it's still markdown...
-                        aboutText.text = user.about.ifEmpty {
+                        aboutText.text = if (user.about.isNotBlank())
+                            component.renderMarkdownUseCase(user.about) { it.dipToPx(root.context) }
+                        else
                             "<em>A mystery...</em>"
                                 .fromHtml(true) { it.dipToPx(root.context) }
-                        }
+                        aboutText.movementMethod = linkMovementMethod
 
                         avatar.load("https://lobste.rs/${user.avatarShortUrl}") {
                             crossfade(true)
