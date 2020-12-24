@@ -9,6 +9,7 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
 import androidx.lifecycle.lifecycleScope
@@ -48,6 +49,8 @@ class UserProfileController(
 
     override var binding: ControllerUserProfileBinding? = null
 
+    private var preDrawListener: ViewTreeObserver.OnPreDrawListener? = null
+
     private val username = args.getString("username")!!
 
     override fun onCreateView(
@@ -59,6 +62,14 @@ class UserProfileController(
             root.listener = SwipeBackTouchListener(root.context) {
                 back()
             }
+
+            // only elevate if in movement, a static elevation in the layout
+            // means layers of UserProfile don't have elevation over each other!
+            preDrawListener = ViewTreeObserver.OnPreDrawListener {
+                root.elevation = if (root.translationX != 0f) 4f.dipToPx(root.context) else 0f
+                true
+            }
+            root.viewTreeObserver.addOnPreDrawListener(preDrawListener)
 
             root.setOnApplyWindowInsetsListener { v, insets ->
                 v.onApplyWindowInsets(insets)
@@ -194,6 +205,12 @@ class UserProfileController(
         }
 
         return requireBinding().root
+    }
+
+    override fun onDestroyView(view: View) {
+        super.onDestroyView(view)
+        if (preDrawListener != null)
+            binding?.root?.viewTreeObserver?.removeOnPreDrawListener(preDrawListener)
     }
 }
 
