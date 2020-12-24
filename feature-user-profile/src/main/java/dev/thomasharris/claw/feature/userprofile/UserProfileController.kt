@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
+import androidx.annotation.Keep
 import androidx.lifecycle.lifecycleScope
 import coil.load
 import coil.transform.CircleCropTransformation
@@ -49,6 +50,7 @@ class UserProfileController(
 
     override var binding: ControllerUserProfileBinding? = null
 
+    @Keep // proguard not liking this without Keeping
     private var preDrawListener: ViewTreeObserver.OnPreDrawListener? = null
 
     private val username = args.getString("username")!!
