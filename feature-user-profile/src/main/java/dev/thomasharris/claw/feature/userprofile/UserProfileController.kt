@@ -1,12 +1,16 @@
 package dev.thomasharris.claw.feature.userprofile
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableStringBuilder
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.AttrRes
+import androidx.annotation.ColorInt
 import androidx.lifecycle.lifecycleScope
 import coil.load
 import coil.transform.CircleCropTransformation
@@ -20,6 +24,7 @@ import dev.thomasharris.claw.core.ext.fade
 import dev.thomasharris.claw.core.ext.getComponent
 import dev.thomasharris.claw.core.ext.postedAgo
 import dev.thomasharris.claw.core.ext.toString
+import dev.thomasharris.claw.core.ui.TagSpan
 import dev.thomasharris.claw.core.ui.ViewLifecycleController
 import dev.thomasharris.claw.feature.userprofile.databinding.ControllerUserProfileBinding
 import dev.thomasharris.claw.feature.userprofile.di.DaggerUserProfileComponent
@@ -65,6 +70,10 @@ class UserProfileController(
                 title = "User Profile"
             }
 
+            nestedScrollView.setOnScrollChangeListener { v, _, _, _, _ ->
+                userProfileAppBarLayout.isSelected = v.canScrollVertically(-1)
+            }
+
             viewLifecycleOwner.lifecycleScope.launch {
                 component.userRepository.refresh(username)
                 component.userRepository.latestUser(username).collect { user ->
@@ -77,12 +86,10 @@ class UserProfileController(
                                     @Suppress("BlockingMethodInNonBlockingContext") // ??
                                     SpannableStringBuilder().apply {
                                         append("$ago invited by ")
-                                        append(user.invitedByUser.toString())
-                                        setSpan(
+                                        append(
+                                            user.invitedByUser.toString(),
                                             PressableSpan(inviter),
-                                            this.length - inviter.length,
-                                            this.length,
-                                            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                                            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE,
                                         )
                                     }
                                 } ?: ago
@@ -93,8 +100,48 @@ class UserProfileController(
                                 goto(Destination.UserProfile(it))
                         }
 
-                        // TODO add privileges (isAdmin, isModerator) as chips
-                        //  with label Privileges here
+                        privilegesTextLabel.visibility =
+                            if (user.isAdmin || user.isModerator) View.VISIBLE else View.GONE
+                        privilegesText.visibility =
+                            if (user.isAdmin || user.isModerator) View.VISIBLE else View.GONE
+                        @Suppress("BlockingMethodInNonBlockingContext")
+                        privilegesText.text = SpannableStringBuilder().apply {
+                            /**
+                             * So, if a replacement span covers the whole text, the span has to
+                             * set the height somehow, using the font metrics in getSize.  If it
+                             * doesn't, it completely breaks the whole ConstraintLayout, which is
+                             * impressive to say the least.
+                             *
+                             * As I have neither the time nor energy to dive back in the weird world
+                             * of span implementations, instead use a space to enable whatever
+                             * automatic height was already being used.
+                             */
+                            if (user.isAdmin || user.isModerator)
+                                append(" ")
+
+                            if (user.isAdmin)
+                                append(
+                                    "admin",
+                                    TagSpan(
+                                        backgroundColor = root.context.color(R.attr.colorTagBackgroundIsAdmin),
+                                        borderColor = root.context.color(R.attr.colorTagBorderIsAdmin)
+                                    ),
+                                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                                )
+
+                            if (user.isAdmin && user.isModerator)
+                                append(" ")
+
+                            if (user.isModerator)
+                                append(
+                                    "moderator",
+                                    TagSpan(
+                                        backgroundColor = root.context.color(R.attr.colorTagBackground),
+                                        borderColor = root.context.color(R.attr.colorTagBorder)
+                                    ),
+                                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                                )
+                        }
 
                         karmaText.text = user.karma.toString()
 
@@ -147,4 +194,10 @@ class UserProfileController(
 
         return requireBinding().root
     }
+}
+
+@ColorInt
+private fun Context.color(@AttrRes attr: Int): Int = TypedValue().run {
+    theme.resolveAttribute(attr, this, true)
+    data
 }

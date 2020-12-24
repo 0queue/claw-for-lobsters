@@ -5,4 +5,5 @@
     <string name="github_text_label">GitHub</string>
     <string name="about_text_label">About</string>
     <string name="twitter_text_label">Twitter</string>
+    <string name="privileges_text_label">Privileges</string>
 </resources>

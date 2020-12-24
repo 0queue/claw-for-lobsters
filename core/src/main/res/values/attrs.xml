@@ -4,11 +4,13 @@
     <attr name="colorTagBorderMedia" format="color" />
     <attr name="colorTagBorderMeta" format="color" />
     <attr name="colorTagBorder" format="color" />
+    <attr name="colorTagBorderIsAdmin" format="color"/>
 
     <attr name="colorTagBackgroundShowAskAnnounceInterview" format="color" />
     <attr name="colorTagBackgroundMedia" format="color" />
     <attr name="colorTagBackgroundMeta" format="color" />
     <attr name="colorTagBackground" format="color" />
+    <attr name="colorTagBackgroundIsAdmin" format="color"/>
 
 <!--    <attr name="lightStatusBar" format="boolean" />-->
 </resources>

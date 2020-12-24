@@ -17,11 +17,13 @@
         <item name="colorTagBorderMedia">@color/colorTagBorderMedia</item>
         <item name="colorTagBorderMeta">@color/colorTagBorderMeta</item>
         <item name="colorTagBorder">@color/colorTagBorder</item>
+        <item name="colorTagBorderIsAdmin">@color/colorTagBorderIsAdmin</item>
 
         <item name="colorTagBackgroundShowAskAnnounceInterview">@color/colorTagBackgroundShowAskAnnounceInterview</item>
         <item name="colorTagBackgroundMedia">@color/colorTagBackgroundMedia</item>
         <item name="colorTagBackgroundMeta">@color/colorTagBackgroundMeta</item>
         <item name="colorTagBackground">@color/colorTagBackground</item>
+        <item name="colorTagBackgroundIsAdmin">@color/colorTagBackgroundIsAdmin</item>
     </style>
 
     <style name="AppTheme.ToolbarStyle">

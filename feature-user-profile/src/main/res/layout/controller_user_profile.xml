@@ -37,6 +37,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="16dp"
+            android:layout_marginBottom="16dp"
+            android:layout_marginTop="4dp"
             android:alpha="0"
             android:visibility="gone"
             tools:alpha="1"
@@ -95,6 +97,29 @@
                 tools:text="Blah blah blah" />
 
             <TextView
+                android:id="@+id/privileges_text_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/privileges_text_label"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/joined_text" />
+
+            <TextView
+                android:id="@+id/privileges_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:gravity="end"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+                app:layout_constraintBaseline_toBaselineOf="@id/privileges_text_label"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/text_barrier"
+                tools:text="admin" />
+
+            <TextView
                 android:id="@+id/karma_text_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -103,7 +128,7 @@
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/joined_text" />
+                app:layout_constraintTop_toBottomOf="@id/privileges_text" />
 
             <TextView
                 android:id="@+id/karma_text"
