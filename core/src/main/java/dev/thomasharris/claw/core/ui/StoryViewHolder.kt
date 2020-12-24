@@ -105,7 +105,6 @@ class StoryViewHolder private constructor(
 
         if (onLongClickListener != null)
             root.setOnLongClickListener {
-                // TODO haptic/audio feedback?
                 onLongClickListener(story.username)
                 true
             }
