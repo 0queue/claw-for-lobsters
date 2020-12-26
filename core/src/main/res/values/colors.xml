@@ -22,5 +22,4 @@
     <color name="colorTagBackgroundMeta">#eeeeee</color>
     <color name="colorTagBackground">#fffcd7</color>
     <color name="colorTagBackgroundIsAdmin">#f9ddde</color>
-    <color name="translucent_gray">#66000000</color>
 </resources>

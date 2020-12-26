@@ -1,9 +1,6 @@
 package dev.thomasharris.claw.core.ext
 
 import android.view.View
-import androidx.appcompat.widget.Toolbar
-import com.google.android.material.appbar.AppBarLayout
-import dev.thomasharris.claw.core.R
 
 fun View.fade(fadeIn: Boolean) {
 
@@ -24,18 +21,4 @@ fun View.fade(fadeIn: Boolean) {
                 visibility = View.GONE
             }
     }
-}
-
-fun Toolbar.setScrollEnabled(enabled: Boolean) {
-    val origScrollParams: AppBarLayout.LayoutParams =
-        (getTag(R.id.TOOLBAR_ORIGINAL_SCROLL_FLAGS_KEY) as? AppBarLayout.LayoutParams)
-            ?: (layoutParams as AppBarLayout.LayoutParams).also {
-                setTag(R.id.TOOLBAR_ORIGINAL_SCROLL_FLAGS_KEY, it)
-            }
-
-    val noScrollParams = AppBarLayout.LayoutParams(origScrollParams).apply {
-        scrollFlags = AppBarLayout.LayoutParams.SCROLL_FLAG_NO_SCROLL
-    }
-
-    layoutParams = if (enabled) origScrollParams else noScrollParams
 }

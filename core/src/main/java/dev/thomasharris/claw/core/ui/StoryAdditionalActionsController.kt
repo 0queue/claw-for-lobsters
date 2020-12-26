@@ -11,6 +11,7 @@ import dev.thomasharris.claw.lib.navigator.Destination
 import dev.thomasharris.claw.lib.navigator.back
 import dev.thomasharris.claw.lib.navigator.goto
 
+@Suppress("unused")
 class StoryAdditionalActionsController(
     args: Bundle,
 ) : ViewLifecycleController(args), HasBinding<ControllerStoryAdditionalActionsBinding> {

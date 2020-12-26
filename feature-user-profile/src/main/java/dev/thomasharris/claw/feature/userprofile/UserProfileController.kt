@@ -38,6 +38,7 @@ import dev.thomasharris.claw.lib.swipeback.SwipeBackTouchListener
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
+@Suppress("unused")
 class UserProfileController(
     args: Bundle,
 ) : ViewLifecycleController(args), HasBinding<ControllerUserProfileBinding> {

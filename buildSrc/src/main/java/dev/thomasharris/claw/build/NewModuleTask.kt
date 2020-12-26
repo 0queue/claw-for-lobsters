@@ -69,14 +69,10 @@ open class NewModuleTask : DefaultTask() {
         if (isAndroid) with(File(project.rootDir, "$moduleName/src/main/AndroidManifest.xml")) {
             ensureParentDirsCreated()
             createNewFile()
-            writeText(
-                "<manifest xmlns:android=\"http://schemas.android.com/apk/res/android\"\n" +
-                        "    package=\"${
-                            packageStructure.split(".").dropLast(1).joinToString(
-                                separator = "."
-                            )
-                        }\" />\n"
-            )
+            """
+                <manifest package="${packageStructure.split(".").dropLast(1).joinToString(".")}">"
+            """.trimIndent()
+                .let { writeText(it) }
         }
 
         // create build.gradle.kts

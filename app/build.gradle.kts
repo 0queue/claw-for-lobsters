@@ -4,17 +4,15 @@ plugins {
 }
 
 android.defaultConfig.applicationId = "dev.thomasharris.claw"
-// not sure why this is needed
-android.packagingOptions.pickFirst("META-INF/kotlinx-coroutines-core.kotlin_module")
 
 dependencies {
-    // TODO runtime dependencies only?
     implementation(project(":core"))
+    // keep these as implementation so that build variant switching in android studio works properly
     implementation(project(":feature-front-page"))
     implementation(project(":feature-comments"))
     implementation(project(":feature-settings"))
     implementation(project(":feature-web-page"))
     implementation(project(":feature-user-profile"))
 
-    debugImplementation("com.squareup.leakcanary:leakcanary-android:2.5")
+    debugRuntimeOnly("com.squareup.leakcanary:leakcanary-android:2.5")
 }

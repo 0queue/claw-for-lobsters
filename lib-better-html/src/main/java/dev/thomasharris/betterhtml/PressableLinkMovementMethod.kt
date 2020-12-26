@@ -9,9 +9,9 @@ import android.widget.TextView
 /**
  * Adapted from https://stackoverflow.com/questions/20856105/change-the-text-color-of-a-single-clickablespan-when-pressed-without-affecting-o
  */
-class PressableLinkMovementMethod(var listener: ((String?) -> Unit)?) : LinkMovementMethod() {
+class PressableLinkMovementMethod(private var listener: ((String?) -> Unit)?) : LinkMovementMethod() {
 
-    var pressedSpan: PressableSpan? = null
+    private var pressedSpan: PressableSpan? = null
 
     override fun onTouchEvent(widget: TextView, buffer: Spannable, event: MotionEvent): Boolean {
 
