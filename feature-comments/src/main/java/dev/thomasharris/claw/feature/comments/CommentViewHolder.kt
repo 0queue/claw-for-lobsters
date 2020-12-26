@@ -24,7 +24,7 @@ import java.util.Date
 import kotlin.math.min
 
 class CommentViewHolder private constructor(
-    private val binding: ItemCommentBinding
+    private val binding: ItemCommentBinding,
 ) : RecyclerView.ViewHolder(binding.root) {
 
     private val colors =
@@ -35,7 +35,8 @@ class CommentViewHolder private constructor(
         comment: CommentModel,
         position: Int,
         onClick: (String, Boolean) -> Unit,
-        onLinkClicked: (String) -> Unit
+        onLinkClicked: (String) -> Unit,
+        onLongClick: (String) -> Unit,
     ) = with(binding) {
         commentMarker.backgroundTintList =
             ColorStateList.valueOf(colors[(comment.indentLevel - 1) % colors.size])
@@ -121,6 +122,11 @@ class CommentViewHolder private constructor(
 
         root.setOnClickListener {
             onClick(comment.shortId, false)
+        }
+
+        root.setOnLongClickListener {
+            onLongClick(comment.username)
+            true
         }
     }
 

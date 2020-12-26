@@ -4,11 +4,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
+import androidx.annotation.Keep
 import androidx.browser.customtabs.CustomTabsClient
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import dev.thomasharris.claw.core.HasBinding
+import dev.thomasharris.claw.core.ext.dipToPx
 import dev.thomasharris.claw.core.ext.getComponent
 import dev.thomasharris.claw.core.ui.ViewLifecycleController
 import dev.thomasharris.claw.core.withBinding
@@ -35,15 +38,27 @@ class CommentsController constructor(
 
     override var binding: ControllerCommentsBinding? = null
 
+    @Keep // proguard not liking this without Keeping
+    private var preDrawListener: ViewTreeObserver.OnPreDrawListener? = null
+
     private val shortId: String = getArgs().getString("shortId")!!
 
     private val listAdapter =
-        CommentsAdapter(this::launchUrl, this::launchUrl) { shortId, isCollapsePredecessors ->
-            if (isCollapsePredecessors)
-                component.commentRepository.collapsePredecessors(shortId)
-            else
-                component.commentRepository.toggleCollapseComment(shortId)
-        }
+        CommentsAdapter(
+            onHeaderClick = this::launchUrl,
+            onLinkClick = this::launchUrl,
+            onCommentClick = { shortId, isCollapsePredecessors ->
+                if (isCollapsePredecessors)
+                    component.commentRepository.collapsePredecessors(shortId)
+                else
+                    component.commentRepository.toggleCollapseComment(shortId)
+            },
+            onLongClick = {
+                // Reusing the StoryModal for now, until comments
+                // and stories have different options
+                goto(Destination.StoryModal(it))
+            },
+        )
 
     // cache the last status to filter out redelivered ERROR statuses on rotate
     private var lastStatus: LoadingStatus? = null
@@ -92,6 +107,14 @@ class CommentsController constructor(
                 v.onApplyWindowInsets(insets)
                 insets
             }
+
+            // only elevate if in movement, a static elevation in the layout
+            // means layers of UserProfile don't have elevation over each other!
+            preDrawListener = ViewTreeObserver.OnPreDrawListener {
+                root.elevation = if (root.translationX != 0f) 4f.dipToPx(root.context) else 0f
+                true
+            }
+            root.viewTreeObserver.addOnPreDrawListener(preDrawListener)
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
@@ -128,6 +151,12 @@ class CommentsController constructor(
         // warm up custom tabs a little
         CustomTabsClient.connectAndInitialize(container.context, "com.android.chrome")
         return requireBinding().root
+    }
+
+    override fun onDestroyView(view: View) {
+        super.onDestroyView(view)
+        if (preDrawListener != null)
+            binding?.root?.viewTreeObserver?.removeOnPreDrawListener(preDrawListener)
     }
 
     private fun launchUrl(@Suppress("UNUSED_PARAMETER") _x: Any, url: String) = launchUrl(url)
