@@ -21,6 +21,8 @@ import dev.thomasharris.claw.feature.comments.di.DaggerCommentsComponent
 import dev.thomasharris.claw.lib.lobsters.LoadingStatus
 import dev.thomasharris.claw.lib.navigator.Destination
 import dev.thomasharris.claw.lib.navigator.goto
+import dev.thomasharris.claw.lib.navigator.handleDeeplink
+import dev.thomasharris.claw.lib.navigator.up
 import dev.thomasharris.claw.lib.swipeback.SwipeBackTouchListener
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -72,7 +74,7 @@ class CommentsController constructor(
 
         withBinding {
             with(commentsToolbar) {
-                setNavigationOnClickListener { router.popCurrentController() }
+                setNavigationOnClickListener { up() }
                 title = "Comments"
             }
 
@@ -93,9 +95,7 @@ class CommentsController constructor(
                 )
             }
 
-            root.listener = SwipeBackTouchListener(root.context) {
-                router.popCurrentController()
-            }
+            root.listener = SwipeBackTouchListener(root.context, this@CommentsController::up)
 
             commentsSwipeRefresh.setOnRefreshListener {
                 lifecycleScope.launch {
@@ -152,6 +152,8 @@ class CommentsController constructor(
         CustomTabsClient.connectAndInitialize(container.context, "com.android.chrome")
         return requireBinding().root
     }
+
+    override fun handleBack() = handleDeeplink() || super.handleBack()
 
     override fun onDestroyView(view: View) {
         super.onDestroyView(view)

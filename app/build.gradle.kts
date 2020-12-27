@@ -14,5 +14,5 @@ dependencies {
     implementation(project(":feature-web-page"))
     implementation(project(":feature-user-profile"))
 
-    debugRuntimeOnly("com.squareup.leakcanary:leakcanary-android:2.5")
+    debugRuntimeOnly("com.squareup.leakcanary:leakcanary-android:2.6")
 }

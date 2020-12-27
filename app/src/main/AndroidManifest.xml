@@ -15,7 +15,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".core.MainActivity">
+        <activity
+            android:name=".core.MainActivity"
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -28,22 +30,11 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
+                <!-- handle http[s]://lobste.rs[/.*] and let the app decide what to do -->
                 <data
                     android:host="lobste.rs"
                     android:scheme="https" />
-            </intent-filter>
-
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data
-                    android:host="lobste.rs"
-                    android:pathPrefix="/s"
-                    android:pathPattern=".*"
-                    android:scheme="https" />
+                <data android:scheme="http" />
             </intent-filter>
         </activity>
     </application>

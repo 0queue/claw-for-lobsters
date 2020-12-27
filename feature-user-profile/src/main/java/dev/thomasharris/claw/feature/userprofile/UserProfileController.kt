@@ -32,8 +32,9 @@ import dev.thomasharris.claw.feature.userprofile.databinding.ControllerUserProfi
 import dev.thomasharris.claw.feature.userprofile.di.DaggerUserProfileComponent
 import dev.thomasharris.claw.feature.userprofile.di.UserProfileComponent
 import dev.thomasharris.claw.lib.navigator.Destination
-import dev.thomasharris.claw.lib.navigator.back
 import dev.thomasharris.claw.lib.navigator.goto
+import dev.thomasharris.claw.lib.navigator.handleDeeplink
+import dev.thomasharris.claw.lib.navigator.up
 import dev.thomasharris.claw.lib.swipeback.SwipeBackTouchListener
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -62,9 +63,7 @@ class UserProfileController(
         savedViewState: Bundle?,
     ): View {
         binding = ControllerUserProfileBinding.inflate(inflater, container, false).apply {
-            root.listener = SwipeBackTouchListener(root.context) {
-                back()
-            }
+            root.listener = SwipeBackTouchListener(root.context, this@UserProfileController::up)
 
             // only elevate if in movement, a static elevation in the layout
             // means layers of UserProfile don't have elevation over each other!
@@ -80,7 +79,7 @@ class UserProfileController(
             }
 
             with(userProfileToolbar) {
-                setNavigationOnClickListener { back() }
+                setNavigationOnClickListener { up() }
                 title = "User Profile"
             }
 
@@ -209,6 +208,8 @@ class UserProfileController(
 
         return requireBinding().root
     }
+
+    override fun handleBack() = handleDeeplink() || super.handleBack()
 
     override fun onDestroyView(view: View) {
         super.onDestroyView(view)

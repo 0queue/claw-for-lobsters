@@ -18,6 +18,7 @@ dependencies {
     // conductor
     implementation(Deps.Conductor.conductor)
     implementation(Deps.Conductor.lifecycle)
+    runtimeOnly(Deps.Android.X.fragment) // please only use for big request codes
 
     // material
     implementation(Deps.material)

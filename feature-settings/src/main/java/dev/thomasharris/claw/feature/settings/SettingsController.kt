@@ -19,7 +19,7 @@ import dev.thomasharris.claw.core.ext.getComponent
 import dev.thomasharris.claw.feature.settings.databinding.SettingsBinding
 import dev.thomasharris.claw.feature.settings.di.DaggerSettingsComponent
 import dev.thomasharris.claw.feature.settings.di.SettingsComponent
-import dev.thomasharris.claw.lib.navigator.back
+import dev.thomasharris.claw.lib.navigator.up
 
 @Suppress("unused")
 class SettingsController : LifecycleController(), HasBinding<SettingsBinding> {
@@ -48,7 +48,7 @@ class SettingsController : LifecycleController(), HasBinding<SettingsBinding> {
 
                         override fun onStateChanged(bottomSheet: View, newState: Int) {
                             if (newState == BottomSheetBehavior.STATE_HIDDEN)
-                                back()
+                                up()
                         }
                     }
                 )
@@ -58,7 +58,7 @@ class SettingsController : LifecycleController(), HasBinding<SettingsBinding> {
 
             settingsScrim.setOnClickListener {
                 bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
-                back()
+                up()
             }
 
             settingsThemeToggleGroup.check(
@@ -121,9 +121,7 @@ class SettingsController : LifecycleController(), HasBinding<SettingsBinding> {
 
     override fun handleBack(): Boolean {
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
-        back()
-
-        return true
+        return super.handleBack()
     }
 
     private fun TextView.updateThemeDescription(themeMode: PreferencesRepository.ThemeMode) {

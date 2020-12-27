@@ -8,8 +8,8 @@ import dev.thomasharris.claw.core.HasBinding
 import dev.thomasharris.claw.core.R
 import dev.thomasharris.claw.core.databinding.ControllerStoryAdditionalActionsBinding
 import dev.thomasharris.claw.lib.navigator.Destination
-import dev.thomasharris.claw.lib.navigator.back
 import dev.thomasharris.claw.lib.navigator.goto
+import dev.thomasharris.claw.lib.navigator.up
 
 @Suppress("unused")
 class StoryAdditionalActionsController(
@@ -26,7 +26,7 @@ class StoryAdditionalActionsController(
     ): View {
         binding = ControllerStoryAdditionalActionsBinding.inflate(inflater, container, false).apply {
             scrim.setOnClickListener {
-                back()
+                up()
             }
 
             dialog.setOnClickListener { }
@@ -35,7 +35,7 @@ class StoryAdditionalActionsController(
                 resources!!.getString(R.string.story_additional_action_view_profile, author)
 
             viewProfileButton.setOnClickListener {
-                back()
+                up()
                 goto(Destination.UserProfile(author))
             }
         }

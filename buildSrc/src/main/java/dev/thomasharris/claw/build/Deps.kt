@@ -33,6 +33,7 @@ object Deps {
             const val browser = "androidx.browser:browser:1.3.0"
             const val lifecycleRuntime = "androidx.lifecycle:lifecycle-runtime-ktx:2.2.0"
             const val pagingRuntime = "androidx.paging:paging-runtime:3.0.0-alpha11"
+            const val fragment = "androidx.fragment:fragment:1.3.0-rc01"
         }
 
         object Testing {
