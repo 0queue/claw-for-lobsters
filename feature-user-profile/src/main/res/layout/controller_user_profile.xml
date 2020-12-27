@@ -49,6 +49,7 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/circle"
                 android:elevation="8dp"
+                android:layout_margin="8dp"
                 android:padding="2dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
