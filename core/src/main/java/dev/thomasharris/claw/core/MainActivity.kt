@@ -59,12 +59,13 @@ class MainActivity : AppCompatActivity(), Navigator {
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
 
-        intent.syntheticBackstack(false).lastOrNull()?.let {
-            if (it !is Destination.FrontPage)
-                it.routerTransaction().let(this::goto)
-            else if (intent != null) {
+        intent.syntheticBackstack(false).lastOrNull()?.let { dest ->
+            if (dest !is Destination.FrontPage)
+                dest.routerTransaction().let(this::goto)
+            else {
+                val explicit = Intent(this, MainActivity::class.java)
                 // startActivityForResult ignores singleTop :^) Can't find a better solution
-                startActivityForResult(intent, REQUEST_CODE)
+                startActivityForResult(explicit, REQUEST_CODE)
             }
         }
     }
@@ -77,7 +78,7 @@ class MainActivity : AppCompatActivity(), Navigator {
      * @return non empty list of destinations
      */
     private fun Intent?.syntheticBackstack(isDeeplinked: Boolean): List<Destination> {
-        if (this == null || data == null)
+        if (this == null || data == null || data?.pathSegments.isNullOrEmpty())
             return listOf(Destination.FrontPage)
 
         return data?.pathSegments?.let { segments ->
@@ -90,7 +91,7 @@ class MainActivity : AppCompatActivity(), Navigator {
             if (lastDestination == null)
                 Log.e(
                     this@MainActivity::class.java.simpleName,
-                    "Failed to determine destination for $data"
+                    "Failed to determine destination for $data (deeplink? $isDeeplinked)"
                 )
 
             listOfNotNull(Destination.FrontPage, lastDestination)
