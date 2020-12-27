@@ -59,15 +59,18 @@ class MainActivity : AppCompatActivity(), Navigator {
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
 
-        intent.syntheticBackstack(false).lastOrNull()?.let { dest ->
-            if (dest !is Destination.FrontPage)
-                dest.routerTransaction().let(this::goto)
-            else {
-                val explicit = Intent(this, MainActivity::class.java)
-                // startActivityForResult ignores singleTop :^) Can't find a better solution
-                startActivityForResult(explicit, REQUEST_CODE)
+        if (intent != null && intent.isLinkHandlingIntent()) intent
+            .syntheticBackstack(false)
+            .lastOrNull()
+            ?.let { dest ->
+                if (dest !is Destination.FrontPage)
+                    dest.routerTransaction().let(this::goto)
+                else {
+                    val explicit = Intent(this, MainActivity::class.java)
+                    // startActivityForResult ignores singleTop :^) Can't find a better solution
+                    startActivityForResult(explicit, REQUEST_CODE)
+                }
             }
-        }
     }
 
     /**
@@ -97,4 +100,7 @@ class MainActivity : AppCompatActivity(), Navigator {
             listOfNotNull(Destination.FrontPage, lastDestination)
         }
     }
+
+    private fun Intent.isLinkHandlingIntent(): Boolean =
+        action == Intent.ACTION_VIEW && data?.host == "lobste.rs"
 }
