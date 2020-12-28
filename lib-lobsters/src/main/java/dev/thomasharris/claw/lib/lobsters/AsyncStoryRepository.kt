@@ -6,7 +6,10 @@ import com.github.michaelbull.result.Result
 import com.github.michaelbull.result.map
 import com.github.michaelbull.result.onSuccess
 import com.github.michaelbull.result.runCatching
+import com.squareup.sqldelight.runtime.coroutines.asFlow
+import com.squareup.sqldelight.runtime.coroutines.mapToOneOrNull
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import java.util.Date
 import javax.inject.Inject
@@ -61,9 +64,8 @@ class AsyncStoryRepository @Inject constructor(
                 }
         }
 
-    suspend fun getStory(storyId: String): StoryModel? = withContext(Dispatchers.IO) {
-        lobstersQueries.getStoryModel(storyId).oneOrNull()
-    }
+    fun observeStory(storyId: String): Flow<StoryModel?> =
+        lobstersQueries.getStoryModel(storyId).asFlow().mapToOneOrNull(Dispatchers.IO)
 }
 
 fun StoryNetworkEntity.toDB(pageIndex: Int, subIndex: Int, now: Date = Date()) =

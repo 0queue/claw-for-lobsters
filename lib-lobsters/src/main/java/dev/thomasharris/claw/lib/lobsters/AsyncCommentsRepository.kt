@@ -8,7 +8,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import java.util.Date
 import java.util.concurrent.Executor
@@ -30,8 +29,8 @@ class AsyncCommentsRepository @Inject constructor(
         get() = _status
 
     fun visibleComments(storyId: String): Flow<Pair<StoryModel?, List<CommentModel>>> {
-        val story = flow { emit(storyRepository.getStory(storyId)) }
-        val comments = lobstersQueries.getVisibleCommentModels(storyId).asFlow().mapToList()
+        val story = storyRepository.observeStory(storyId)
+        val comments = lobstersQueries.getVisibleCommentModels(storyId).asFlow().mapToList(Dispatchers.IO)
 
         return story.combine(comments) { s, c -> s to c }
     }
