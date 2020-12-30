@@ -7,7 +7,6 @@ import com.android.build.gradle.api.AndroidBasePlugin
 import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.artifacts.dsl.DependencyHandler
 import org.gradle.kotlin.dsl.findByType
 import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.withType
@@ -16,9 +15,11 @@ import java.util.Properties
 
 /**
  * Technique borrowed from https://quickbirdstudios.com/blog/gradle-kotlin-buildsrc-plugin-android/
+ *
+ * Seems to only like being the last plugin specified
  */
 open class ClawPlugin : Plugin<Project> {
-    override fun apply(target: Project) = target.run {
+    override fun apply(target: Project): Unit = target.run {
         apply {
             plugin("java-library")
             plugin("kotlin")
@@ -26,7 +27,6 @@ open class ClawPlugin : Plugin<Project> {
         }
 
         configureKotlin()
-        configureDependencies()
     }
 }
 
@@ -37,14 +37,12 @@ open class ClawAndroidPlugin : Plugin<Project> {
                 plugin("com.android.library")
 
             plugin("kotlin-android")
-            plugin("kotlin-android-extensions")
 
             plugin("kotlin-kapt")
         }
 
         configureKotlin()
         configureAndroid()
-        configureDependencies()
     }
 
 }
@@ -57,8 +55,8 @@ internal fun Project.configureAndroid() {
         defaultConfig {
             minSdkVersion(23)
             targetSdkVersion(29)
-            versionCode = 15
-            versionName = "15"
+            versionCode = 16
+            versionName = "16"
             testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         }
 
@@ -82,16 +80,12 @@ internal fun Project.configureAndroid() {
             }
         }
 
-        // for some reason this is still marked incubating...
-        // so it is overridden in gradle.properties
-        // buildFeatures.viewBinding = true
+        buildFeatures.viewBinding = true
 
         compileOptions {
             sourceCompatibility = JavaVersion.VERSION_1_8
             targetCompatibility = JavaVersion.VERSION_1_8
         }
-
-        dependencies.add("implementation", "androidx.core:core-ktx:1.3.0")
     }
 
     extensions.findByType<LibraryExtension>()?.run {
@@ -108,45 +102,9 @@ internal fun Project.configureAndroid() {
     }
 }
 
-/**
- * Dependencies that everyone has, guaranteed (kotlin, dagger)
- */
-internal fun Project.configureDependencies() {
-    dependencies.run {
-        add("implementation", "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.3.72")
-        add("implementation", "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.7")
-        add("implementation", "com.google.dagger:dagger:2.28.1")
-        add("kapt", "com.google.dagger:dagger-compiler:2.28.1")
-    }
-}
-
 internal fun Project.configureKotlin() = tasks.withType<KotlinCompile> {
     kotlinOptions {
         jvmTarget = "1.8"
+        languageVersion = "1.4"
     }
-}
-
-fun DependencyHandler.testing() {
-    add("testImplementation", "junit:junit:4.13")
-}
-
-fun DependencyHandler.androidTesting() {
-    add("androidTestImplementation", "androidx.test:runner:1.2.0")
-    add("androidTestImplementation", "androidx.test.espresso:espresso-core:3.2.0")
-}
-
-fun DependencyHandler.conductor() {
-    add("implementation", "com.bluelinelabs:conductor:3.0.0-rc6")
-    add("implementation", "com.bluelinelabs:conductor-archlifecycle:3.0.0-rc6")
-}
-
-fun DependencyHandler.material() {
-    add("implementation", "androidx.appcompat:appcompat:1.1.0")
-    add("implementation", "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0-rc01")
-    add("implementation", "com.google.android.material:material:1.3.0-alpha01")
-    add("implementation", "androidx.constraintlayout:constraintlayout:1.1.3")
-}
-
-fun DependencyHandler.coil() {
-    add("implementation", "io.coil-kt:coil:0.11.0")
 }

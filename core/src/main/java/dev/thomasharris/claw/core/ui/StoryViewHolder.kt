@@ -14,15 +14,15 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.text.buildSpannedString
 import androidx.recyclerview.widget.RecyclerView
-import coil.api.load
+import coil.load
 import coil.transform.CircleCropTransformation
+import dev.thomasharris.betterhtml.PressableLinkMovementMethod
+import dev.thomasharris.betterhtml.fromHtml
 import dev.thomasharris.claw.core.R
 import dev.thomasharris.claw.core.databinding.StoryViewBinding
 import dev.thomasharris.claw.core.ext.dipToPx
 import dev.thomasharris.claw.core.ext.postedAgo
 import dev.thomasharris.claw.core.ext.toString
-import dev.thomasharris.claw.core.ui.betterhtml.PressableLinkMovementMethod
-import dev.thomasharris.claw.core.ui.betterhtml.fromHtml
 import dev.thomasharris.claw.lib.lobsters.StoryModel
 import org.threeten.bp.DateTimeUtils
 import org.threeten.bp.Duration
@@ -31,7 +31,7 @@ import java.net.URI
 import java.util.Date
 
 class StoryViewHolder private constructor(
-    private val binding: StoryViewBinding
+    private val binding: StoryViewBinding,
 ) : RecyclerView.ViewHolder(binding.root) {
 
     private val context: Context = binding.root.context
@@ -40,7 +40,8 @@ class StoryViewHolder private constructor(
         story: StoryModel,
         isCompact: Boolean = true,
         onClickListener: ((String, String) -> Unit)? = null,
-        onLinkClicked: ((String) -> Unit)? = null
+        onLongClickListener: ((String) -> Unit)? = null,
+        onLinkClicked: ((String) -> Unit)? = null,
     ) = with(binding) {
         storyViewAvatar.load("https://lobste.rs/${story.avatarShortUrl}") {
             crossfade(true)
@@ -52,13 +53,15 @@ class StoryViewHolder private constructor(
             append(story.title)
             story.tags.forEach { tag ->
                 append(" ")
-                append(SpannableString(tag).apply {
-                    val span = TagSpan(
-                        backgroundColor = context.tagBackground(tag),
-                        borderColor = context.tagBorder(tag)
-                    )
-                    setSpan(span, 0, tag.length, Spannable.SPAN_INCLUSIVE_EXCLUSIVE)
-                })
+                append(
+                    SpannableString(tag).apply {
+                        val span = TagSpan(
+                            backgroundColor = context.tagBackground(tag),
+                            borderColor = context.tagBorder(tag)
+                        )
+                        setSpan(span, 0, tag.length, Spannable.SPAN_INCLUSIVE_EXCLUSIVE)
+                    }
+                )
             }
             if (story.description.isNotBlank()) append(" ☶")
         }
@@ -98,6 +101,12 @@ class StoryViewHolder private constructor(
         if (onClickListener != null)
             root.setOnClickListener {
                 onClickListener(story.shortId, story.url)
+            }
+
+        if (onLongClickListener != null)
+            root.setOnLongClickListener {
+                onLongClickListener(story.username)
+                true
             }
 
         val shouldShowDescription = !isCompact && story.description.isNotBlank()

@@ -11,12 +11,12 @@ import dev.thomasharris.claw.feature.frontpage.DividerViewHolder
 import dev.thomasharris.claw.feature.frontpage.FrontPageItem
 import dev.thomasharris.claw.frontpage.feature.frontpage.databinding.ItemFrontPageDividerBinding
 
-
 const val VIEW_TYPE_STORY = 1
 const val VIEW_TYPE_DIVIDER = 2
 
 class FrontPageAdapter2(
-    private val onClick: (String, String) -> Unit
+    private val onClick: (String, String) -> Unit,
+    private val onLongClick: (String) -> Unit,
 ) : PagingDataAdapter<FrontPageItem, RecyclerView.ViewHolder>(this) {
 
     override fun getItemViewType(position: Int) = when (getItem(position)) {
@@ -35,7 +35,11 @@ class FrontPageAdapter2(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (val item = getItem(position)) {
             is FrontPageItem.Story -> {
-                (holder as StoryViewHolder).bind(item.story, onClickListener = onClick)
+                (holder as StoryViewHolder).bind(
+                    item.story,
+                    onClickListener = onClick,
+                    onLongClickListener = onLongClick
+                )
             }
             is FrontPageItem.Divider -> (holder as DividerViewHolder).bind(getItem(position) as FrontPageItem.Divider)
             null -> {

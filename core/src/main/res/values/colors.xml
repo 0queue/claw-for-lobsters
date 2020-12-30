@@ -14,10 +14,12 @@
     <color name="colorTagBorderMedia">#B2CCF0</color>
     <color name="colorTagBorderMeta">#c8c8c8</color>
     <color name="colorTagBorder">#d5d458</color>
+    <color name="colorTagBorderIsAdmin">#F0B2B8</color>
 
     <color name="colorTagBackgroundShowAskAnnounceInterview">#f9ddde</color>
     <!--  TODO media and meta look very similar in night mode (actually all the tags do tbh)  /-->
     <color name="colorTagBackgroundMedia">#ddebf9</color>
     <color name="colorTagBackgroundMeta">#eeeeee</color>
     <color name="colorTagBackground">#fffcd7</color>
+    <color name="colorTagBackgroundIsAdmin">#f9ddde</color>
 </resources>

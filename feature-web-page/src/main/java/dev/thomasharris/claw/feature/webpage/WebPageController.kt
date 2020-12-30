@@ -1,7 +1,6 @@
 package dev.thomasharris.claw.feature.webpage
 
 import android.content.Context
-import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.net.Uri
@@ -11,19 +10,22 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.AttrRes
+import androidx.browser.customtabs.CustomTabColorSchemeParams
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.content.ContextCompat
 import com.bluelinelabs.conductor.Controller
-import dev.thomasharris.claw.lib.navigator.back
+import dev.thomasharris.claw.lib.navigator.up
 
-private const val REQUEST_CODE = 102019
-
+/**
+ * Just serves as a navigation destination, once it is attached
+ * it just immediately fires off an intent and pops itself
+ */
 @Suppress("unused")
 class WebPageController(args: Bundle) : Controller(args) {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup,
-        savedStateBundle: Bundle?
+        savedStateBundle: Bundle?,
     ): View = inflater.inflate(R.layout.web_page, container, false)
 
     override fun onAttach(view: View) {
@@ -43,18 +45,19 @@ class WebPageController(args: Bundle) : Controller(args) {
                 setStartAnimations(it, R.anim.slide_in_from_right, R.anim.nothing)
                 setExitAnimations(it, R.anim.nothing, R.anim.slide_out_to_right)
                 // closest thing to turning on dark mode as far as I can tell
-                setToolbarColor(it.getColorAttr(R.attr.colorSurface))
+                setDefaultColorSchemeParams(
+                    CustomTabColorSchemeParams.Builder().apply {
+                        setToolbarColor(it.getColorAttr(R.attr.colorSurface))
+                    }.build()
+                )
             }
         }.build().apply {
             intent.data = Uri.parse(url)
-            startActivityForResult(intent, REQUEST_CODE, startAnimationBundle)
+            // NOTE cannot startActivityForResult, because it interferes with singleTop
+            //   also it isn't necessary, we don't care about the result
+            activity?.startActivity(intent, startAnimationBundle)
+            up()
         }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == REQUEST_CODE)
-            back()
     }
 }
 

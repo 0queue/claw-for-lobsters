@@ -39,11 +39,17 @@ open class NewModuleTask : DefaultTask() {
 
         // create the starting class
         val ktName =
-            "$moduleName/src/main/java/${packageStructure.split(".").joinToString(separator = "/")}.kt"
+            "$moduleName/src/main/java/${
+                packageStructure.split(".").joinToString(separator = "/")
+            }.kt"
         with(File(project.rootDir, ktName)) {
             ensureParentDirsCreated()
             createNewFile()
-            writeText("package ${packageStructure.split(".").dropLast(1).joinToString(separator = ".")}")
+            writeText(
+                "package ${
+                    packageStructure.split(".").dropLast(1).joinToString(separator = ".")
+                }"
+            )
         }
 
         // create the res folder if hasAndroid
@@ -52,35 +58,48 @@ open class NewModuleTask : DefaultTask() {
 
         // create test directory
         val testDir =
-            "$moduleName/src/test/java/${packageStructure.split(".").dropLast(1).joinToString(
-                separator = "/"
-            )}"
+            "$moduleName/src/test/java/${
+                packageStructure.split(".").dropLast(1).joinToString(
+                    separator = "/"
+                )
+            }"
         File(project.rootDir, testDir).mkdirs()
 
         // create manifest if hasAndroid
         if (isAndroid) with(File(project.rootDir, "$moduleName/src/main/AndroidManifest.xml")) {
             ensureParentDirsCreated()
             createNewFile()
-            writeText(
-                "<manifest xmlns:android=\"http://schemas.android.com/apk/res/android\"\n" +
-                        "    package=\"${packageStructure.split(".").dropLast(1).joinToString(
-                            separator = "."
-                        )}\" />"
-            )
+            """
+                <manifest package="${packageStructure.split(".").dropLast(1).joinToString(".")}">"
+            """.trimIndent()
+                .let { writeText(it) }
         }
 
         // create build.gradle.kts
         with(File(project.rootDir, "$moduleName/build.gradle.kts")) {
             createNewFile()
-            appendText("import dev.thomasharris.build.testing\n\n")
-            appendText("plugins {\n    id(\"dev.thomasharris.claw${if (isAndroid) ".android" else ""}\")\n}\n\n")
-            appendText("dependencies {\n    testing()\n}")
+            """
+                import dev.thomasharris.claw.build.Deps
+                
+                plugins {
+                    id("dev.thomasharris.claw${if (isAndroid) ".android" else ""}")
+                }
+                
+                dependencies {
+                    implementation(Deps.Kotlin.stdlib)
+                    implementation(Deps.Dagger.dagger)
+                    kapt(Deps.Dagger.compiler)
+                    
+                    testImplementation(Deps.junit)
+                }
+                
+            """.trimIndent().let { appendText(it) }
         }
 
         File(project.rootDir, "settings.gradle.kts").appendText("\ninclude(\":$moduleName\")")
 
         // create proguard-rules.pro
-        with (File(project.rootDir, "$moduleName/proguard-rules.pro")){
+        with(File(project.rootDir, "$moduleName/proguard-rules.pro")) {
             createNewFile()
             appendText("# -dontobfuscate")
         }

@@ -6,7 +6,10 @@ import com.github.michaelbull.result.Result
 import com.github.michaelbull.result.map
 import com.github.michaelbull.result.onSuccess
 import com.github.michaelbull.result.runCatching
+import com.squareup.sqldelight.runtime.coroutines.asFlow
+import com.squareup.sqldelight.runtime.coroutines.mapToOneOrNull
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import java.util.Date
 import javax.inject.Inject
@@ -15,7 +18,7 @@ import javax.inject.Singleton
 @Singleton
 class AsyncStoryRepository @Inject constructor(
     private val lobstersService: LobstersService,
-    private val lobstersQueries: LobstersQueries
+    private val lobstersQueries: LobstersQueries,
 ) {
 
     /**
@@ -30,11 +33,11 @@ class AsyncStoryRepository @Inject constructor(
 
             val oldestDate = lobstersQueries.getOldestStory(index).oneOrNull()
 
-            val isOld: Boolean? = oldestDate?.min?.let {
+            val isOld: Boolean = oldestDate?.min?.let {
                 Date(it).isOld()
             } ?: true
 
-            if (isOld == false && !shouldRefresh) {
+            if (!isOld && !shouldRefresh) {
                 return@withContext Ok(lobstersQueries.getPage(index).list())
             }
 
@@ -54,7 +57,6 @@ class AsyncStoryRepository @Inject constructor(
                         if (lobstersQueries.getPageSize(index).executeAsOne() > 25)
                             lobstersQueries.trimExcess(index, 25)
                     }
-
                 }
                 .map {
                     // refetch
@@ -62,11 +64,9 @@ class AsyncStoryRepository @Inject constructor(
                 }
         }
 
-    suspend fun getStory(storyId: String): StoryModel? = withContext(Dispatchers.IO) {
-        lobstersQueries.getStoryModel(storyId).oneOrNull()
-    }
+    fun observeStory(storyId: String): Flow<StoryModel?> =
+        lobstersQueries.getStoryModel(storyId).asFlow().mapToOneOrNull(Dispatchers.IO)
 }
-
 
 fun StoryNetworkEntity.toDB(pageIndex: Int, subIndex: Int, now: Date = Date()) =
     Story(
@@ -93,6 +93,8 @@ fun UserNetworkEntity.toDB(now: Date = Date()) =
         isModerator,
         karma,
         avatarUrl,
-        invitedByUser,
-        now
+        invitedByUser = invitedByUser,
+        githubUsername = githubUsername,
+        twitterUsername = twitterUsername,
+        insertedAt = now
     )

@@ -10,6 +10,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
 import androidx.paging.insertSeparators
+import androidx.paging.map
 import androidx.recyclerview.widget.LinearLayoutManager
 import dev.thomasharris.claw.core.HasBinding
 import dev.thomasharris.claw.core.ext.fade
@@ -46,7 +47,7 @@ class FrontPageController : ViewLifecycleController(), HasBinding<FrontPageBindi
         ).flow.map { pagingData ->
             @Suppress("RemoveExplicitTypeArguments")
             pagingData
-                .map(FrontPageItem::Story)
+                .map { FrontPageItem.Story(it) }
                 .insertSeparators<FrontPageItem.Story, FrontPageItem> { before, after ->
                     before?.let { b ->
                         after?.let { a ->
@@ -57,20 +58,20 @@ class FrontPageController : ViewLifecycleController(), HasBinding<FrontPageBindi
                         }
                     }
                 }
-
         }.cachedIn(lifecycleScope) // fine to cache in controller lifecycle
     }
 
-    private val adapter = FrontPageAdapter2 { shortId, _ ->
-        goto(Destination.Comments(shortId))
-    }
+    private val adapter = FrontPageAdapter2(
+        onClick = { shortId, _ -> goto(Destination.Comments(shortId)) },
+        onLongClick = { author -> goto(Destination.StoryModal(author)) }
+    )
 
     override var binding: FrontPageBinding? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup,
-        savedStateBundle: Bundle?
+        savedStateBundle: Bundle?,
     ): View {
         binding = FrontPageBinding.inflate(inflater, container, false).apply {
             frontPageRecycler.apply {
@@ -79,14 +80,16 @@ class FrontPageController : ViewLifecycleController(), HasBinding<FrontPageBindi
                 setOnScrollChangeListener { v, _, _, _, _ ->
                     frontPageAppBarLayout.isSelected = v.canScrollVertically(-1)
                 }
-                addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
-                    override fun onViewDetachedFromWindow(v: View?) {
-                        // listAdapter outlives recycler, so make sure to detach it
-                        frontPageRecycler.adapter = null
-                    }
+                addOnAttachStateChangeListener(
+                    object : View.OnAttachStateChangeListener {
+                        override fun onViewDetachedFromWindow(v: View?) {
+                            // listAdapter outlives recycler, so make sure to detach it
+                            frontPageRecycler.adapter = null
+                        }
 
-                    override fun onViewAttachedToWindow(v: View?) = Unit
-                })
+                        override fun onViewAttachedToWindow(v: View?) = Unit
+                    }
+                )
             }
 
             frontPageToolbar.setOnMenuItemClickListener { item ->
@@ -111,7 +114,12 @@ class FrontPageController : ViewLifecycleController(), HasBinding<FrontPageBindi
 
                     // little ugly but I want to catch all errors
                     var isError = false
-                    loadStates.forEach { _, _, loadState ->
+                    // this is what the internal forEach does
+                    loadStates.source.forEach { _, loadState ->
+                        isError = isError || loadState is LoadState.Error
+                    }
+
+                    loadStates.mediator?.forEach { _, loadState ->
                         isError = isError || loadState is LoadState.Error
                     }
 

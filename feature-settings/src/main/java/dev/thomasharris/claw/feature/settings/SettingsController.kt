@@ -1,6 +1,5 @@
 package dev.thomasharris.claw.feature.settings
 
-
 import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
@@ -14,16 +13,21 @@ import androidx.core.view.forEach
 import com.bluelinelabs.conductor.archlifecycle.LifecycleController
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.button.MaterialButton
+import dev.thomasharris.betterhtml.PressableLinkMovementMethod
+import dev.thomasharris.betterhtml.fromHtml
 import dev.thomasharris.claw.core.HasBinding
 import dev.thomasharris.claw.core.PreferencesRepository
+import dev.thomasharris.claw.core.ext.dipToPx
 import dev.thomasharris.claw.core.ext.getComponent
-import dev.thomasharris.claw.feature.settings.databinding.SettingsBinding
+import dev.thomasharris.claw.feature.settings.databinding.ControllerSettingsBinding
 import dev.thomasharris.claw.feature.settings.di.DaggerSettingsComponent
 import dev.thomasharris.claw.feature.settings.di.SettingsComponent
-import dev.thomasharris.claw.lib.navigator.back
+import dev.thomasharris.claw.lib.navigator.Destination
+import dev.thomasharris.claw.lib.navigator.goto
+import dev.thomasharris.claw.lib.navigator.up
 
 @Suppress("unused")
-class SettingsController : LifecycleController(), HasBinding<SettingsBinding> {
+class SettingsController : LifecycleController(), HasBinding<ControllerSettingsBinding> {
 
     private val component by getComponent<SettingsComponent> {
         DaggerSettingsComponent.builder()
@@ -31,7 +35,7 @@ class SettingsController : LifecycleController(), HasBinding<SettingsBinding> {
             .build()
     }
 
-    override var binding: SettingsBinding? = null
+    override var binding: ControllerSettingsBinding? = null
 
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<ConstraintLayout>
 
@@ -39,25 +43,27 @@ class SettingsController : LifecycleController(), HasBinding<SettingsBinding> {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup,
-        savedViewState: Bundle?
+        savedViewState: Bundle?,
     ): View {
-        binding = SettingsBinding.inflate(inflater, container, false).apply {
+        binding = ControllerSettingsBinding.inflate(inflater, container, false).apply {
             bottomSheetBehavior = BottomSheetBehavior.from(settingsBottomSheet).apply {
-                addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
-                    override fun onSlide(bottomSheet: View, slideOffset: Float) = Unit
+                addBottomSheetCallback(
+                    object : BottomSheetBehavior.BottomSheetCallback() {
+                        override fun onSlide(bottomSheet: View, slideOffset: Float) = Unit
 
-                    override fun onStateChanged(bottomSheet: View, newState: Int) {
-                        if (newState == BottomSheetBehavior.STATE_HIDDEN)
-                            back()
+                        override fun onStateChanged(bottomSheet: View, newState: Int) {
+                            if (newState == BottomSheetBehavior.STATE_HIDDEN)
+                                up()
+                        }
                     }
-                })
+                )
 
                 state = BottomSheetBehavior.STATE_HIDDEN
             }
 
             settingsScrim.setOnClickListener {
                 bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
-                back()
+                up()
             }
 
             settingsThemeToggleGroup.check(
@@ -82,9 +88,12 @@ class SettingsController : LifecycleController(), HasBinding<SettingsBinding> {
                 if (isChecked) {
                     settingsThemeDescription.updateThemeDescription(themeMode)
                     component.preferencesRepository().setTheme(themeMode)
-                    v.postDelayed({
-                        AppCompatDelegate.setDefaultNightMode(themeMode.modeNight)
-                    }, 150) // little hack to stop button flickering
+                    v.postDelayed(
+                        {
+                            AppCompatDelegate.setDefaultNightMode(themeMode.modeNight)
+                        },
+                        150
+                    ) // little hack to stop button flickering
                 }
             }
 
@@ -103,6 +112,15 @@ class SettingsController : LifecycleController(), HasBinding<SettingsBinding> {
                     debug
                 )
 
+            updatesLinkTextView.movementMethod = PressableLinkMovementMethod {
+                if (it != null)
+                    goto(Destination.WebPage(it))
+            }
+
+            // html overkill here? yes
+            updatesLinkTextView.text = root.context.getString(R.string.updates_text)
+                .fromHtml { it.dipToPx(root.context) }
+                .trim()
         }
 
         return requireBinding().root
@@ -118,19 +136,18 @@ class SettingsController : LifecycleController(), HasBinding<SettingsBinding> {
 
     override fun handleBack(): Boolean {
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
-        back()
-
-        return true
+        return super.handleBack()
     }
 
     private fun TextView.updateThemeDescription(themeMode: PreferencesRepository.ThemeMode) {
         text = when (themeMode) {
             PreferencesRepository.ThemeMode.DAY -> "Day mode"
             PreferencesRepository.ThemeMode.NIGHT -> "Night mode"
-            PreferencesRepository.ThemeMode.SYSTEM -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
-                "Follow system"
-            else
-                "Follow battery saver"
+            PreferencesRepository.ThemeMode.SYSTEM ->
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+                    "Follow system"
+                else
+                    "Follow battery saver"
         }
     }
 }

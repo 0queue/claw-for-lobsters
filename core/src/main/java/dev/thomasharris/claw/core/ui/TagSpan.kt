@@ -1,6 +1,10 @@
 package dev.thomasharris.claw.core.ui
 
-import android.graphics.*
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.RectF
+import android.graphics.Typeface
 import android.text.style.ReplacementSpan
 import androidx.annotation.ColorInt
 
@@ -34,14 +38,21 @@ class TagSpan(
         strokeWidth = 2f
     }
 
-    override fun getSize(paint: Paint, text: CharSequence, start: Int, end: Int, fm: Paint.FontMetricsInt?): Int {
+    override fun getSize(
+        paint: Paint,
+        text: CharSequence,
+        start: Int,
+        end: Int,
+        fm: Paint.FontMetricsInt?
+    ): Int {
         textPaint = Paint(paint).apply {
             textSize *= textScale
             typeface = Typeface.DEFAULT
             color = Color.BLACK
         }
 
-        return paddingPx.toInt() + textPaint.measureText(text, start, end).toInt() + paddingPx.toInt()
+        return paddingPx.toInt() + textPaint.measureText(text, start, end)
+            .toInt() + paddingPx.toInt()
     }
 
     override fun draw(
@@ -69,5 +80,4 @@ class TagSpan(
         canvas.drawRoundRect(rect, cornerRadiusPx, cornerRadiusPx, borderPaint)
         canvas.drawText(text, start, end, x + paddingPx, y.toFloat(), textPaint)
     }
-
 }

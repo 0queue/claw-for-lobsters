@@ -1,19 +1,38 @@
-import dev.thomasharris.claw.build.coil
-import dev.thomasharris.claw.build.conductor
-import dev.thomasharris.claw.build.material
-import dev.thomasharris.claw.build.testing
+import dev.thomasharris.claw.build.Deps
 
 plugins {
     id("dev.thomasharris.claw.android")
 }
 
 dependencies {
-    testing()
-    conductor()
-    material()
-    coil()
-
-    implementation("androidx.browser:browser:1.2.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.2.0")
+    implementation(Deps.Kotlin.stdlib)
     implementation(project(":core"))
+    implementation(project(":lib-better-html"))
+    implementation(project(":lib-swipe-back"))
+
+    // util
+    implementation(Deps.Kotlin.X.coroutinesAndroid)
+    implementation(Deps.Android.X.coreKtx)
+
+    // dagger
+    implementation(Deps.Dagger.dagger)
+    kapt(Deps.Dagger.compiler)
+
+    // conductor
+    implementation(Deps.Conductor.conductor)
+    implementation(Deps.Conductor.lifecycle)
+
+    // material
+    implementation(Deps.Android.X.appCompat)
+    implementation(Deps.Android.X.swipeRefreshLayout)
+    implementation(Deps.Android.X.constraintLayout)
+    implementation(Deps.material)
+
+    // other
+    implementation(Deps.coil)
+    implementation(Deps.Android.X.browser)
+    implementation(Deps.Android.X.lifecycleRuntime)
+
+    // testing
+    testImplementation(Deps.junit)
 }

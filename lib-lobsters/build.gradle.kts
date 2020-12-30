@@ -1,22 +1,39 @@
-import dev.thomasharris.claw.build.testing
+import dev.thomasharris.claw.build.Deps
 
 plugins {
-    id("dev.thomasharris.claw.android")
     id("com.squareup.sqldelight")
+    id("dev.thomasharris.claw.android")
 }
 
 android.buildTypes.getByName("release").consumerProguardFile("proguard-rules.pro")
 
+kapt {
+    correctErrorTypes = true
+}
+
 dependencies {
-    testing()
+    implementation(Deps.Kotlin.stdlib)
 
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
-    implementation("com.squareup.moshi:moshi-adapters:1.9.3")
-    kapt("com.squareup.moshi:moshi-kotlin-codegen:1.9.3")
+    // util
+    implementation(Deps.Android.X.coreKtx)
+    implementation(Deps.Kotlin.X.coroutinesAndroid)
+    implementation(Deps.Kotlin.result)
 
-    implementation("com.squareup.sqldelight:android-driver:1.4.0")
-    api("com.squareup.sqldelight:android-paging-extensions:1.4.0")
-    implementation("com.squareup.sqldelight:coroutines-extensions:1.4.0")
-    implementation("com.michael-bull.kotlin-result:kotlin-result:1.1.6")
+    // dagger
+    implementation(Deps.Dagger.dagger)
+    kapt(Deps.Dagger.compiler)
+
+    // retrofit
+    implementation(Deps.Square.Retrofit.retrofit)
+    implementation(Deps.Square.Retrofit.converterMoshi)
+    implementation(Deps.Square.Moshi.adapters)
+    kapt(Deps.Square.Moshi.codegen)
+
+    // sqldelight
+    api(Deps.Square.SqlDelight.pagingExtensions)
+    implementation(Deps.Square.SqlDelight.androidDriver)
+    implementation(Deps.Square.SqlDelight.coroutinesExtensions)
+
+    // testing
+    testImplementation(Deps.junit)
 }

@@ -10,23 +10,21 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
-import coil.api.load
+import coil.load
 import coil.transform.CircleCropTransformation
+import dev.thomasharris.betterhtml.fromHtml
 import dev.thomasharris.claw.core.ext.dipToPx
 import dev.thomasharris.claw.core.ext.postedAgo
 import dev.thomasharris.claw.core.ext.toString
-import dev.thomasharris.claw.core.ui.betterhtml.PressableLinkMovementMethod
-import dev.thomasharris.claw.core.ui.betterhtml.fromHtml
 import dev.thomasharris.claw.core.ui.isNewUser
 import dev.thomasharris.claw.feature.comments.databinding.ItemCommentBinding
 import dev.thomasharris.claw.lib.lobsters.CommentModel
 import dev.thomasharris.claw.lib.lobsters.CommentStatus
 import java.util.Date
-import java.util.Locale
 import kotlin.math.min
 
 class CommentViewHolder private constructor(
-    private val binding: ItemCommentBinding
+    private val binding: ItemCommentBinding,
 ) : RecyclerView.ViewHolder(binding.root) {
 
     private val colors =
@@ -37,15 +35,16 @@ class CommentViewHolder private constructor(
         comment: CommentModel,
         position: Int,
         onClick: (String, Boolean) -> Unit,
-        onLinkClicked: (String) -> Unit
+        onLinkClicked: (String) -> Unit,
+        onLongClick: (String) -> Unit,
     ) = with(binding) {
         commentMarker.backgroundTintList =
             ColorStateList.valueOf(colors[(comment.indentLevel - 1) % colors.size])
 
         commentMarker.layoutParams =
             (commentMarker.layoutParams as? ViewGroup.MarginLayoutParams)?.apply {
-                leftMargin = (comment.indentLevel - 1) * 8f.dipToPx(root.context).toInt()
-            } ?: commentMarker.layoutParams
+            leftMargin = (comment.indentLevel - 1) * 8f.dipToPx(root.context).toInt()
+        } ?: commentMarker.layoutParams
 
         root.layoutParams = (root.layoutParams as? ViewGroup.MarginLayoutParams)?.apply {
             topMargin = (if (position != 1 && comment.indentLevel == 1) 12f else 0f)
@@ -89,7 +88,7 @@ class CommentViewHolder private constructor(
             .fromHtml(dipToPx = { it.dipToPx(root.context) })
             .trim()
         commentBody.movementMethod =
-            PressableLinkMovementMethod {
+            dev.thomasharris.betterhtml.PressableLinkMovementMethod {
                 if (it != null)
                     onLinkClicked(it)
             }
@@ -115,7 +114,7 @@ class CommentViewHolder private constructor(
 
         commentChildCount.visibility =
             if (isCollapsed && comment.childCount > 0) View.VISIBLE else View.GONE
-        commentChildCount.text = String.format(Locale.US, "%d", comment.childCount)
+        commentChildCount.text = comment.childCount.toString(10)
 
         val commentAlpha = if (comment.score < -2) .7f else 1f
         commentContentContainer.alpha = commentAlpha
@@ -123,6 +122,11 @@ class CommentViewHolder private constructor(
 
         root.setOnClickListener {
             onClick(comment.shortId, false)
+        }
+
+        root.setOnLongClickListener {
+            onLongClick(comment.username)
+            true
         }
     }
 

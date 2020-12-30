@@ -20,11 +20,11 @@ sealed class CommentsItem {
     data class Spacer(val isEmpty: Boolean) : CommentsItem()
 }
 
-
 class CommentsAdapter(
     private val onHeaderClick: (String, String) -> Unit,
     private val onLinkClick: (String) -> Unit,
-    private val onCommentClick: (String, Boolean) -> Unit
+    private val onCommentClick: (String, Boolean) -> Unit,
+    private val onLongClick: (String) -> Unit,
 ) : ListAdapter<CommentsItem, RecyclerView.ViewHolder>(DIFF) {
     override fun getItemViewType(position: Int) = when (getItem(position)) {
         is CommentsItem.Header -> VIEW_TYPE_HEADER
@@ -47,12 +47,19 @@ class CommentsAdapter(
                     header.story,
                     isCompact = false,
                     onClickListener = listener,
-                    onLinkClicked = onLinkClick
+                    onLongClickListener = onLongClick,
+                    onLinkClicked = onLinkClick,
                 )
             }
             VIEW_TYPE_COMMENT -> {
                 val comment = getItem(position) as CommentsItem.Comment
-                (holder as CommentViewHolder).bind(comment.commentView, position, onCommentClick, onLinkClick)
+                (holder as CommentViewHolder).bind(
+                    comment.commentView,
+                    position = position,
+                    onClick = onCommentClick,
+                    onLinkClicked = onLinkClick,
+                    onLongClick = onLongClick,
+                )
             }
             VIEW_TYPE_SPACER -> {
                 val spacer = getItem(position) as CommentsItem.Spacer
@@ -60,7 +67,6 @@ class CommentsAdapter(
             }
         }
     }
-
 }
 
 object DIFF : DiffUtil.ItemCallback<CommentsItem>() {

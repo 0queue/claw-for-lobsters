@@ -2,11 +2,8 @@ package dev.thomasharris.claw.lib.lobsters
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
-import retrofit2.Call
-import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
-import java.io.IOException
 import java.util.Date
 
 interface LobstersService {
@@ -15,22 +12,13 @@ interface LobstersService {
      * Hey this starts at 1, don't forget it
      */
     @GET("page/{index}.json")
-    fun getPageSync(@Path("index") index: Int): Call<List<StoryNetworkEntity>>
-
-    @GET("page/{index}.json")
     suspend fun getPage(@Path("index") index: Int): List<StoryNetworkEntity>
-
-    @GET("s/{short_id}.json")
-    fun getStorySync(@Path("short_id") shortId: String): Call<StoryNetworkEntity>
 
     @GET("s/{short_id}.json")
     suspend fun getStory(@Path("short_id") shortId: String): StoryNetworkEntity
 
-    @GET("tags.json")
-    fun getTagsSync(): Call<List<TagNetworkEntity>>
-
-    @GET("tags.json")
-    suspend fun getTags(): List<TagNetworkEntity>
+    @GET("u/{username}.json")
+    suspend fun getUser(@Path("username") username: String): UserNetworkEntity
 }
 
 typealias ShortId = String
@@ -47,7 +35,7 @@ data class StoryNetworkEntity(
     val description: String,
     @field:Json(name = "submitter_user") val submitter: UserNetworkEntity,
     val tags: List<String>,
-    val comments: List<CommentNetworkEntity>? = null
+    val comments: List<CommentNetworkEntity>? = null,
 )
 
 @JsonClass(generateAdapter = true)
@@ -62,7 +50,7 @@ data class CommentNetworkEntity(
     val comment: String,
     val url: String,
     @field:Json(name = "indent_level") val indentLevel: Int, // starts at 1
-    @field:Json(name = "commenting_user") val commentingUser: UserNetworkEntity
+    @field:Json(name = "commenting_user") val commentingUser: UserNetworkEntity,
 )
 
 @JsonClass(generateAdapter = true)
@@ -74,7 +62,9 @@ data class UserNetworkEntity(
     @field:Json(name = "is_moderator") val isModerator: Boolean,
     val karma: Int = 0,
     @field:Json(name = "avatar_url") val avatarUrl: String,
-    @field:Json(name = "invited_by_user") val invitedByUser: String
+    @field:Json(name = "invited_by_user") val invitedByUser: String?,
+    @field:Json(name = "github_username") val githubUsername: String?,
+    @field:Json(name = "twitter_username") val twitterUsername: String?,
 )
 
 @JsonClass(generateAdapter = true)
@@ -85,11 +75,5 @@ data class TagNetworkEntity(
     val privileged: Boolean,
     @field:Json(name = "is_media") val isMedia: Boolean,
     val inactive: Boolean,
-    @field:Json(name = "hotness_mod") val hotnessMod: Float
+    @field:Json(name = "hotness_mod") val hotnessMod: Float,
 )
-
-fun <T> Call<T>.executeOrNull(): Response<T>? = try {
-    execute()
-} catch (e: IOException) {
-    null
-}

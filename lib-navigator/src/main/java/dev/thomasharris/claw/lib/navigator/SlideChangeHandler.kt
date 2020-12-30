@@ -10,6 +10,7 @@ import com.bluelinelabs.conductor.changehandler.AnimatorChangeHandler
 // copied from the old project, works like a charm
 class SlideChangeHandler(duration: Long) : AnimatorChangeHandler(duration, false) {
 
+    @Suppress("unused") // used with reflection
     constructor() : this(DEFAULT_ANIMATION_DURATION)
 
     override fun getAnimator(
