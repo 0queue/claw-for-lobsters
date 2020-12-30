@@ -31,16 +31,6 @@ CREATE TABLE user (
     twitterUsername TEXT
 );
 
-CREATE TABLE tag (
-    tag TEXT NOT NULL UNIQUE PRIMARY KEY,
-    id INTEGER as Int NOT NULL,
-    description TEXT NOT NULL,
-    privileged INTEGER as Boolean NOT NULL,
-    isMedia INTEGER as Boolean NOT NULL,
-    isInactive INTEGER as Boolean NOT NULL,
-    hotnessMod REAL as Float NOT NULL
-);
-
 CREATE TABLE comment (
     shortId TEXT NOT NULL UNIQUE PRIMARY KEY,
     storyId TEXT NOT NULL,
@@ -76,12 +66,6 @@ SELECT
 FROM story
 JOIN user ON story.username = user.username
 ORDER BY story.pageSubIndex;
-
-CREATE VIEW tagModel AS
-SELECT
-    tag.tag,
-    tag.isMedia
-FROM tag;
 
 CREATE VIEW commentModel AS
 SELECT
@@ -161,14 +145,6 @@ SELECT * FROM user WHERE username = :username;
 -- misc
 clear:
 DELETE FROM story;
-
-
--- tag methods
-insertTag:
-INSERT OR REPLACE INTO tag VALUES ?;
-
-getTagModels:
-SELECT * FROM tagModel;
 
 
 -- comment methods
