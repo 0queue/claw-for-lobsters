@@ -99,5 +99,24 @@
             app:layout_constraintStart_toEndOf="@id/settings_theme_toggle_group"
             app:layout_constraintTop_toTopOf="@id/settings_theme_toggle_group"
             tools:text="Day mode (Light)" />
+
+        <TextView
+            android:id="@+id/updates_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/updates_label"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/settings_theme_toggle_group" />
+
+        <dev.thomasharris.betterhtml.LinkTextView
+            android:id="@+id/updates_link_text_view"
+            android:layout_width="wrap_content"
+            android:layout_marginTop="4dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+            app:layout_constraintStart_toStartOf="@id/updates_label"
+            app:layout_constraintTop_toBottomOf="@id/updates_label"
+            tools:text="Check for links on: the internet" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

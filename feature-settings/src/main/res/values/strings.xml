@@ -5,4 +5,6 @@
     <string name="settings_comment_collapsing_label_text">Comment Collapsing</string>
     <!-- Claw for Lobsters v<1>< (debug)> -->
     <string name="settings_app_info_text">Claw for Lobsters v%1$d%2$s</string>
+    <string name="updates_label">Updates</string>
+    <string name="updates_text"><![CDATA[<p>Check for the latest updates on <a href="https://github.com/0queue/claw-for-lobsters/releases">GitHub</a></p>]]></string>
 </resources>
