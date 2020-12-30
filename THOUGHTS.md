@@ -112,3 +112,34 @@ generation, so I hacked it to use `"username" + i.to_s` instead of the Faker
 thing and it worked (spitting out tons of warnings from the cops of course).
 
 At least after all that `rails server` worked like a charm, so that's nice.
+
+## The Great 2020 Refresh
+
+The big update went rather smoothly, considering how long a year is in Android Time,
+no non trivial code changes had to be made, and except for the weird exception in
+[buildSrc/build.gradle.kts](buildSrc/build.gradle.kts), Kotlin is nice and up to date.
+
+To reflect on some earlier technology choices:
+
+- Still glad I chose to go with Conductor.  Between easy transitions and straightforward
+  backstack manipulation, I feel like it hits the right balance of correct defaults
+  for simple situations, and power for making sure every edge case works as desired. As long
+  as I continue to work with Views and anything above a few screens, I feel like I will reach
+  for Conductor.  That said, I should maybe upstream something about the view lifecycle, because
+  as Fragment folks have already figured out, the view lifecycle and controller lifecycle are
+  different, and I don't believe conductor has that built in yet.
+  
+- SQLDelight/Coroutines/Retrofit makes data loading easy and straightforward: Just observe the
+  database, and when refresh events happen, hop off the main thread, download, and insert.  For
+  paging, the Paging library does a lot of magic that means I pretty much just need a "load a page"
+  method, but I don't know how necessary that magic is. A nice future experiment would be to have a
+  list of observed pages that get rendered in the adapter, then observe more pages as the user
+  scrolls.
+  
+- Multi module navigation is still something of a question mark to me, in such a small app my
+  approach of manual reflection is aggressively okay, not fun to write but very contained and
+  theoretically easy to test.  I may revisit this in the future if I think of/hear about any
+  better approaches.
+  
+Overall, I used Claw at least daily for the whole year before this refresh, with only one unknown
+crash (and one known crash, due to lobste.rs changes), and look forward to another year of stability.
