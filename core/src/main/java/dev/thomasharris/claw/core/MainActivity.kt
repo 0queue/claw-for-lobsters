@@ -1,6 +1,7 @@
 package dev.thomasharris.claw.core
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -43,8 +44,13 @@ class MainActivity : AppCompatActivity(), Navigator {
     }
 
     override fun onBackPressed() {
-        if (!router.handleBack())
-            super.onBackPressed()
+        if (!router.handleBack()) {
+            // https://issuetracker.google.com/issues/139738913 ...
+            if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q && isTaskRoot)
+                finishAfterTransition()
+            else
+                super.onBackPressed()
+        }
     }
 
     /**
